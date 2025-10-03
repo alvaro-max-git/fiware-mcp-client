@@ -15,21 +15,21 @@ tools = [
         "type": "mcp",
         "server_label": "fiware-mcp",
         "server_url": MCP_URL,
-        # MUY RECOMENDADO: limitar herramientas que verá el modelo
+        # limitar herramientas que verá el modelo
         "allowed_tools": ["CB_version", "get_all_entities", "get_entity_types"],
-        # para pruebas, ejecuta sin pedir confirmación humana
+        # ejecuta sin pedir confirmación
         "require_approval": "never",
     }
 ]
 
 prompt = (
-    "Use CB version tool and tell me the Context Broker version."
+    "Use the tools to retrieve all entities with limit=5 and summarize how many entities you retrieved and their types."
 )
 
 response = client.responses.create(
     model="gpt-4o-mini",
     tools=tools,
-    instructions="You are a client that queries a Context Broker through a MCP Server, answering users' questions.",
+    instructions="You are a client that answers questions from the user and queries a context broker via MCP to retrieve answers",
     input=prompt,
     max_output_tokens=800,
 )
