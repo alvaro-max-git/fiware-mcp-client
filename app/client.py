@@ -28,7 +28,7 @@ prompt = (
 
 response = client.responses.create(
     model="gpt-4o-mini",
-    tools=tools,
+    tools=tools, # type: ignore
     instructions="You are a client that answers questions from the user and queries a context broker via MCP to retrieve answers",
     input=prompt,
     max_output_tokens=800,

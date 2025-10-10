@@ -1,3 +1,14 @@
 # Ignore dotenv environment variable files
 .env
 .env.*
+
+# Ignore logs folder and its contents
+logs/
+
+# Ignore Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ignore local virtual env
+.venv/
