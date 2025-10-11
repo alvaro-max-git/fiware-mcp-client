@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from dotenv import load_dotenv
+from app.prompts import load_prompt
 
 # Load environment variables from .env file
 load_dotenv()
@@ -12,16 +13,20 @@ load_dotenv()
 # MCP server configuration class
 @dataclass
 class MCPServerConfig:
-    label: str #MCP server name. i.e. "fiware-mcp"
-    url: str #MCP server URL (public or local)
+    label: str  # MCP server name. i.e. "fiware-mcp"
+    url: str    # MCP server URL (public or local)
+    allowed_tools: Optional[List[str]] = None
 
     def to_openai_tool(self) -> dict:
-        return {
+        d = {
             "type": "mcp",
             "server_label": self.label,
             "server_url": self.url,
-            "require_approval": "never" #TODO: define it as a .env variable
+            "require_approval": "never",  # TODO: define it as a .env variable
         }
+        if self.allowed_tools:
+            d["allowed_tools"] = self.allowed_tools # type: ignore
+        return d
 
 @dataclass
 class AppConfig:
@@ -40,6 +45,10 @@ class AppConfig:
     log_to_file: bool = field(default=True)
     logs_dir: Path = field(default=Path("logs"))
 
+    # Prompts
+    prompts_dir: Path = field(default=Path("prompts"))
+    system_prompt_file: str = field(default="system1.md")
+
     #Load values from .env file
     @staticmethod
     def from_env() -> "AppConfig":
@@ -53,6 +62,7 @@ class AppConfig:
         while True:
             label = os.getenv(f"MCP{i}_LABEL")
             url = os.getenv(f"MCP{i}_URL")
+            allowed = os.getenv(f"MCP{i}_ALLOWED_TOOLS")
             if not label and not url:
                 break
             if not label or not url:
@@ -60,13 +70,17 @@ class AppConfig:
                     f"Config MCP incompleta: faltan label o url para MCP{i} "
                     f"(MCP{i}_LABEL={label!r}, MCP{i}_URL={url!r})"
                 )
-            mcp_servers.append(MCPServerConfig(label=label, url=url))
+            allowed_list = [t.strip() for t in allowed.split(",")] if allowed else None
+            mcp_servers.append(MCPServerConfig(label=label, url=url, allowed_tools=allowed_list))
             i += 1
 
         if not mcp_servers:
             single_url = os.getenv("MCP_URL")
+            single_label = os.getenv("MCP_LABEL", "fiware-mcp")
+            single_allowed = os.getenv("MCP_ALLOWED_TOOLS")
+            allowed_list = [t.strip() for t in single_allowed.split(",")] if single_allowed else None
             if single_url:
-                mcp_servers.append(MCPServerConfig(label="fiware-mcp", url=single_url))
+                mcp_servers.append(MCPServerConfig(label=single_label, url=single_url, allowed_tools=allowed_list))
 
         cfg = AppConfig(
             openai_api_key=api_key,
@@ -77,6 +91,8 @@ class AppConfig:
             log_level=os.getenv("LOG_LEVEL", "INFO").upper(),
             log_to_file=os.getenv("LOG_TO_FILE", "true").lower() in ("1", "true", "yes"),
             logs_dir=Path(os.getenv("LOGS_DIR", "logs")),
+            prompts_dir=Path(os.getenv("PROMPTS_DIR", "prompts")),
+            system_prompt_file=os.getenv("SYSTEM_PROMPT_FILE", "system.md"),
         )
         cfg.validate()
         return cfg
@@ -91,12 +107,17 @@ class AppConfig:
         if self.log_level not in {"DEBUG", "INFO", "WARNING", "ERROR"}:
             raise ValueError("LOG_LEVEL must be DEBUG|INFO|WARNING|ERROR.")
         self.logs_dir.mkdir(parents=True, exist_ok=True)
-    
+        # ensure prompts dir exists (helps future prompt switching UX)
+        self.prompts_dir.mkdir(parents=True, exist_ok=True)
+
     def build_tools(self) -> List[dict]:
         """
         Returns OpenAI compatible tool list.
         """
         return [srv.to_openai_tool() for srv in self.mcp_servers]
+
+    def load_system_prompt(self) -> str:
+        return load_prompt(self.prompts_dir, self.system_prompt_file)
 
 
 

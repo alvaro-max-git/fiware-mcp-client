@@ -30,9 +30,18 @@ def main() -> int:
     logger.debug("Tools publicadas a LLM: %s", tools)
 
     # Prompt
-    user_prompt = "Use the tools to retrieve all entities with limit=5 and summarize how many entities you retrieved and their types."
+    user_prompt = "List all animals owned by \"Old MacDonald\""
+    try:
+        system_prompt_text = cfg.load_system_prompt()
+        logger.info("Using system prompt file: %s", (cfg.prompts_dir / cfg.system_prompt_file))
+    except Exception as e:
+        logger.exception("No se pudo cargar el system prompt")
+        print(f"[ERROR] No se pudo cargar el system prompt: {e}")
+        return 2
+
+    # Preservar el aviso de solo lectura como parte del prompt del sistema
     system_instructions = (
-        "You are a client that answers questions from the user and queries a context broker via MCP to retrieve answers"
+        f"{system_prompt_text}\n\n"
         f"Read only mode={cfg.read_only}. If something fails, explain why."
     )
 
