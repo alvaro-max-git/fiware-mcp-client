@@ -1,10 +1,72 @@
 import sys
+import argparse
 import logging
-from openai import OpenAI
+from pathlib import Path
 from app.config import AppConfig
 from app.logging_conf import setup_logging
+from app.runner import run_once
+from app.types import RunRequest, ExpectedSpec
+from app.evaluator import evaluate
+from benchmark.csv_runner import run_benchmark
 
 logger = logging.getLogger("client")
+
+def cmd_run(cfg: AppConfig, args: argparse.Namespace) -> int:
+    req = RunRequest(user_prompt=args.prompt, system_prompt_file=args.system_prompt_file)
+    res = run_once(cfg, req)
+    print(res.output_text if res.ok else f"[ERROR] {res.error}")
+    return 0 if res.ok else 1
+
+def cmd_eval(cfg: AppConfig, args: argparse.Namespace) -> int:
+    req = RunRequest(user_prompt=args.prompt, system_prompt_file=args.system_prompt_file)
+    res = run_once(cfg, req)
+
+    expected = ExpectedSpec()
+    if args.exact_text:
+        expected.exact_text = args.exact_text
+    if args.equals_json:
+        import json
+        expected.equals_json = json.loads(args.equals_json)
+    if args.json_subset:
+        import json
+        expected.json_subset = json.loads(args.json_subset)
+    if args.regex:
+        expected.regex = args.regex
+
+    ev = evaluate(res, expected)
+    print(res.output_text)
+    print(f"\n[EVAL] passed={ev.passed} reason={ev.reason or ''}")
+    return 0 if ev.passed else 2
+
+def cmd_bench(cfg: AppConfig, args: argparse.Namespace) -> int:
+    out = run_benchmark(cfg, Path(args.csv), Path(args.out))
+    print(f"Benchmark results: {out}")
+    return 0
+
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(prog="fiware-mcp-client")
+    sub = p.add_subparsers(dest="cmd", required=True)
+
+    pr = sub.add_parser("run")
+    pr.add_argument("--prompt", required=True)
+    pr.add_argument("--system-prompt-file", default=None)
+    pr.set_defaults(func=cmd_run)
+
+    pe = sub.add_parser("eval")
+    pe.add_argument("--prompt", required=True)
+    pe.add_argument("--system-prompt-file", default=None)
+    pe.add_argument("--exact-text")
+    pe.add_argument("--equals-json")
+    pe.add_argument("--json-subset")
+    pe.add_argument("--regex")
+    pe.set_defaults(func=cmd_eval)
+
+    pb = sub.add_parser("bench")
+    pb.add_argument("--csv", required=True)
+    pb.add_argument("--out", default="bench_out")
+    pb.set_defaults(func=cmd_bench)
+
+    return p
 
 def main() -> int:
     try:
@@ -13,59 +75,16 @@ def main() -> int:
         print(f"[FATAL] Config error: {e}")
         return 2
 
-    # Logging
     setup_logging(level=cfg.log_level, log_to_file=cfg.log_to_file, logs_dir=cfg.logs_dir)
-    logger.info("Configuration Loaded. Model=%s, MCPs=%s, read_only=%s",
-                cfg.model, [s.label for s in cfg.mcp_servers], cfg.read_only)
 
-    # OpenAI Client
+    parser = build_parser()
+    args = parser.parse_args()
     try:
-        client = OpenAI(api_key=cfg.openai_api_key)
+        return args.func(cfg, args)
     except Exception as e:
-        logger.exception("Error inicializando OpenAI client")
-        return 2
-
-    # Tools (MCP servers)
-    tools = cfg.build_tools()
-    logger.debug("Tools publicadas a LLM: %s", tools)
-
-    # Prompt
-    user_prompt = "List all animals owned by \"Old MacDonald\""
-    try:
-        system_prompt_text = cfg.load_system_prompt()
-        logger.info("Using system prompt file: %s", (cfg.prompts_dir / cfg.system_prompt_file))
-    except Exception as e:
-        logger.exception("No se pudo cargar el system prompt")
-        print(f"[ERROR] No se pudo cargar el system prompt: {e}")
-        return 2
-
-    # Preservar el aviso de solo lectura como parte del prompt del sistema
-    system_instructions = (
-        f"{system_prompt_text}\n\n"
-        f"Read only mode={cfg.read_only}. If something fails, explain why."
-    )
-
-    try:
-        resp = client.responses.create(
-            model=cfg.model,
-            tools=tools, # type: ignore
-            instructions=system_instructions,
-            input=user_prompt,
-            max_output_tokens=cfg.max_output_tokens,
-        )
-    except Exception as e:
-        logger.exception("Failure in responses.create()")
-        print(f"[ERROR] Failed model call: {e}")
+        logger.exception("Command failed")
+        print(f"[ERROR] {e}")
         return 1
-
-    # Éxito
-    try:
-        print(resp.output_text)
-    except Exception:
-        logger.warning("Couldn't retrieve output_text; printing response object.")
-        print(resp)
-
-    return 0
 
 if __name__ == "__main__":
     sys.exit(main())
