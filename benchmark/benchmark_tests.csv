@@ -1,0 +1,3 @@
+id,prompt,system_prompt_file,eval_mode,expected
+T1,"Tell me how many animals are located at AgriParcel 005. Answer only with a number",system3.md,exact_text,"13"
+T2,"List all animals located at AgriParcel 005. Just return the JSON format (Context Broker answer)",system3.md,json_subset,"[{""id"":""urn:ngsi-ld:Animal:cow003""},{""id"":""urn:ngsi-ld:Animal:cow005""}]"

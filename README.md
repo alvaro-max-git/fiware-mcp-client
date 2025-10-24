@@ -89,6 +89,34 @@ Output:
 - Prints the model response and an evaluation line like:
   - [EVAL] passed=True reason=
 
+## Benchmarks (CSV)
+
+Run multiple prompts and evaluate them from a CSV file.
+
+- Command:
+  - python -m app.cli bench --csv benchmark/benchmark_tests.csv --out bench_out
+- Output:
+  - A results file at bench_out/results.csv with columns:
+    - id, passed, reason, model, system_prompt_file, eval_mode, prompt, output_text
+
+CSV format:
+- Columns: id, prompt, system_prompt_file, eval_mode, expected
+- eval_mode values:
+  - exact_text | equals_json | json_subset | regex
+- expected:
+  - Plain text for exact_text
+  - JSON for equals_json/json_subset
+  - Regex pattern for regex
+
+Example CSV (see sample: benchmark/benchmark_tests.csv):
+- id,prompt,system_prompt_file,eval_mode,expected
+- T1,"Tell me how many animals are located at AgriParcel 005. Answer only with a number",system3.md,exact_text,"13"
+- T2,"List all animals located at AgriParcel 005. Just return the JSON format (Context Broker answer)",system3.md,json_subset,"[{""id"":""urn:ngsi-ld:Animal:cow003""},{""id"":""urn:ngsi-ld:Animal:cow005""}]"
+
+Tips:
+- For JSON inside CSV, escape quotes with "".
+- If system_prompt_file is empty, the default from .env is used.
+
 ## Prompts
 
 Place system prompts in prompts/ (e.g., system1.md, system2.md, system3.md). Switch with --system-prompt-file as needed.
