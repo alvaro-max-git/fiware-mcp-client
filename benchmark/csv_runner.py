@@ -1,5 +1,6 @@
 import csv
 import json
+import logging
 from pathlib import Path
 from typing import Dict, Any, Iterable, Tuple
 from app.config import AppConfig
@@ -37,6 +38,7 @@ def parse_expected(row: Dict[str, str]) -> ExpectedSpec:
 def run_benchmark(cfg: AppConfig, csv_file: Path, out_dir: Path) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
     results_csv = out_dir / "results.csv"
+    bench_logger = logging.getLogger("benchmark")
 
     with results_csv.open("w", encoding="utf-8", newline="") as f_out:
         writer = csv.DictWriter(
@@ -55,6 +57,19 @@ def run_benchmark(cfg: AppConfig, csv_file: Path, out_dir: Path) -> Path:
             res = run_once(cfg, req)
             exp = parse_expected(row)
             ev = evaluate(res, exp)
+
+            # Debug-print MCP trace per row when log level is DEBUG (as JSON from runner._extract_mcp_trace_from_response)
+            if bench_logger.isEnabledFor(logging.DEBUG):
+                meta = getattr(res, "metadata", {}) if res else {}
+                trace = None
+                if isinstance(meta, dict):
+                    trace = meta.get("mcp_trace") or meta.get("mcp_traces")
+                if trace:
+                    try:
+                        trace_str = json.dumps(trace, ensure_ascii=False, indent=2)
+                    except Exception:
+                        trace_str = str(trace)
+                    bench_logger.debug("MCP trace for id=%s:\n%s", row.get("id") or "", trace_str)
 
             writer.writerow({
                 "id": row.get("id") or "",

@@ -1,6 +1,7 @@
 import sys
 import argparse
 import logging
+import json
 from pathlib import Path
 from app.config import AppConfig
 from app.logging_conf import setup_logging
@@ -11,10 +12,28 @@ from benchmark.csv_runner import run_benchmark
 
 logger = logging.getLogger("client")
 
+def _debug_dump_mcp_trace(metadata: dict, label: str = "") -> None:
+    if not logger.isEnabledFor(logging.DEBUG):
+        return
+    if not isinstance(metadata, dict):
+        return
+    # Expect the structured dict created by app.runner._extract_mcp_trace_from_response
+    trace = metadata.get("mcp_trace") or metadata.get("mcp_traces")
+    if not trace:
+        return
+    try:
+        trace_str = json.dumps(trace, ensure_ascii=False, indent=2)
+    except Exception:
+        trace_str = str(trace)
+    header = f"MCP trace [{label}]" if label else "MCP trace"
+    logger.debug("%s:\n%s", header, trace_str)
+
 def cmd_run(cfg: AppConfig, args: argparse.Namespace) -> int:
     req = RunRequest(user_prompt=args.prompt, system_prompt_file=args.system_prompt_file)
     res = run_once(cfg, req)
     print(res.output_text if res.ok else f"[ERROR] {res.error}")
+    _debug_dump_mcp_trace(getattr(res, "metadata", {}), label="run")
+
     return 0 if res.ok else 1
 
 def cmd_eval(cfg: AppConfig, args: argparse.Namespace) -> int:
@@ -36,6 +55,7 @@ def cmd_eval(cfg: AppConfig, args: argparse.Namespace) -> int:
     ev = evaluate(res, expected)
     print(res.output_text)
     print(f"\n[EVAL] passed={ev.passed} reason={ev.reason or ''}")
+    _debug_dump_mcp_trace(getattr(res, "metadata", {}), label="eval")
     return 0 if ev.passed else 2
 
 def cmd_bench(cfg: AppConfig, args: argparse.Namespace) -> int:
