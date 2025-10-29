@@ -12,3 +12,6 @@ __pycache__/
 
 # Ignore local virtual env
 .venv/
+
+# Ignore result files
+bench_out/
