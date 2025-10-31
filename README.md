@@ -14,6 +14,10 @@ Client that queries a FIWARE NGSI-LD Context Broker via an MCP server using an O
 - Python 3.10+
 - An MCP server exposing tools (e.g., execute_query, get_entity_types, CB_version) pointing to your Context Broker.
 
+Right now using:
+- Server: https://github.com/dncampo/FIWARE-MCP-Server
+- Context-broker: https://github.com/jason-fox/Context-Data-Loader
+
 ## Installation
 
 Create a virtual environment and install dependencies:
