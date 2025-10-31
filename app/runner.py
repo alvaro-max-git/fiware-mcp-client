@@ -31,7 +31,13 @@ def _extract_mcp_trace_from_response(resp: Any) -> Dict[str, Any]:
         ...
       ],
       "call_count": 3,
-      "queries": ["/ngsi-ld/v1/entities?...","/ngsi-ld/v1/entities?...", ...]
+      "queries": ["/ngsi-ld/v1/entities?...","/ngsi-ld/v1/entities?...", ...],
+      "usage": {
+        "input_tokens": 123,
+        "output_tokens": 456,
+        "total_tokens": 579,
+        "reasoning_tokens": 300
+      }
     }
     """
     calls: List[Dict] = []
@@ -99,10 +105,24 @@ def _extract_mcp_trace_from_response(resp: Any) -> Dict[str, Any]:
             # opcional: registrar tools disponibles si te sirve
             pass
 
+    usage_data = getattr(resp, "usage", None)
+    usage_dict = {}
+    if usage_data:
+        usage_dict = {
+            "input_tokens": getattr(usage_data, "input_tokens", None),
+            "output_tokens": getattr(usage_data, "output_tokens", None),
+            "total_tokens": getattr(usage_data, "total_tokens", None),
+        }
+        output_details = getattr(usage_data, "output_tokens_details", None)
+        if output_details:
+            usage_dict["reasoning_tokens"] = getattr(output_details, "reasoning_tokens", None)
+
+
     return {
         "calls": calls,
         "call_count": len(calls),
         "queries": queries,
+        "usage": usage_dict,
     }   
 
 
