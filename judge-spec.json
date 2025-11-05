@@ -1,0 +1,9 @@
+{
+    "gold": {
+	 "numeric": 13,
+	 "queries": ["/ngsi-ld/v1/entities?type=Animal&q=locatedAt==%22urn:ngsi-ld:AgriParcel:005%22&count=true"] },
+    "weights": {"correctness":0.7,"reasoning":0.2,"efficiency":0.1},
+    "pass_threshold": 0.75,
+    "grading_mode": "gated",
+    "min_correctness": 1.0
+}

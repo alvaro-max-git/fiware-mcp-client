@@ -44,7 +44,10 @@ def run_benchmark(cfg: AppConfig, csv_file: Path, out_dir: Path) -> Path:
         writer = csv.DictWriter(
             f_out,
             fieldnames=[
-                "id","passed","reason","model","system_prompt_file","eval_mode","prompt","output_text"
+                "id","passed","reason","model","system_prompt_file","eval_mode",
+                "prompt","output_text",
+                "score_correctness","score_reasoning","score_efficiency","score_total",
+                "mcp_call_count","queries"
             ],
         )
         writer.writeheader()
@@ -71,6 +74,11 @@ def run_benchmark(cfg: AppConfig, csv_file: Path, out_dir: Path) -> Path:
                         trace_str = str(trace)
                     bench_logger.debug("MCP trace for id=%s:\n%s", row.get("id") or "", trace_str)
 
+            details = ev.details or {}
+            scores = details.get("scores", {}) if isinstance(details, dict) else {}
+            meta = getattr(res, "metadata", {}) if res else {}
+            trace = meta.get("mcp_trace", {}) if isinstance(meta, dict) else {}
+            queries_list = trace.get("queries") or []
             writer.writerow({
                 "id": row.get("id") or "",
                 "passed": str(ev.passed),
@@ -80,6 +88,12 @@ def run_benchmark(cfg: AppConfig, csv_file: Path, out_dir: Path) -> Path:
                 "eval_mode": row.get("eval_mode") or "",
                 "prompt": req.user_prompt,
                 "output_text": res.output_text,
+                "score_correctness": scores.get("correctness", ""),
+                "score_reasoning": scores.get("reasoning", ""),
+                "score_efficiency": scores.get("efficiency", ""),
+                "score_total": scores.get("weighted_total", ""),
+                "mcp_call_count": trace.get("call_count", ""),
+                "queries": "|".join(str(q) for q in queries_list[:10]),
             })
 
     return results_csv
