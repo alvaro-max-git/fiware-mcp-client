@@ -6,8 +6,8 @@ from pathlib import Path
 from app.config import AppConfig
 from app.logging_conf import setup_logging
 from app.runner import run_once
-from app.types import RunRequest, ExpectedSpec
-from app.evaluator import evaluate
+from app.types import RunRequest, ExpectedSpec, LLMJudgeSpec
+from app.evaluator import evaluate, evaluate_llm_judge
 from benchmark.csv_runner import run_benchmark
 
 logger = logging.getLogger("client")
@@ -40,19 +40,40 @@ def cmd_eval(cfg: AppConfig, args: argparse.Namespace) -> int:
     req = RunRequest(user_prompt=args.prompt, system_prompt_file=args.system_prompt_file)
     res = run_once(cfg, req)
 
-    expected = ExpectedSpec()
-    if args.exact_text:
-        expected.exact_text = args.exact_text
-    if args.equals_json:
-        import json
-        expected.equals_json = json.loads(args.equals_json)
-    if args.json_subset:
-        import json
-        expected.json_subset = json.loads(args.json_subset)
-    if args.regex:
-        expected.regex = args.regex
+    judge_spec = None
+    if args.llm_judge_file:
+        try:
+            with open(args.llm_judge_file, 'r', encoding='utf-8') as f:
+                judge_payload = json.load(f)
+        except FileNotFoundError:
+            print(f"[ERROR] Judge file not found: {args.llm_judge_file}")
+            return 2
+        except json.JSONDecodeError as exc:
+            print(f"[ERROR] Invalid JSON in --llm-judge-file: {exc}")
+            return 2
+        try:
+            judge_spec = LLMJudgeSpec.from_dict(judge_payload)
+        except ValueError as exc:
+            print(f"[ERROR] {exc}")
+            return 2
+        if args.exact_text or args.equals_json or args.json_subset or args.regex:
+            print("[ERROR] --llm-judge-file cannot be combined with other evaluation flags")
+            return 2
 
-    ev = evaluate(res, expected)
+    if judge_spec:
+        ev = evaluate_llm_judge(cfg, res, judge_spec, req.user_prompt)
+    else:
+        expected = ExpectedSpec()
+        if args.exact_text:
+            expected.exact_text = args.exact_text
+        if args.equals_json:
+            expected.equals_json = json.loads(args.equals_json)
+        if args.json_subset:
+            expected.json_subset = json.loads(args.json_subset)
+        if args.regex:
+            expected.regex = args.regex
+        ev = evaluate(res, expected)
+
     print(res.output_text)
     print(f"\n[EVAL] passed={ev.passed} reason={ev.reason or ''}")
     _debug_dump_mcp_trace(getattr(res, "metadata", {}), label="eval")
@@ -79,6 +100,7 @@ def build_parser() -> argparse.ArgumentParser:
     pe.add_argument("--equals-json")
     pe.add_argument("--json-subset")
     pe.add_argument("--regex")
+    pe.add_argument("--llm-judge-file")
     pe.set_defaults(func=cmd_eval)
 
     pb = sub.add_parser("bench")

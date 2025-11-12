@@ -1,0 +1,43 @@
+{
+  "gold": {
+    "answer_json": [
+      { "id": "urn:ngsi-ld:Animal:cow001" },
+      { "id": "urn:ngsi-ld:Animal:cow002" },
+      { "id": "urn:ngsi-ld:Animal:cow003" },
+      { "id": "urn:ngsi-ld:Animal:cow005" },
+      { "id": "urn:ngsi-ld:Animal:cow006" },
+      { "id": "urn:ngsi-ld:Animal:cow008" },
+      { "id": "urn:ngsi-ld:Animal:cow009" },
+      { "id": "urn:ngsi-ld:Animal:cow011" },
+      { "id": "urn:ngsi-ld:Animal:cow013" },
+      { "id": "urn:ngsi-ld:Animal:cow014" },
+      { "id": "urn:ngsi-ld:Animal:cow015" },
+      { "id": "urn:ngsi-ld:Animal:cow018" },
+      { "id": "urn:ngsi-ld:Animal:cow021" },
+      { "id": "urn:ngsi-ld:Animal:cow024" },
+      { "id": "urn:ngsi-ld:Animal:cow025" },
+      { "id": "urn:ngsi-ld:Animal:cow026" },
+      { "id": "urn:ngsi-ld:Animal:cow027" },
+      { "id": "urn:ngsi-ld:Animal:cow031" },
+      { "id": "urn:ngsi-ld:Animal:cow032" },
+      { "id": "urn:ngsi-ld:Animal:cow037" },
+      { "id": "urn:ngsi-ld:Animal:cow039" },
+      { "id": "urn:ngsi-ld:Animal:cow040" },
+      { "id": "urn:ngsi-ld:Animal:cow101" },
+      { "id": "urn:ngsi-ld:Animal:cow102" },
+      { "id": "urn:ngsi-ld:Animal:cow103" }
+    ],
+    "numeric": 25,
+    "reasoning": "Resolve Person id by name, then list Animal entities filtered by ownedBy using that id with a high enough limit to return all results.",
+    "queries": [
+      "/ngsi-ld/v1/entities?type=Person&q=name==%22Old%20MacDonald%22",
+      "/ngsi-ld/v1/entities?type=Animal&q=ownedBy==%22urn:ngsi-ld:Person:person001%22&limit=100"
+    ]
+  },
+  "weights": { "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1 },
+  "pass_threshold": 0.8,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 3,
+  "notes": "Accept any ordering and additional properties; ids must match exactly these 25 (no extras or missing). The second query must either set a limit >= 25 (e.g., 100) or otherwise retrieve all results via pagination; returning only the default page (20) is incorrect."
+}

@@ -49,12 +49,16 @@ class AppConfig:
     prompts_dir: Path = field(default=Path("prompts"))
     system_prompt_file: str = field(default="system1.md")
 
+    #LLM-As-judge
+    judge_model: str = field(default="gpt-4o-mini")
+    judge_system_prompt_file: str = field(default="judge_system.md")
+    judge_temperature: Optional[float] = field(default=None)  # <- ahora opcional
+
     #Load values from .env file
     @staticmethod
     def from_env() -> "AppConfig":
 
         api_key = os.getenv("OPENAI_API_KEY")
-        model = os.getenv("OPENAI_MODEL")
         
         #Loads MCP servers, either with MCP_0, MCP_1 or without numbers: MCP_LABEL.
         mcp_servers: List[MCPServerConfig] = []
@@ -82,17 +86,25 @@ class AppConfig:
             if single_url:
                 mcp_servers.append(MCPServerConfig(label=single_label, url=single_url, allowed_tools=allowed_list))
 
+        # Parse temperature sólo si está definido en .env
+        eval_temp_env = os.getenv("EVAL_TEMPERATURE")
+        eval_temperature = float(eval_temp_env) if eval_temp_env is not None else None
+
+        # The default values from the dataclass fields are used if os.getenv returns None
         cfg = AppConfig(
             openai_api_key=api_key,
-            model=model, # type: ignore
+            model=os.getenv("OPENAI_MODEL") or AppConfig.model,
             mcp_servers=mcp_servers,
-            max_output_tokens=int(os.getenv("MAX_OUTPUT_TOKENS", "800")),
+            max_output_tokens=int(os.getenv("MAX_OUTPUT_TOKENS") or AppConfig.max_output_tokens),
             read_only=os.getenv("READ_ONLY", "true").lower() in ("1", "true", "yes"),
-            log_level=os.getenv("LOG_LEVEL", "INFO").upper(),
+            log_level=(os.getenv("LOG_LEVEL") or AppConfig.log_level).upper(),
             log_to_file=os.getenv("LOG_TO_FILE", "true").lower() in ("1", "true", "yes"),
-            logs_dir=Path(os.getenv("LOGS_DIR", "logs")),
-            prompts_dir=Path(os.getenv("PROMPTS_DIR", "prompts")),
-            system_prompt_file=os.getenv("SYSTEM_PROMPT_FILE", "system.md"),
+            logs_dir=Path(os.getenv("LOGS_DIR") or AppConfig.logs_dir),
+            prompts_dir=Path(os.getenv("PROMPTS_DIR") or AppConfig.prompts_dir),
+            system_prompt_file=os.getenv("SYSTEM_PROMPT_FILE") or AppConfig.system_prompt_file,
+            judge_model=os.getenv("EVAL_MODEL") or os.getenv("OPENAI_MODEL") or AppConfig.judge_model,
+            judge_system_prompt_file=os.getenv("EVAL_SYSTEM_PROMPT_FILE") or AppConfig.judge_system_prompt_file,
+            judge_temperature=eval_temperature,  # <- sólo si está en .env
         )
         cfg.validate()
         return cfg
@@ -118,6 +130,10 @@ class AppConfig:
 
     def load_system_prompt(self) -> str:
         return load_prompt(self.prompts_dir, self.system_prompt_file)
+    
+    def load_judge_prompt(self) -> str:
+        from app.prompts import load_prompt
+        return load_prompt(self.prompts_dir, self.judge_system_prompt_file)
 
 
 
