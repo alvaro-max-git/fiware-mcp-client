@@ -12,15 +12,24 @@ from app.evaluator import evaluate, evaluate_llm_judge
 # id, question, model, system_prompt_file, eval_mode, expected
 # where expected can be JSON (for equals_json/json_subset/llm_judge) or plain text/regex.
 
+def _detect_delimiter(sample: str) -> str:
+    header = sample.splitlines()[0] if sample else ""
+    candidates = [",", ";", "|", "\t"]
+    counts = {d: header.count(d) for d in candidates}
+    best = max(candidates, key=counts.get) # type: ignore
+    if counts.get(best):
+        return best
+    try:
+        return csv.Sniffer().sniff(sample, delimiters="".join(candidates)).delimiter
+    except csv.Error:
+        return ","
+
 def load_rows(csv_path: Path) -> Iterable[Dict[str, str]]:
     with csv_path.open("r", encoding="utf-8-sig", newline="") as f:
         sample = f.read(2048)
         f.seek(0)
-        try:
-            dialect = csv.Sniffer().sniff(sample, delimiters=",;|\t")
-        except csv.Error:
-            dialect = csv.get_dialect("excel")
-        reader = csv.DictReader(f, dialect=dialect, skipinitialspace=True)
+        delimiter = _detect_delimiter(sample)
+        reader = csv.DictReader(f, delimiter=delimiter, skipinitialspace=True)
         for raw_row in reader:
             if not raw_row:
                 continue

@@ -1,0 +1,494 @@
+id;difficulty;question;system_prompt_file;model;eval_mode;expected;cli_command;notes
+11;1;List all animals located at AgriParcel 005;system3.1.md;gpt-5-nano;json_subset;"[
+{
+""@context"": [
+""http://context/user-context.jsonld"",
+""[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld)""
+],
+""id"": ""urn:ngsi-ld:Animal:cow003"",
+""type"": ""Animal"",
+""heartRate"": 51,
+""name"": ""Petal"",
+""birthdate"": ""2019-01-13T00:00:00.000Z"",
+""fedWith"": ""Grass"",
+""legalId"": ""F-cow003-Petal"",
+""locatedAt"": ""urn:ngsi-ld:AgriParcel:005"",
+""ownedBy"": ""urn:ngsi-ld:Person:person001"",
+""phenologicalCondition"": {
+""vocab"": ""femaleAdult""
+},
+""reproductiveCondition"": {
+""vocab"": ""active""
+},
+""sex"": {
+""vocab"": ""Female""
+},
+""species"": ""dairy cattle"",
+""location"": {
+""type"": ""Point"",
+""coordinates"": [
+13.35509,
+52.5152
+]
+},
+""weight"": 404
+},
+{
+""@context"": [
+""http://context/user-context.jsonld"",
+""[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld)""
+],
+""id"": ""urn:ngsi-ld:Animal:cow005"",
+""type"": ""Animal"",
+""heartRate"": 70,
+""name"": ""Sun"",
+""birthdate"": ""2022-06-09T00:00:00.000Z"",
+""fedWith"": ""Grass"",
+""legalId"": ""F-cow005-Sun"",
+""locatedAt"": ""urn:ngsi-ld:AgriParcel:005"",
+""ownedBy"": ""urn:ngsi-ld:Person:person001"",
+""phenologicalCondition"": {
+""vocab"": ""femaleAdult""
+},
+""reproductiveCondition"": {
+""vocab"": ""active""
+},
+""sex"": {
+""vocab"": ""Female""
+},
+""species"": ""dairy cattle"",
+""location"": {
+""type"": ""Point"",
+""coordinates"": [
+13.35569,
+52.51515
+]
+},
+""weight"": 339
+},
+{
+""@context"": [
+""http://context/user-context.jsonld"",
+""[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld)""
+],
+""id"": ""urn:ngsi-ld:Animal:cow007"",
+""type"": ""Animal"",
+""heartRate"": 55,
+""name"": ""Diamond"",
+""birthdate"": ""2022-06-05T00:00:00.000Z"",
+""fedWith"": ""Grass"",
+""legalId"": ""F-cow007-Diamond"",
+""locatedAt"": ""urn:ngsi-ld:AgriParcel:005"",
+""ownedBy"": ""urn:ngsi-ld:Person:person002"",
+""phenologicalCondition"": {
+""vocab"": ""femaleAdult""
+},
+""reproductiveCondition"": {
+""vocab"": ""active""
+},
+""sex"": {
+""vocab"": ""Female""
+},
+""species"": ""dairy cattle"",
+""location"": {
+""type"": ""Point"",
+""coordinates"": [
+13.35599,
+52.51567
+]
+},
+""weight"": 480
+},
+{
+""@context"": [
+""http://context/user-context.jsonld"",
+""[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld)""
+],
+""id"": ""urn:ngsi-ld:Animal:cow016"",
+""type"": ""Animal"",
+""heartRate"": 51,
+""name"": ""Lacey"",
+""birthdate"": ""2019-03-11T00:00:00.000Z"",
+""fedWith"": ""Grass"",
+""legalId"": ""F-cow016-Lacey"",
+""locatedAt"": ""urn:ngsi-ld:AgriParcel:005"",
+""ownedBy"": ""urn:ngsi-ld:Person:person002"",
+""phenologicalCondition"": {
+""vocab"": ""femaleAdult""
+},
+""reproductiveCondition"": {
+""vocab"": ""inCalf""
+},
+""sex"": {
+""vocab"": ""Female""
+},
+""species"": ""dairy cattle"",
+""location"": {
+""type"": ""Point"",
+""coordinates"": [
+13.35446,
+52.51585
+]
+},
+""weight"": 485
+},
+{
+""@context"": [
+""http://context/user-context.jsonld"",
+""[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld)""
+],
+""id"": ""urn:ngsi-ld:Animal:cow017"",
+""type"": ""Animal"",
+""heartRate"": 54,
+""name"": ""Fisher"",
+""birthdate"": ""2024-05-16T00:00:00.000Z"",
+""fedWith"": ""Grass"",
+""legalId"": ""F-cow017-Fisher"",
+""locatedAt"": ""urn:ngsi-ld:AgriParcel:005"",
+""ownedBy"": ""urn:ngsi-ld:Person:person002"",
+""phenologicalCondition"": {
+""vocab"": ""femaleYoung""
+},
+""reproductiveCondition"": {
+""vocab"": ""active""
+},
+""sex"": {
+""vocab"": ""Female""
+},
+""species"": ""dairy cattle"",
+""location"": {
+""type"": ""Point"",
+""coordinates"": [
+13.35538,
+52.51587
+]
+},
+""weight"": 210
+},
+{
+""@context"": [
+""http://context/user-context.jsonld"",
+""[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld)""
+],
+""id"": ""urn:ngsi-ld:Animal:cow030"",
+""type"": ""Animal"",
+""heartRate"": 52,
+""name"": ""Flower"",
+""birthdate"": ""2018-08-26T00:00:00.000Z"",
+""fedWith"": ""Grass"",
+""legalId"": ""F-cow030-Flower"",
+""locatedAt"": ""urn:ngsi-ld:AgriParcel:005"",
+""ownedBy"": ""urn:ngsi-ld:Person:person002"",
+""phenologicalCondition"": {
+""vocab"": ""femaleAdult""
+},
+""reproductiveCondition"": {
+""vocab"": ""active""
+},
+""sex"": {
+""vocab"": ""Female""
+},
+""species"": ""dairy cattle"",
+""location"": {
+""type"": ""Point"",
+""coordinates"": [
+13.35438,
+52.51541
+]
+},
+""weight"": 383
+},
+{
+""@context"": [
+""http://context/user-context.jsonld"",
+""[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld)""
+],
+""id"": ""urn:ngsi-ld:Animal:cow031"",
+""type"": ""Animal"",
+""heartRate"": 50,
+""name"": ""Grape"",
+""birthdate"": ""2021-05-18T00:00:00.000Z"",
+""fedWith"": ""Hay"",
+""legalId"": ""F-cow031-Grape"",
+""locatedAt"": ""urn:ngsi-ld:AgriParcel:005"",
+""ownedBy"": ""urn:ngsi-ld:Person:person001"",
+""phenologicalCondition"": {
+""vocab"": ""femaleAdult""
+},
+""reproductiveCondition"": {
+""vocab"": ""inCalf""
+},
+""sex"": {
+""vocab"": ""Female""
+},
+""species"": ""dairy cattle"",
+""location"": {
+""type"": ""Point"",
+""coordinates"": [
+13.3552,
+52.51593
+]
+},
+""weight"": 300
+},
+{
+""@context"": [
+""http://context/user-context.jsonld"",
+""[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld)""
+],
+""id"": ""urn:ngsi-ld:Animal:cow034"",
+""type"": ""Animal"",
+""heartRate"": 51,
+""name"": ""Cloud"",
+""birthdate"": ""2024-05-06T00:00:00.000Z"",
+""fedWith"": ""Grass"",
+""legalId"": ""F-cow034-Cloud"",
+""locatedAt"": ""urn:ngsi-ld:AgriParcel:005"",
+""ownedBy"": ""urn:ngsi-ld:Person:person002"",
+""phenologicalCondition"": {
+""vocab"": ""femaleYoung""
+},
+""reproductiveCondition"": {
+""vocab"": ""inactive""
+},
+""sex"": {
+""vocab"": ""Female""
+},
+""species"": ""dairy cattle"",
+""location"": {
+""type"": ""Point"",
+""coordinates"": [
+13.35436,
+52.51513
+]
+},
+""weight"": 220
+},
+{
+""@context"": [
+""http://context/user-context.jsonld"",
+""[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld)""
+],
+""id"": ""urn:ngsi-ld:Animal:cow038"",
+""type"": ""Animal"",
+""heartRate"": 52,
+""name"": ""Sugar"",
+""birthdate"": ""2019-01-11T00:00:00.000Z"",
+""fedWith"": ""Grass"",
+""legalId"": ""F-cow038-Sugar"",
+""locatedAt"": ""urn:ngsi-ld:AgriParcel:005"",
+""ownedBy"": ""urn:ngsi-ld:Person:person002"",
+""phenologicalCondition"": {
+""vocab"": ""femaleAdult""
+},
+""reproductiveCondition"": {
+""vocab"": ""active""
+},
+""sex"": {
+""vocab"": ""Female""
+},
+""species"": ""dairy cattle"",
+""location"": {
+""type"": ""Point"",
+""coordinates"": [
+13.35476,
+52.51563
+]
+},
+""weight"": 453
+},
+{
+""@context"": [
+""http://context/user-context.jsonld"",
+""[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld)""
+],
+""id"": ""urn:ngsi-ld:Animal:cow024"",
+""type"": ""Animal"",
+""heartRate"": 52,
+""name"": ""Fluffy"",
+""birthdate"": ""2024-06-24T00:00:00.000Z"",
+""fedWith"": ""Grass"",
+""legalId"": ""F-cow024-Fluffy"",
+""locatedAt"": ""urn:ngsi-ld:AgriParcel:005"",
+""ownedBy"": ""urn:ngsi-ld:Person:person001"",
+""phenologicalCondition"": {
+""vocab"": ""femaleYoung""
+},
+""reproductiveCondition"": {
+""vocab"": ""active""
+},
+""sex"": {
+""vocab"": ""Female""
+},
+""species"": ""dairy cattle"",
+""location"": {
+""type"": ""Point"",
+""coordinates"": [
+13.35414,
+52.51585
+]
+},
+""weight"": 258
+},
+{
+""@context"": [
+""http://context/user-context.jsonld"",
+""[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld)""
+],
+""id"": ""urn:ngsi-ld:Animal:cow025"",
+""type"": ""Animal"",
+""heartRate"": 51,
+""name"": ""Bug"",
+""birthdate"": ""2017-05-14T00:00:00.000Z"",
+""fedWith"": ""Hay"",
+""legalId"": ""F-cow025-Bug"",
+""locatedAt"": ""urn:ngsi-ld:AgriParcel:005"",
+""ownedBy"": ""urn:ngsi-ld:Person:person001"",
+""phenologicalCondition"": {
+""vocab"": ""femaleAdult""
+},
+""reproductiveCondition"": {
+""vocab"": ""active""
+},
+""sex"": {
+""vocab"": ""Female""
+},
+""species"": ""dairy cattle"",
+""location"": {
+""type"": ""Point"",
+""coordinates"": [
+13.35575,
+52.51506
+]
+},
+""weight"": 314
+},
+{
+""@context"": [
+""http://context/user-context.jsonld"",
+""[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld)""
+],
+""id"": ""urn:ngsi-ld:Animal:cow026"",
+""type"": ""Animal"",
+""heartRate"": 54,
+""name"": ""Opal"",
+""birthdate"": ""2017-06-09T00:00:00.000Z"",
+""fedWith"": ""Grass"",
+""legalId"": ""F-cow026-Opal"",
+""locatedAt"": ""urn:ngsi-ld:AgriParcel:005"",
+""ownedBy"": ""urn:ngsi-ld:Person:person001"",
+""phenologicalCondition"": {
+""vocab"": ""femaleAdult""
+},
+""reproductiveCondition"": {
+""vocab"": ""inCalf""
+},
+""sex"": {
+""vocab"": ""Female""
+},
+""species"": ""dairy cattle"",
+""location"": {
+""type"": ""Point"",
+""coordinates"": [
+13.35453,
+52.51597
+]
+},
+""weight"": 429
+},
+{
+""@context"": [
+""http://context/user-context.jsonld"",
+""[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld)""
+],
+""id"": ""urn:ngsi-ld:Animal:cow027"",
+""type"": ""Animal"",
+""heartRate"": 54,
+""name"": ""Fresian"",
+""birthdate"": ""2023-09-19T00:00:00.000Z"",
+""fedWith"": ""Grass"",
+""legalId"": ""F-cow027-Fresian"",
+""locatedAt"": ""urn:ngsi-ld:AgriParcel:005"",
+""ownedBy"": ""urn:ngsi-ld:Person:person001"",
+""phenologicalCondition"": {
+""vocab"": ""femaleAdult""
+},
+""reproductiveCondition"": {
+""vocab"": ""active""
+},
+""sex"": {
+""vocab"": ""Female""
+},
+""species"": ""dairy cattle"",
+""location"": {
+""type"": ""Point"",
+""coordinates"": [
+13.35582,
+52.51524
+]
+},
+""weight"": 295
+}
+]";;
+11;1;List all animals located at AgriParcel 005. Answer only with a number.;system2.1.md;gpt-5-nano;exact_text;13;;
+11;1;List all animals located at AgriParcel 005. Answer only with a number.;system2.1.md;gpt-5-mini;exact_text;13;;
+11;1;List all animals located at AgriParcel 005;system2.1.md;gpt-5-mini;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow003"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow005"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow007"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow016"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow017"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow024"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow025"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow026"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow027"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow030"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow031"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow034"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow038"" }
+    ],
+    ""numeric"": 13,
+    ""reasoning"": ""Query Animal entities filtered by locatedAt relationship equal to urn:ngsi-ld:AgriParcel:005. No need to find AgriParcel ID first since it's directly referenced in the question (AgriParcel 005 maps to urn:ngsi-ld:AgriParcel:005)."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=locatedAt==%22urn:ngsi-ld:AgriParcel:005%22""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering and additional properties; ids must match exactly these 13 animals (no extras or missing). The query should directly filter by locatedAt=urn:ngsi-ld:AgriParcel:005. Setting count=true or limit parameter is optional since default page size (20) is sufficient for 13 results. Using limit >= 13 or pagination is also acceptable.""
+}";;
+11;1;List all animals located at AgriParcel 005;system3.1.md;gpt-5-mini;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow003"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow005"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow007"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow016"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow017"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow024"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow025"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow026"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow027"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow030"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow031"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow034"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow038"" }
+    ],
+    ""numeric"": 13,
+    ""reasoning"": ""Query Animal entities filtered by locatedAt relationship equal to urn:ngsi-ld:AgriParcel:005. No need to find AgriParcel ID first since it's directly referenced in the question (AgriParcel 005 maps to urn:ngsi-ld:AgriParcel:005)."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=locatedAt==%22urn:ngsi-ld:AgriParcel:005%22""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering and additional properties; ids must match exactly these 13 animals (no extras or missing). The query should directly filter by locatedAt=urn:ngsi-ld:AgriParcel:005. Setting count=true or limit parameter is optional since default page size (20) is sufficient for 13 results. Using limit >= 13 or pagination is also acceptable.""
+}";;
