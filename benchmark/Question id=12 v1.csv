@@ -1,0 +1,644 @@
+id;difficulty;question;system_prompt_file;model;eval_mode;expected;cli_command;notes
+11;1;List all female animals currently in heat;system3.1.md;gpt-5-nano;json_subset;"[
+    {
+        ""id"": ""urn:ngsi-ld:Animal:cow022"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 54,
+            ""observedAt"": ""2025-11-17T13:21:36.699Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow022""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Feather""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2023-09-06T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow022-Feather""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:006"",
+            ""observedAt"": ""2025-11-17T13:21:36.699Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person002""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""inHeat""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34833,
+                    52.51691
+                ]
+            },
+            ""observedAt"": ""2025-11-17T13:21:36.699Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow022""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 360,
+            ""observedAt"": ""2025-11-17T13:21:36.699Z"",
+            ""unitCode"": ""KGM""
+        },
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+    },
+    {
+        ""id"": ""urn:ngsi-ld:Animal:cow029"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 53,
+            ""observedAt"": ""2025-11-17T13:21:36.699Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow029""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Clover""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2023-07-24T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow029-Clover""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T13:21:36.699Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person002""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""inHeat""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34957,
+                    52.51114
+                ]
+            },
+            ""observedAt"": ""2025-11-17T13:21:36.699Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow029""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 295,
+            ""observedAt"": ""2025-11-17T13:21:36.699Z"",
+            ""unitCode"": ""KGM""
+        },
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+    },
+    {
+        ""id"": ""urn:ngsi-ld:Animal:cow015"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 51,
+            ""observedAt"": ""2025-11-17T13:21:36.699Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow015""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Button""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2023-08-21T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow015-Button""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:006"",
+            ""observedAt"": ""2025-11-17T13:21:36.699Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""inHeat""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34823,
+                    52.51711
+                ]
+            },
+            ""observedAt"": ""2025-11-17T13:21:36.699Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow015""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 352,
+            ""observedAt"": ""2025-11-17T13:21:36.699Z"",
+            ""unitCode"": ""KGM""
+        },
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+    },
+    {
+        ""id"": ""urn:ngsi-ld:Animal:cow008"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 50,
+            ""observedAt"": ""2025-11-17T13:21:36.699Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow008""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Pollen""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2022-06-07T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow008-Pollen""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:006"",
+            ""observedAt"": ""2025-11-17T13:21:36.699Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""inHeat""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34824,
+                    52.51844
+                ]
+            },
+            ""observedAt"": ""2025-11-17T13:21:36.699Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow008""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 431,
+            ""observedAt"": ""2025-11-17T13:21:36.699Z"",
+            ""unitCode"": ""KGM""
+        },
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+    },
+    {
+        ""id"": ""urn:ngsi-ld:Animal:cow036"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 51,
+            ""observedAt"": ""2025-11-17T13:21:36.699Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow036""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Cream""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2019-02-24T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow036-Cream""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:006"",
+            ""observedAt"": ""2025-11-17T13:21:36.699Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person002""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""inHeat""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34872,
+                    52.51852
+                ]
+            },
+            ""observedAt"": ""2025-11-17T13:21:36.699Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow036""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 401,
+            ""observedAt"": ""2025-11-17T13:21:36.699Z"",
+            ""unitCode"": ""KGM""
+        },
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+    },
+    {
+        ""id"": ""urn:ngsi-ld:Animal:pig022"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 61,
+            ""observedAt"": ""2025-11-17T13:21:36.905Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:pig022""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Taffy""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-sow022-Taffy""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""inHeat""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""pig""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.35033,
+                    52.51891
+                ]
+            },
+            ""observedAt"": ""2025-11-17T13:21:36.905Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:pig022""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 217,
+            ""observedAt"": ""2025-11-17T13:21:36.905Z"",
+            ""unitCode"": ""KGM""
+        },
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+    },
+    {
+        ""id"": ""urn:ngsi-ld:Animal:pig008"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 60,
+            ""observedAt"": ""2025-11-17T13:21:36.905Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:pig008""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Magenta""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-sow008-Magenta""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""inHeat""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""pig""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.35024,
+                    52.51844
+                ]
+            },
+            ""observedAt"": ""2025-11-17T13:21:36.905Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:pig008""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 302,
+            ""observedAt"": ""2025-11-17T13:21:36.905Z"",
+            ""unitCode"": ""KGM""
+        },
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+    },
+    {
+        ""id"": ""urn:ngsi-ld:Animal:pig036"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 64,
+            ""observedAt"": ""2025-11-17T13:21:36.905Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:pig036""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Bruce""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-sow036-Bruce""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""inHeat""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""pig""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.35072,
+                    52.51852
+                ]
+            },
+            ""observedAt"": ""2025-11-17T13:21:36.905Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:pig036""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 316,
+            ""observedAt"": ""2025-11-17T13:21:36.905Z"",
+            ""unitCode"": ""KGM""
+        },
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+    }
+]";;
+11;1;Find all female animals currently in heat. Answer only with a number;system2.1.md;gpt-5-nano;exact_text;8;;
+11;1;Find all female animals currently in heat. Answer only with a number;system2.1.md;gpt-5-mini;exact_text;8;;
+11;1;List all female animals currently in heat;system2.1.md;gpt-5-nano;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow022"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow029"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow015"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow008"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow036"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig022"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig008"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig036"" }
+    ],
+    ""numeric"": 8,
+    ""reasoning"": ""Filter Animal entities by sex==\""Female\"" and reproductiveCondition==\""inHeat\"" using a single NGSI-LD query."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=sex==%22Female%22;reproductiveCondition==%22inHeat%22&count=true""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering or extra properties but ensure only these eight female animals in heat are returned. Either structured JSON or clear natural-language answers identifying all eight are valid. Using count=true is recommended; limit >= 8 or pagination is also acceptable.""
+}";;
+11;1;List all female animals currently in heat;system3.1.md;gpt-5-mini;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow022"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow029"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow015"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow008"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow036"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig022"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig008"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig036"" }
+    ],
+    ""numeric"": 8,
+    ""reasoning"": ""Filter Animal entities by sex==\""Female\"" and reproductiveCondition==\""inHeat\"" using a single NGSI-LD query."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=sex==%22Female%22;reproductiveCondition==%22inHeat%22&count=true""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering or extra properties but ensure only these eight female animals in heat are returned. Either structured JSON or clear natural-language answers identifying all eight are valid. Using count=true is recommended; limit >= 8 or pagination is also acceptable.""
+}";;

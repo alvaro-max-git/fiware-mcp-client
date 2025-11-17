@@ -1,0 +1,27 @@
+{
+  "gold": {
+    "answer_json": [
+      { "id": "urn:ngsi-ld:Animal:cow002" },
+      { "id": "urn:ngsi-ld:Animal:cow010" },
+      { "id": "urn:ngsi-ld:Animal:cow013" },
+      { "id": "urn:ngsi-ld:Animal:cow021" },
+      { "id": "urn:ngsi-ld:Animal:cow028" },
+      { "id": "urn:ngsi-ld:Animal:cow029" },
+      { "id": "urn:ngsi-ld:Animal:cow032" },
+      { "id": "urn:ngsi-ld:Animal:cow037" },
+      { "id": "urn:ngsi-ld:Animal:cow101" }
+    ],
+    "numeric": 9,
+    "reasoning": "Resolve the AgriParcel entity whose name is \"North Pasture\" to obtain its ID (urn:ngsi-ld:AgriParcel:003); then list Animal entities filtered by locatedAt equal to that ID, ensuring the limit or pagination returns all animals.",
+    "queries": [
+      "/ngsi-ld/v1/entities?type=AgriParcel&q=name==%22North%20Pasture%22",
+      "/ngsi-ld/v1/entities?type=Animal&q=locatedAt==%22urn:ngsi-ld:AgriParcel:003%22&limit=100"
+    ]
+  },
+  "weights": { "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1 },
+  "pass_threshold": 0.7,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 3,
+  "notes": "Accept any ordering and additional properties so long as exactly these nine animals are returned. Either structured JSON or clear natural-language statements are valid."
+}

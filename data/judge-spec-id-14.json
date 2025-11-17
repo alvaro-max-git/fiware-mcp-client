@@ -1,0 +1,43 @@
+{
+  "gold": {
+    "answer_json": [
+      {
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ],
+        "id": "urn:ngsi-ld:Person:person001",
+        "type": "Person",
+        "jobTitle": {
+          "type": "Property",
+          "value": {
+            "name": "Agricultural Manager",
+            "inDefinedTermSet": "https://targetjobs.co.uk/careers-advice/job-descriptions",
+            "termCode": "277119-agricultural-manager-job-description",
+            "url": "https://targetjobs.co.uk/careers-advice/job-descriptions/277119-agricultural-manager-job-description"
+          }
+        },
+        "name": {
+          "type": "Property",
+          "value": "Old MacDonald"
+        },
+        "owns": {
+          "type": "Relationship",
+          "object": "urn:ngsi-ld:AgriFarm:farm001"
+        }
+      }
+    ],
+    "numeric": 1,
+    "reasoning": "Resolve the Person entity ID by querying name==\"Old MacDonald\"; then list Building entities filtered by ownedBy equal to urn:ngsi-ld:Person:person001.",
+    "queries": [
+      "/ngsi-ld/v1/entities?type=Person&q=name==%22Old%20MacDonald%22",
+      "/ngsi-ld/v1/entities?type=Building&q=ownedBy==%22urn:ngsi-ld:Person:person001%22&limit=100"
+    ]
+  },
+  "weights": { "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1 },
+  "pass_threshold": 0.7,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 3,
+  "notes": "Accept either structured JSON or natural-language answers that clearly state Old MacDonald owns urn:ngsi-ld:AgriFarm:farm001; additional properties are fine but no contradictory claims."
+}
