@@ -1,0 +1,17 @@
+{
+  "gold": {
+    "answer_json": [],
+    "numeric": 0,
+    "reasoning": "Inspect Animal entities for providedBy relationships and list Device entities to confirm none remain without an associated animal; the dataset currently yields no orphan devices.",
+    "queries": [
+      "/ngsi-ld/v1/entities?type=Animal&attrs=providedBy&limit=1000&count=true",
+      "/ngsi-ld/v1/entities?type=Device&limit=1000&pick=id,controlledAsset"
+    ]
+  },
+  "weights": { "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1 },
+  "pass_threshold": 0.7,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 3,
+  "notes": "Accept an empty array or a clear natural-language statement that no devices lack an associated animal; any claimed device should be treated as incorrect."
+}

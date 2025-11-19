@@ -1,0 +1,22 @@
+{
+  "gold": {
+    "answer_json": [
+      { "id": "urn:ngsi-ld:Animal:cow031" },
+      { "id": "urn:ngsi-ld:Animal:cow037" },
+      { "id": "urn:ngsi-ld:Animal:cow019" },
+      { "id": "urn:ngsi-ld:Animal:cow013" },
+      { "id": "urn:ngsi-ld:Animal:cow025" }
+    ],
+    "numeric": 5,
+    "reasoning": "Filter Animal entities by fedWith==\"Hay\"; no additional lookups are required because fedWith is a direct Property.",
+    "queries": [
+      "/ngsi-ld/v1/entities?type=Animal&q=fedWith==%22Hay%22"
+    ]
+  },
+  "weights": { "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1 },
+  "pass_threshold": 0.7,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 3,
+  "notes": "Accept any ordering or extra attributes while ensuring exactly these five hay-fed animals are reported, either as JSON or clear natural language."
+}

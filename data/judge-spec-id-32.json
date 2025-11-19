@@ -1,0 +1,250 @@
+{
+  "gold": {
+    "answer_json": [
+      {
+        "id": "urn:ngsi-ld:Device:tractor001",
+        "type": "Tractor",
+        "description": {
+          "type": "Property",
+          "value": "Big Blue Tractor"
+        },
+        "category": {
+          "type": "VocabProperty",
+          "vocab": [
+            "actuator",
+            "sensor"
+          ]
+        },
+        "batteryLevel": {
+          "type": "Property",
+          "value": 0.8,
+          "unitCode": "C68"
+        },
+        "controlledProperty": {
+          "type": "Property",
+          "value": [
+            "location",
+            "status"
+          ]
+        },
+        "deviceState": {
+          "type": "Property",
+          "value": "OK"
+        },
+        "supportedProtocol": {
+          "type": "Property",
+          "value": "json"
+        },
+        "deviceModel": {
+          "type": "Relationship",
+          "object": "urn:ngsi-ld:DeviceModel:Tractor"
+        },
+        "location": {
+          "type": "GeoProperty",
+          "value": {
+            "type": "Point",
+            "coordinates": [
+              13.345,
+              52.51806
+            ]
+          },
+          "observedAt": "2025-11-19T09:20:30.613Z"
+        },
+        "status": {
+          "type": "Property",
+          "value": "MOVING"
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      },
+      {
+        "id": "urn:ngsi-ld:Device:tractor003",
+        "type": "Tractor",
+        "description": {
+          "type": "Property",
+          "value": "Large Green Tractor"
+        },
+        "category": {
+          "type": "VocabProperty",
+          "vocab": [
+            "actuator",
+            "sensor"
+          ]
+        },
+        "batteryLevel": {
+          "type": "Property",
+          "value": 0.8,
+          "unitCode": "C68"
+        },
+        "controlledProperty": {
+          "type": "Property",
+          "value": [
+            "location",
+            "status"
+          ]
+        },
+        "deviceState": {
+          "type": "Property",
+          "value": "OK"
+        },
+        "supportedProtocol": {
+          "type": "Property",
+          "value": "json"
+        },
+        "deviceModel": {
+          "type": "Relationship",
+          "object": "urn:ngsi-ld:DeviceModel:Tractor"
+        },
+        "location": {
+          "type": "GeoProperty",
+          "value": {
+            "type": "Point",
+            "coordinates": [
+              13.3505,
+              52.5144
+            ]
+          },
+          "observedAt": "2025-11-19T09:20:30.613Z"
+        },
+        "status": {
+          "type": "Property",
+          "value": "IDLE"
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      },
+      {
+        "id": "urn:ngsi-ld:Device:tractor002",
+        "type": "Tractor",
+        "description": {
+          "type": "Property",
+          "value": "Little Red Tractor"
+        },
+        "category": {
+          "type": "VocabProperty",
+          "vocab": [
+            "actuator",
+            "sensor"
+          ]
+        },
+        "batteryLevel": {
+          "type": "Property",
+          "value": 0.8,
+          "unitCode": "C68"
+        },
+        "controlledProperty": {
+          "type": "Property",
+          "value": [
+            "location",
+            "status"
+          ]
+        },
+        "deviceState": {
+          "type": "Property",
+          "value": "OK"
+        },
+        "supportedProtocol": {
+          "type": "Property",
+          "value": "json"
+        },
+        "deviceModel": {
+          "type": "Relationship",
+          "object": "urn:ngsi-ld:DeviceModel:Tractor"
+        },
+        "location": {
+          "type": "GeoProperty",
+          "value": {
+            "type": "Point",
+            "coordinates": [
+              13.3505,
+              52.5144
+            ]
+          },
+          "observedAt": "2025-11-19T09:20:30.613Z"
+        },
+        "status": {
+          "type": "Property",
+          "value": "IDLE"
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      },
+      {
+        "id": "urn:ngsi-ld:Device:tractor004",
+        "type": "Tractor",
+        "description": {
+          "type": "Property",
+          "value": "Fast Black Tractor"
+        },
+        "category": {
+          "type": "VocabProperty",
+          "vocab": [
+            "actuator",
+            "sensor"
+          ]
+        },
+        "batteryLevel": {
+          "type": "Property",
+          "value": 0.8,
+          "unitCode": "C68"
+        },
+        "controlledProperty": {
+          "type": "Property",
+          "value": [
+            "location",
+            "status"
+          ]
+        },
+        "deviceState": {
+          "type": "Property",
+          "value": "OK"
+        },
+        "supportedProtocol": {
+          "type": "Property",
+          "value": "json"
+        },
+        "deviceModel": {
+          "type": "Relationship",
+          "object": "urn:ngsi-ld:DeviceModel:Tractor"
+        },
+        "location": {
+          "type": "GeoProperty",
+          "value": {
+            "type": "Point",
+            "coordinates": [
+              13.34,
+              52.5188
+            ]
+          },
+          "observedAt": "2025-11-19T09:20:30.613Z"
+        },
+        "status": {
+          "type": "Property",
+          "value": "SOWING"
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      }
+    ],
+    "numeric": 4,
+    "reasoning": "List all Tractor entities and verify that none reference tasks or fields; optionally confirm there are no Task entities. All four tractors lack assignments.",
+    "queries": [
+      "/ngsi-ld/v1/entities?type=Tractor&limit=1000&count=true",
+      "/ngsi-ld/v1/entities?type=Task&limit=1000&count=true"
+    ]
+  },
+  "weights": { "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1 },
+  "pass_threshold": 0.7,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 3,
+  "notes": "Accept JSON or clear natural-language answers listing exactly these four unassigned tractors; any claimed assignments or additional tractors should fail."
+}
