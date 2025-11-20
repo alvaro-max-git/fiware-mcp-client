@@ -1,0 +1,35 @@
+{
+  "gold": {
+    "answer_json": [
+      {
+        "id": "urn:ngsi-ld:Device:cow005",
+        "type": "Device",
+        "heartRate": {
+          "type": "Property",
+          "value": 70,
+          "unitCode": "5K",
+          "observedAt": "2025-11-19T09:20:30.613Z"
+        },
+        "controlledAsset": {
+          "type": "Relationship",
+          "object": "urn:ngsi-ld:Animal:cow005"
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      }
+    ],
+    "numeric": 70,
+    "reasoning": "List Device entities with heartRate readings, then select the maximum value and identify the associated animal via controlledAsset; device cow005 reports the peak heartRate of 70.",
+    "queries": [
+      "/ngsi-ld/v1/entities?type=Device&attrs=heartRate,controlledAsset&limit=1000&count=true"
+    ]
+  },
+  "weights": { "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1 },
+  "pass_threshold": 0.7,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 3,
+  "notes": "Accept JSON or natural-language answers that state the maximum heart rate is 70 (5K) measured by device urn:ngsi-ld:Device:cow005 on animal urn:ngsi-ld:Animal:cow005; any other maximum should fail."
+}

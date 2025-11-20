@@ -1,0 +1,1024 @@
+id;difficulty;question;expected;;
+10;1;List all animals owned by  'Old MacDonald';"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow001"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow002"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow003"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow005"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow006"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow008"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow009"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow011"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow013"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow014"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow015"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow018"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow021"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow024"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow025"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow026"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow027"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow031"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow032"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow037"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow039"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow040"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow101"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow102"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow103"" }
+    ],
+    ""numeric"": 25,
+    ""reasoning"": ""Resolve Person id by name, then list Animal entities filtered by ownedBy using that id with a high enough limit to return all results."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Person&q=name==%22Old%20MacDonald%22"",
+      ""/ngsi-ld/v1/entities?type=Animal&q=ownedBy==%22urn:ngsi-ld:Person:person001%22&limit=100""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering and additional properties; ids must match exactly these 25 (no extras or missing). The second query must either set a limit >= 25 (e.g., 100) or otherwise retrieve all results via pagination; returning only the default page (20) is incorrect.""
+}";;
+11;1;List all animals located at AgriParcel 005;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow003"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow005"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow007"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow016"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow017"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow024"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow025"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow026"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow027"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow030"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow031"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow034"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow038"" }
+    ],
+    ""numeric"": 13,
+    ""reasoning"": ""Query Animal entities filtered by locatedAt relationship equal to urn:ngsi-ld:AgriParcel:005. No need to find AgriParcel ID first since it's directly referenced in the question (AgriParcel 005 maps to urn:ngsi-ld:AgriParcel:005)."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=locatedAt==%22urn:ngsi-ld:AgriParcel:005%22""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering and additional properties; ids must match exactly these 13 animals (no extras or missing). The query should directly filter by locatedAt=urn:ngsi-ld:AgriParcel:005. Setting count=true or limit parameter is optional since default page size (20) is sufficient for 13 results. Using limit >= 13 or pagination is also acceptable.""
+}";;
+12;1;Find all female animals that are currently in heat;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow022"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow029"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow015"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow008"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow036"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig022"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig008"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig036"" }
+    ],
+    ""numeric"": 8,
+    ""reasoning"": ""Filter Animal entities by sex==\""Female\"" and reproductiveCondition==\""inHeat\"" using a single NGSI-LD query."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=sex==%22Female%22;reproductiveCondition==%22inHeat%22&count=true""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering or extra properties but ensure only these eight female animals in heat are returned. Either structured JSON or clear natural-language answers identifying all eight are valid. Using count=true is recommended; limit >= 8 or pagination is also acceptable.""
+}";;
+14;1;Which buildings does Old Macdonald own?;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Person:person001"",
+        ""type"": ""Person"",
+        ""jobTitle"": {
+          ""type"": ""Property"",
+          ""value"": {
+            ""name"": ""Agricultural Manager"",
+            ""inDefinedTermSet"": ""https://targetjobs.co.uk/careers-advice/job-descriptions"",
+            ""termCode"": ""277119-agricultural-manager-job-description"",
+            ""url"": ""https://targetjobs.co.uk/careers-advice/job-descriptions/277119-agricultural-manager-job-description""
+          }
+        },
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Old MacDonald""
+        },
+        ""owns"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriFarm:farm001""
+        }
+      }
+    ],
+    ""numeric"": 1,
+    ""reasoning"": ""Resolve the Person entity ID by querying name==\""Old MacDonald\""; then list Building entities filtered by ownedBy equal to urn:ngsi-ld:Person:person001."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Person&q=name==%22Old%20MacDonald%22"",
+      ""/ngsi-ld/v1/entities?type=Building&q=ownedBy==%22urn:ngsi-ld:Person:person001%22&limit=100""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept either structured JSON or natural-language answers that clearly state Old MacDonald owns urn:ngsi-ld:AgriFarm:farm001; additional properties are fine but no contradictory claims.""
+}";;
+20;1;Which animals are currently located in North Pasture?;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow002"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow010"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow013"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow021"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow028"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow029"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow032"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow037"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow101"" }
+    ],
+    ""numeric"": 9,
+    ""reasoning"": ""Resolve the AgriParcel entity whose name is \""North Pasture\"" to obtain its ID (urn:ngsi-ld:AgriParcel:003); then list Animal entities filtered by locatedAt equal to that ID, ensuring the limit or pagination returns all animals."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=AgriParcel&q=name==%22North%20Pasture%22"",
+      ""/ngsi-ld/v1/entities?type=Animal&q=locatedAt==%22urn:ngsi-ld:AgriParcel:003%22&limit=100""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering and additional properties so long as exactly these nine animals are returned. Either structured JSON or clear natural-language statements are valid.""
+}";;
+21;1;What are the devices installed in the Cornfield?;"{
+  ""gold"": {
+    ""answer_json"": [],
+    ""numeric"": 0,
+    ""reasoning"": ""Lookup AgriParcel named \""Cornfield\"" to obtain urn:ngsi-ld:AgriParcel:002, then query Device entities filtered by controlledAsset or locatedAt equal to that parcel; both return no results, so the expected answer is an empty list."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=AgriParcel&q=name==%22Cornfield%22"",
+      ""/ngsi-ld/v1/entities?type=Device&q=controlledAsset==%22urn:ngsi-ld:AgriParcel:002%22"",
+      ""/ngsi-ld/v1/entities?type=Device&q=locatedAt==%22urn:ngsi-ld:AgriParcel:002%22""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept an empty JSON array or a clear natural-language statement that no devices are installed in the Cornfield. Any non-empty result should be marked incorrect.""
+}";;
+23;1;What animals are being fed with Hay;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow031"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow037"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow019"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow013"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow025"" }
+    ],
+    ""numeric"": 5,
+    ""reasoning"": ""Filter Animal entities by fedWith==\""Hay\""; no additional lookups are required because fedWith is a direct Property."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=fedWith==%22Hay%22""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering or extra attributes while ensuring exactly these five hay-fed animals are reported, either as JSON or clear natural language.""
+}";;
+24;1;What is the health condition of animals owned by Old MacDonald?;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""healthCondition"": {
+          ""type"": ""VocabProperty"",
+          ""vocab"": ""healthy""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""healthCondition"": {
+          ""type"": ""VocabProperty"",
+          ""vocab"": ""healthy""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      }
+    ],
+    ""numeric"": 2,
+    ""reasoning"": ""Resolve Old MacDonald’s Person ID, then query Animal entities owned by that ID while picking the healthCondition attribute; only two animals expose this property and both report \""healthy\""."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Person&q=name==%22Old%20MacDonald%22"",
+      ""/ngsi-ld/v1/entities?type=Animal&q=ownedBy==%22urn:ngsi-ld:Person:person001%22&pick=healthCondition""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept the two JSON objects shown or an equivalent natural-language explanation stating that only two of Old MacDonald’s animals report healthCondition=\""healthy\"".""
+}";;
+25;1;What is the temperature at Wheatfield agri parcel?;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""id"": ""urn:ngsi-ld:AgriParcel:001"",
+        ""temperature"": {
+          ""type"": ""Property"",
+          ""value"": 15.4,
+          ""unitCode"": ""CEL"",
+          ""observedAt"": ""2025-11-19T09:20:31.126Z""
+        }
+      }
+    ],
+    ""numeric"": 15.4,
+    ""reasoning"": ""Resolve the AgriParcel named \""Wheatfield\"" to obtain its ID (urn:ngsi-ld:AgriParcel:001), then read the temperature Property reported for that parcel."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=AgriParcel&q=name==%22Wheatfield%22"",
+      ""/ngsi-ld/v1/entities?type=AgriParcel&q=name==%22Wheatfield%22&pick=temperature""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept JSON or natural-language answers that clearly state Wheatfield’s temperature is 15.4 °C; additional context is fine but contradictory values are not.""
+}";;
+26;1;List the animals weighting less than 100 KG;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow103"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow102"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow101"" }
+    ],
+    ""numeric"": 3,
+    ""reasoning"": ""Query Animal entities where weight<100 kg; no preliminary lookup is required because weight is a direct Property."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=weight<100&limit=1000&count=true""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept JSON or natural-language answers that clearly list exactly these three animals under 100 kg; ordering and extra attributes are fine.""
+}";;
+30;1;List all devices currently without any associated animal;"{
+  ""gold"": {
+    ""answer_json"": [],
+    ""numeric"": 0,
+    ""reasoning"": ""Inspect Animal entities for providedBy relationships and list Device entities to confirm none remain without an associated animal; the dataset currently yields no orphan devices."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&attrs=providedBy&limit=1000&count=true"",
+      ""/ngsi-ld/v1/entities?type=Device&limit=1000&pick=id,controlledAsset""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept an empty array or a clear natural-language statement that no devices lack an associated animal; any claimed device should be treated as incorrect.""
+}";;
+31;1;List all Agri Parcels that have no weather observation;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""id"": ""urn:ngsi-ld:AgriParcel:004"",
+        ""type"": ""AgriParcel"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""East Pasture""
+        },
+        ""cropStatus"": {
+          ""type"": ""VocabProperty"",
+          ""vocab"": ""maturing""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person002""
+        },
+        ""hasAgriCrop"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriCrop:Grass""
+        },
+        ""hasAgriSoil"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriSoil:silt""
+        },
+        ""hasDevices"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:SoilSensor:humidity006""
+        },
+        ""soilTextureType"": {
+          ""type"": ""Property"",
+          ""value"": ""Silt loam""
+        },
+        ""humidity"": {
+          ""type"": ""Property"",
+          ""value"": 0.6,
+          ""observedAt"": ""2025-11-19T09:20:31.126Z"",
+          ""unitCode"": ""P1"",
+          ""providedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:SoilSensor:humidity006""
+          }
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      }
+    ],
+    ""numeric"": 1,
+    ""reasoning"": ""Fetch all AgriParcel entities and identify those lacking the observation relationship; only urn:ngsi-ld:AgriParcel:004 has no weather observation."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=AgriParcel&limit=1000&count=true""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept JSON or natural-language answers that clearly state East Pasture (urn:ngsi-ld:AgriParcel:004) is the only parcel without a weather observation; any additional parcels should be marked incorrect.""
+}";;
+32;1;Which tractors are not currently assigned to any task or field?;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""id"": ""urn:ngsi-ld:Device:tractor001"",
+        ""type"": ""Tractor"",
+        ""description"": {
+          ""type"": ""Property"",
+          ""value"": ""Big Blue Tractor""
+        },
+        ""category"": {
+          ""type"": ""VocabProperty"",
+          ""vocab"": [
+            ""actuator"",
+            ""sensor""
+          ]
+        },
+        ""batteryLevel"": {
+          ""type"": ""Property"",
+          ""value"": 0.8,
+          ""unitCode"": ""C68""
+        },
+        ""controlledProperty"": {
+          ""type"": ""Property"",
+          ""value"": [
+            ""location"",
+            ""status""
+          ]
+        },
+        ""deviceState"": {
+          ""type"": ""Property"",
+          ""value"": ""OK""
+        },
+        ""supportedProtocol"": {
+          ""type"": ""Property"",
+          ""value"": ""json""
+        },
+        ""deviceModel"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:DeviceModel:Tractor""
+        },
+        ""location"": {
+          ""type"": ""GeoProperty"",
+          ""value"": {
+            ""type"": ""Point"",
+            ""coordinates"": [
+              13.345,
+              52.51806
+            ]
+          },
+          ""observedAt"": ""2025-11-19T09:20:30.613Z""
+        },
+        ""status"": {
+          ""type"": ""Property"",
+          ""value"": ""MOVING""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Device:tractor003"",
+        ""type"": ""Tractor"",
+        ""description"": {
+          ""type"": ""Property"",
+          ""value"": ""Large Green Tractor""
+        },
+        ""category"": {
+          ""type"": ""VocabProperty"",
+          ""vocab"": [
+            ""actuator"",
+            ""sensor""
+          ]
+        },
+        ""batteryLevel"": {
+          ""type"": ""Property"",
+          ""value"": 0.8,
+          ""unitCode"": ""C68""
+        },
+        ""controlledProperty"": {
+          ""type"": ""Property"",
+          ""value"": [
+            ""location"",
+            ""status""
+          ]
+        },
+        ""deviceState"": {
+          ""type"": ""Property"",
+          ""value"": ""OK""
+        },
+        ""supportedProtocol"": {
+          ""type"": ""Property"",
+          ""value"": ""json""
+        },
+        ""deviceModel"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:DeviceModel:Tractor""
+        },
+        ""location"": {
+          ""type"": ""GeoProperty"",
+          ""value"": {
+            ""type"": ""Point"",
+            ""coordinates"": [
+              13.3505,
+              52.5144
+            ]
+          },
+          ""observedAt"": ""2025-11-19T09:20:30.613Z""
+        },
+        ""status"": {
+          ""type"": ""Property"",
+          ""value"": ""IDLE""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Device:tractor002"",
+        ""type"": ""Tractor"",
+        ""description"": {
+          ""type"": ""Property"",
+          ""value"": ""Little Red Tractor""
+        },
+        ""category"": {
+          ""type"": ""VocabProperty"",
+          ""vocab"": [
+            ""actuator"",
+            ""sensor""
+          ]
+        },
+        ""batteryLevel"": {
+          ""type"": ""Property"",
+          ""value"": 0.8,
+          ""unitCode"": ""C68""
+        },
+        ""controlledProperty"": {
+          ""type"": ""Property"",
+          ""value"": [
+            ""location"",
+            ""status""
+          ]
+        },
+        ""deviceState"": {
+          ""type"": ""Property"",
+          ""value"": ""OK""
+        },
+        ""supportedProtocol"": {
+          ""type"": ""Property"",
+          ""value"": ""json""
+        },
+        ""deviceModel"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:DeviceModel:Tractor""
+        },
+        ""location"": {
+          ""type"": ""GeoProperty"",
+          ""value"": {
+            ""type"": ""Point"",
+            ""coordinates"": [
+              13.3505,
+              52.5144
+            ]
+          },
+          ""observedAt"": ""2025-11-19T09:20:30.613Z""
+        },
+        ""status"": {
+          ""type"": ""Property"",
+          ""value"": ""IDLE""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Device:tractor004"",
+        ""type"": ""Tractor"",
+        ""description"": {
+          ""type"": ""Property"",
+          ""value"": ""Fast Black Tractor""
+        },
+        ""category"": {
+          ""type"": ""VocabProperty"",
+          ""vocab"": [
+            ""actuator"",
+            ""sensor""
+          ]
+        },
+        ""batteryLevel"": {
+          ""type"": ""Property"",
+          ""value"": 0.8,
+          ""unitCode"": ""C68""
+        },
+        ""controlledProperty"": {
+          ""type"": ""Property"",
+          ""value"": [
+            ""location"",
+            ""status""
+          ]
+        },
+        ""deviceState"": {
+          ""type"": ""Property"",
+          ""value"": ""OK""
+        },
+        ""supportedProtocol"": {
+          ""type"": ""Property"",
+          ""value"": ""json""
+        },
+        ""deviceModel"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:DeviceModel:Tractor""
+        },
+        ""location"": {
+          ""type"": ""GeoProperty"",
+          ""value"": {
+            ""type"": ""Point"",
+            ""coordinates"": [
+              13.34,
+              52.5188
+            ]
+          },
+          ""observedAt"": ""2025-11-19T09:20:30.613Z""
+        },
+        ""status"": {
+          ""type"": ""Property"",
+          ""value"": ""SOWING""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      }
+    ],
+    ""numeric"": 4,
+    ""reasoning"": ""List all Tractor entities and verify that none reference tasks or fields; optionally confirm there are no Task entities. All four tractors lack assignments."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Tractor&limit=1000&count=true"",
+      ""/ngsi-ld/v1/entities?type=Task&limit=1000&count=true""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept JSON or clear natural-language answers listing exactly these four unassigned tractors; any claimed assignments or additional tractors should fail.""
+}";;
+33;1;Find all soil sensors that are not monitoring any AgriParcel;"{
+  ""gold"": {
+    ""answer_json"": [],
+    ""numeric"": 0,
+    ""reasoning"": ""List SoilSensor entities and verify each has a controlledAsset relationship pointing to an AgriParcel; none are unassigned, so the answer is empty."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=SoilSensor&limit=1000&count=true"",
+      ""/ngsi-ld/v1/entities?type=SoilSensor&limit=1000&pick=id,controlledAsset""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept an empty array or a clear natural-language statement confirming no soil sensors lack an associated AgriParcel; any listed sensor should cause failure.""
+}";;
+40;2;Average heart rate of animals located in North Pasture;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""heartRate"": {
+          ""type"": ""Property"",
+          ""value"": 55,
+          ""unitCode"": ""5K"",
+          ""observedAt"": ""2025-11-19T09:20:30.048Z""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""heartRate"": {
+          ""type"": ""Property"",
+          ""value"": 54,
+          ""unitCode"": ""5K"",
+          ""observedAt"": ""2025-11-19T09:20:30.048Z"",
+          ""providedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Device:cow002""
+          }
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""heartRate"": {
+          ""type"": ""Property"",
+          ""value"": 55,
+          ""unitCode"": ""5K"",
+          ""observedAt"": ""2025-11-19T09:20:30.048Z"",
+          ""providedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Device:cow010""
+          }
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""heartRate"": {
+          ""type"": ""Property"",
+          ""value"": 55,
+          ""unitCode"": ""5K"",
+          ""observedAt"": ""2025-11-19T09:20:30.048Z"",
+          ""providedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Device:cow037""
+          }
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""heartRate"": {
+          ""type"": ""Property"",
+          ""value"": 55,
+          ""unitCode"": ""5K"",
+          ""observedAt"": ""2025-11-19T09:20:30.048Z"",
+          ""providedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Device:cow032""
+          }
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""heartRate"": {
+          ""type"": ""Property"",
+          ""value"": 50,
+          ""unitCode"": ""5K"",
+          ""observedAt"": ""2025-11-19T09:20:30.048Z"",
+          ""providedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Device:cow021""
+          }
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""heartRate"": {
+          ""type"": ""Property"",
+          ""value"": 53,
+          ""unitCode"": ""5K"",
+          ""observedAt"": ""2025-11-19T09:20:30.048Z"",
+          ""providedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Device:cow013""
+          }
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""heartRate"": {
+          ""type"": ""Property"",
+          ""value"": 53,
+          ""unitCode"": ""5K"",
+          ""observedAt"": ""2025-11-19T09:20:30.048Z"",
+          ""providedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Device:cow029""
+          }
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""heartRate"": {
+          ""type"": ""Property"",
+          ""value"": 52,
+          ""unitCode"": ""5K"",
+          ""observedAt"": ""2025-11-19T09:20:30.048Z"",
+          ""providedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Device:cow028""
+          }
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      }
+    ],
+    ""numeric"": 53.56,
+    ""reasoning"": ""Resolve the AgriParcel named \""North Pasture\"" (urn:ngsi-ld:AgriParcel:003), fetch all animals located there, pick their heartRate values, and compute the average (482/9 = 53.56)."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=AgriParcel&q=name==%22North%20Pasture%22"",
+      ""/ngsi-ld/v1/entities?type=Animal&q=locatedAt==%22urn:ngsi-ld:AgriParcel:003%22&pick=heartRate&limit=1000""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept JSON or natural-language answers stating the average heart rate is 53.56 (5K). Listing the nine heart-rate readings is optional but acceptable; any contradictory average should be marked incorrect.""
+}";;
+41;2;What is the maximum weight of all female dairy cattle owned by Old MacDonald?;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""maxWeight"": {
+          ""value"": 490,
+          ""unitCode"": ""KGM""
+        },
+        ""animal"": {
+          ""id"": ""urn:ngsi-ld:Animal:cow011"",
+          ""type"": ""Animal"",
+          ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Oats""
+          },
+          ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+          },
+          ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+          },
+          ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person001""
+          },
+          ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 490,
+            ""unitCode"": ""KGM""
+          }
+        }
+      }
+    ],
+    ""numeric"": 490,
+    ""reasoning"": ""Resolve Old MacDonald’s Person ID, filter Animal entities owned by that ID where sex==\""Female\"" and species==\""dairy cattle\"", then compute the maximum weight; Oats (cow011) weighs 490 KGM."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Person&q=name==%22Old%20MacDonald%22"",
+      ""/ngsi-ld/v1/entities?type=Animal&q=ownedBy==%22urn:ngsi-ld:Person:person001%22;sex==%22Female%22;species==%22dairy%20cattle%22&limit=1000&count=true""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept answers (JSON or natural language) that state the maximum weight is 490 KGM and identify Oats (urn:ngsi-ld:Animal:cow011) as the heaviest female dairy cattle owned by Old MacDonald; any differing maximum should be marked incorrect.""
+}";;
+42;2;Find humidity reading and battery level from sensor in AgriParcel 005;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""id"": ""urn:ngsi-ld:SoilSensor:humidity003"",
+        ""type"": ""SoilSensor"",
+        ""batteryLevel"": {
+          ""type"": ""Property"",
+          ""value"": 0.7,
+          ""unitCode"": ""C68""
+        },
+        ""humidity"": {
+          ""type"": ""Property"",
+          ""value"": 0.7,
+          ""unitCode"": ""P1"",
+          ""observedAt"": ""2025-11-19T09:20:30.613Z""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      }
+    ],
+    ""numeric"": 0.7,
+    ""reasoning"": ""Filter SoilSensor entities by controlledAsset equal to urn:ngsi-ld:AgriParcel:005 and retrieve humidity plus batteryLevel attributes; the single matching sensor reports both values as 0.7."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=SoilSensor&q=controlledAsset==%22urn:ngsi-ld:AgriParcel:005%22&attrs=humidity,batteryLevel""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept the returned JSON or natural-language answers explicitly stating that SoilSensor humidity003 in AgriParcel 005 reports humidity 0.7 (P1) and battery level 0.7 (C68); any differing values should fail.""
+}";;
+43;2;What is the maximum heart reate measured by a sensor and on which animal?;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""id"": ""urn:ngsi-ld:Device:cow005"",
+        ""type"": ""Device"",
+        ""heartRate"": {
+          ""type"": ""Property"",
+          ""value"": 70,
+          ""unitCode"": ""5K"",
+          ""observedAt"": ""2025-11-19T09:20:30.613Z""
+        },
+        ""controlledAsset"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Animal:cow005""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      }
+    ],
+    ""numeric"": 70,
+    ""reasoning"": ""List Device entities with heartRate readings, then select the maximum value and identify the associated animal via controlledAsset; device cow005 reports the peak heartRate of 70."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Device&attrs=heartRate,controlledAsset&limit=1000&count=true""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept JSON or natural-language answers that state the maximum heart rate is 70 (5K) measured by device urn:ngsi-ld:Device:cow005 on animal urn:ngsi-ld:Animal:cow005; any other maximum should fail.""
+}";;
+44;2;What is the oldest birthdate among all animals currently in heat?;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""oldestBirthdateInHeat"": {
+          ""value"": ""2019-02-24T00:00:00.000Z""
+        },
+        ""animal"": {
+          ""id"": ""urn:ngsi-ld:Animal:cow036"",
+          ""type"": ""Animal"",
+          ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Cream""
+          },
+          ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2019-02-24T00:00:00.000Z""
+          },
+          ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""inHeat""
+          },
+          ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+          },
+          ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+          ]
+        }
+      }
+    ],
+    ""numeric"": ""2019-02-24T00:00:00.000Z"",
+    ""reasoning"": ""Filter Animal entities by reproductiveCondition==\""inHeat\"" (and optionally sex==\""Female\""), retrieve birthdate attributes, then select the minimum (oldest) birthdate value; Cream (cow036) is the oldest with birthdate 2019-02-24T00:00:00.000Z."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=reproductiveCondition==%22inHeat%22&attrs=birthdate,name,reproductiveCondition,sex&limit=1000&count=true""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept JSON or natural-language answers that identify Cream (urn:ngsi-ld:Animal:cow036) with the oldest birthdate 2019-02-24T00:00:00.000Z among animals in heat; any different oldest date should be marked incorrect.""
+}";;
+45;2;Calculate the average soil moisture level across all sensors monitoring wheat crops;"{
+  ""gold"": {
+    ""answer_json"": [],
+    ""numeric"": 0,
+    ""reasoning"": ""Search for AgriParcels (or AgriCrops) associated with wheat, then query SoilSensor entities monitoring those parcels for humidity readings; the dataset contains no wheat crops, so no soil moisture average can be computed."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=AgriCrop&q=name==%22Wheat%22&limit=100"",
+      ""/ngsi-ld/v1/entities?type=AgriParcel&q=hasAgriCrop==%22urn:ngsi-ld:AgriCrop:Wheat%22&attrs=hasDevices&limit=100"",
+      ""/ngsi-ld/v1/entities?type=SoilSensor&q=controlledAsset==%22urn:ngsi-ld:AgriParcel:Wheat%22&attrs=humidity&limit=100""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept an empty JSON array or natural-language explanations clearly stating that no soil sensors monitor wheat crops, so the average humidity cannot be calculated; any claimed numerical average should be marked incorrect.""
+}ç";;
+50;3;List animals that have parents from different owners;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow102"",
+        ""type"": ""Animal"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Blossom""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""calvedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Animal:cow004""
+        },
+        ""siredBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Animal:cow001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      }
+    ],
+    ""numeric"": 1,
+    ""reasoning"": ""Fetch Animal entities with ownedBy, calvedBy, and siredBy attributes, then identify those whose parents belong to different owners; only Blossom (cow102) satisfies this condition."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&attrs=name,ownedBy,siredBy,calvedBy&limit=1000&count=true""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept JSON or natural-language answers that clearly state Blossom (urn:ngsi-ld:Animal:cow102) is the only animal whose parents have different owners; any additional animals should be marked incorrect.""
+}";;

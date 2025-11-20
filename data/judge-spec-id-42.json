@@ -1,0 +1,36 @@
+{
+  "gold": {
+    "answer_json": [
+      {
+        "id": "urn:ngsi-ld:SoilSensor:humidity003",
+        "type": "SoilSensor",
+        "batteryLevel": {
+          "type": "Property",
+          "value": 0.7,
+          "unitCode": "C68"
+        },
+        "humidity": {
+          "type": "Property",
+          "value": 0.7,
+          "unitCode": "P1",
+          "observedAt": "2025-11-19T09:20:30.613Z"
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      }
+    ],
+    "numeric": 0.7,
+    "reasoning": "Filter SoilSensor entities by controlledAsset equal to urn:ngsi-ld:AgriParcel:005 and retrieve humidity plus batteryLevel attributes; the single matching sensor reports both values as 0.7.",
+    "queries": [
+      "/ngsi-ld/v1/entities?type=SoilSensor&q=controlledAsset==%22urn:ngsi-ld:AgriParcel:005%22&attrs=humidity,batteryLevel"
+    ]
+  },
+  "weights": { "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1 },
+  "pass_threshold": 0.7,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 3,
+  "notes": "Accept the returned JSON or natural-language answers explicitly stating that SoilSensor humidity003 in AgriParcel 005 reports humidity 0.7 (P1) and battery level 0.7 (C68); any differing values should fail."
+}

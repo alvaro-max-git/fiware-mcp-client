@@ -1,0 +1,158 @@
+{
+  "gold": {
+    "answer_json": [
+      {
+        "heartRate": {
+          "type": "Property",
+          "value": 55,
+          "unitCode": "5K",
+          "observedAt": "2025-11-19T09:20:30.048Z"
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      },
+      {
+        "heartRate": {
+          "type": "Property",
+          "value": 54,
+          "unitCode": "5K",
+          "observedAt": "2025-11-19T09:20:30.048Z",
+          "providedBy": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:Device:cow002"
+          }
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      },
+      {
+        "heartRate": {
+          "type": "Property",
+          "value": 55,
+          "unitCode": "5K",
+          "observedAt": "2025-11-19T09:20:30.048Z",
+          "providedBy": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:Device:cow010"
+          }
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      },
+      {
+        "heartRate": {
+          "type": "Property",
+          "value": 55,
+          "unitCode": "5K",
+          "observedAt": "2025-11-19T09:20:30.048Z",
+          "providedBy": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:Device:cow037"
+          }
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      },
+      {
+        "heartRate": {
+          "type": "Property",
+          "value": 55,
+          "unitCode": "5K",
+          "observedAt": "2025-11-19T09:20:30.048Z",
+          "providedBy": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:Device:cow032"
+          }
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      },
+      {
+        "heartRate": {
+          "type": "Property",
+          "value": 50,
+          "unitCode": "5K",
+          "observedAt": "2025-11-19T09:20:30.048Z",
+          "providedBy": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:Device:cow021"
+          }
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      },
+      {
+        "heartRate": {
+          "type": "Property",
+          "value": 53,
+          "unitCode": "5K",
+          "observedAt": "2025-11-19T09:20:30.048Z",
+          "providedBy": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:Device:cow013"
+          }
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      },
+      {
+        "heartRate": {
+          "type": "Property",
+          "value": 53,
+          "unitCode": "5K",
+          "observedAt": "2025-11-19T09:20:30.048Z",
+          "providedBy": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:Device:cow029"
+          }
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      },
+      {
+        "heartRate": {
+          "type": "Property",
+          "value": 52,
+          "unitCode": "5K",
+          "observedAt": "2025-11-19T09:20:30.048Z",
+          "providedBy": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:Device:cow028"
+          }
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      }
+    ],
+    "numeric": 53.56,
+    "reasoning": "Resolve the AgriParcel named \"North Pasture\" (urn:ngsi-ld:AgriParcel:003), fetch all animals located there, pick their heartRate values, and compute the average (482/9 = 53.56).",
+    "queries": [
+      "/ngsi-ld/v1/entities?type=AgriParcel&q=name==%22North%20Pasture%22",
+      "/ngsi-ld/v1/entities?type=Animal&q=locatedAt==%22urn:ngsi-ld:AgriParcel:003%22&pick=heartRate&limit=1000"
+    ]
+  },
+  "weights": { "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1 },
+  "pass_threshold": 0.7,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 3,
+  "notes": "Accept JSON or natural-language answers stating the average heart rate is 53.56 (5K). Listing the nine heart-rate readings is optional but acceptable; any contradictory average should be marked incorrect."
+}

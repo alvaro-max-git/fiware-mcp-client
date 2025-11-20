@@ -1,0 +1,46 @@
+{
+  "gold": {
+    "answer_json": [
+      {
+        "oldestBirthdateInHeat": {
+          "value": "2019-02-24T00:00:00.000Z"
+        },
+        "animal": {
+          "id": "urn:ngsi-ld:Animal:cow036",
+          "type": "Animal",
+          "name": {
+            "type": "Property",
+            "value": "Cream"
+          },
+          "birthdate": {
+            "type": "Property",
+            "value": "2019-02-24T00:00:00.000Z"
+          },
+          "reproductiveCondition": {
+            "type": "VocabProperty",
+            "vocab": "inHeat"
+          },
+          "sex": {
+            "type": "VocabProperty",
+            "vocab": "Female"
+          },
+          "@context": [
+            "http://context/user-context.jsonld",
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+          ]
+        }
+      }
+    ],
+    "numeric": "2019-02-24T00:00:00.000Z",
+    "reasoning": "Filter Animal entities by reproductiveCondition==\"inHeat\" (and optionally sex==\"Female\"), retrieve birthdate attributes, then select the minimum (oldest) birthdate value; Cream (cow036) is the oldest with birthdate 2019-02-24T00:00:00.000Z.",
+    "queries": [
+      "/ngsi-ld/v1/entities?type=Animal&q=reproductiveCondition==%22inHeat%22&attrs=birthdate,name,reproductiveCondition,sex&limit=1000&count=true"
+    ]
+  },
+  "weights": { "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1 },
+  "pass_threshold": 0.7,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 3,
+  "notes": "Accept JSON or natural-language answers that identify Cream (urn:ngsi-ld:Animal:cow036) with the oldest birthdate 2019-02-24T00:00:00.000Z among animals in heat; any different oldest date should be marked incorrect."
+}

@@ -1,0 +1,18 @@
+{
+  "gold": {
+    "answer_json": [],
+    "numeric": 0,
+    "reasoning": "Search for AgriParcels (or AgriCrops) associated with wheat, then query SoilSensor entities monitoring those parcels for humidity readings; the dataset contains no wheat crops, so no soil moisture average can be computed.",
+    "queries": [
+      "/ngsi-ld/v1/entities?type=AgriCrop&q=name==%22Wheat%22&limit=100",
+      "/ngsi-ld/v1/entities?type=AgriParcel&q=hasAgriCrop==%22urn:ngsi-ld:AgriCrop:Wheat%22&attrs=hasDevices&limit=100",
+      "/ngsi-ld/v1/entities?type=SoilSensor&q=controlledAsset==%22urn:ngsi-ld:AgriParcel:Wheat%22&attrs=humidity&limit=100"
+    ]
+  },
+  "weights": { "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1 },
+  "pass_threshold": 0.7,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 3,
+  "notes": "Accept an empty JSON array or natural-language explanations clearly stating that no soil sensors monitor wheat crops, so the average humidity cannot be calculated; any claimed numerical average should be marked incorrect."
+}
