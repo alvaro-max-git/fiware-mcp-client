@@ -99,6 +99,7 @@ Run multiple prompts and evaluate them from a CSV file.
 
 - Command:
   - python -m app.cli bench --csv benchmark/benchmark_tests.csv --out bench_out
+  - python -m app.cli bench --csv benchmark/benchmark_tests.csv --out "bench_out/my results v1.csv"
 - Output:
   - A results file at bench_out/results.csv with columns:
     - id, passed, reason, model, system_prompt_file, eval_mode, prompt, output_text
@@ -159,6 +160,7 @@ Place system prompts in prompts/ (e.g., system1.md, system2.md, system3.md). Swi
 
 - Ensure the MCP server is reachable and configured with the allowed tools expected by the client.
 - Do not commit the .env file or API keys.
+- `--out` accepts either a directory (defaulting to results.csv inside it) or a full CSV file path.
 
 ## License
 

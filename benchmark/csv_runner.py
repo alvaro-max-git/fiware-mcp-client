@@ -86,9 +86,14 @@ def parse_expected(row: Dict[str, str]) -> tuple[ExpectedSpec, LLMJudgeSpec | No
     
     return ExpectedSpec(), None
 
-def run_benchmark(cfg: AppConfig, csv_file: Path, out_dir: Path) -> Path:
-    out_dir.mkdir(parents=True, exist_ok=True)
-    results_csv = out_dir / "results.csv"
+def run_benchmark(cfg: AppConfig, csv_file: Path, out_path: Path) -> Path:
+    out_is_file = out_path.suffix.lower() == ".csv" or (out_path.exists() and out_path.is_file())
+    if out_is_file:
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        results_csv = out_path
+    else:
+        out_path.mkdir(parents=True, exist_ok=True)
+        results_csv = out_path / "results.csv"
     bench_logger = logging.getLogger("benchmark")
 
     with results_csv.open("w", encoding="utf-8", newline="") as f_out:

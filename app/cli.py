@@ -105,7 +105,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     pb = sub.add_parser("bench")
     pb.add_argument("--csv", required=True)
-    pb.add_argument("--out", default="bench_out")
+    pb.add_argument("--out", default="bench_out", help="Output directory or CSV file path (default: bench_out)")
     pb.set_defaults(func=cmd_bench)
 
     return p
