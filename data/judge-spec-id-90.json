@@ -1,0 +1,53 @@
+{
+  "gold": {
+    "answer_json": [
+      {
+        "id": "urn:ngsi-ld:Animal:cow001",
+        "name": { "type": "Property", "value": "Beany" }
+      },
+      {
+        "id": "urn:ngsi-ld:Animal:cow101",
+        "name": { "type": "Property", "value": "Bumble" },
+        "siredBy": { "type": "Relationship", "object": "urn:ngsi-ld:Animal:cow001" },
+        "calvedBy": { "type": "Relationship", "object": "urn:ngsi-ld:Animal:cow002" }
+      },
+      {
+        "id": "urn:ngsi-ld:Animal:cow102",
+        "name": { "type": "Property", "value": "Blossom" },
+        "siredBy": { "type": "Relationship", "object": "urn:ngsi-ld:Animal:cow001" },
+        "calvedBy": { "type": "Relationship", "object": "urn:ngsi-ld:Animal:cow004" }
+      },
+      {
+        "id": "urn:ngsi-ld:Animal:cow103",
+        "name": { "type": "Property", "value": "Buttercup" },
+        "siredBy": { "type": "Relationship", "object": "urn:ngsi-ld:Animal:cow001" },
+        "calvedBy": { "type": "Relationship", "object": "urn:ngsi-ld:Animal:cow006" }
+      },
+      {
+        "id": "urn:ngsi-ld:Animal:cow002",
+        "name": { "type": "Property", "value": "Trotter" }
+      },
+      {
+        "id": "urn:ngsi-ld:Animal:cow004",
+        "name": { "type": "Property", "value": "River" }
+      },
+      {
+        "id": "urn:ngsi-ld:Animal:cow006",
+        "name": { "type": "Property", "value": "Twilight" }
+      }
+    ],
+    "numeric": 7,
+    "reasoning": "Resolve Beany (urn:ngsi-ld:Animal:cow001), then recursively traverse siredBy/calvedBy relationships to list all ancestors and descendants within three generations; Beany has no ancestors, three offspring (Bumble, Blossom, Buttercup), and three co-parents (Trotter, River, Twilight).",
+    "queries": [
+      "/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow001&pick=id,name,siredBy,calvedBy",
+      "/ngsi-ld/v1/entities?type=Animal&q=siredBy==%22urn:ngsi-ld:Animal:cow001%22&pick=id,name,siredBy,calvedBy&limit=1000&count=true",
+      "/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow002,urn:ngsi-ld:Animal:cow004,urn:ngsi-ld:Animal:cow006&pick=id,name,siredBy,calvedBy"
+    ]
+  },
+  "weights": { "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1 },
+  "pass_threshold": 0.7,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 5,
+  "notes": "Accept JSON or natural-language answers that enumerate Beany plus exactly these six related animals (three offspring and three co-parents) across up to three generations; any additional or missing lineage members should be marked incorrect."
+}

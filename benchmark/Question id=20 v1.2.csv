@@ -1,0 +1,1499 @@
+id;difficulty;question;system_prompt_file;model;eval_mode;expected;cli_command;notes
+20;1;Which animals are currently located in North Pasture?;system3.1.md;gpt-5-nano;json_subset;"[
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow002"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 54,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow002""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Trotter""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2022-04-12T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow002-Trotter""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""active""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34806,
+                    52.51186
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow002""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 373,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        }
+    },
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow010"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 55,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow010""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Tulip""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2023-05-12T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow010-Tulip""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person002""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""active""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34856,
+                    52.51121
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow010""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 232,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        }
+    },
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow013"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 53,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow013""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Silver""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2018-05-21T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Hay""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow013-Silver""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""active""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34984,
+                    52.51133
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow013""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 376,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        }
+    },
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow021"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 50,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow021""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Ferdinand""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2018-03-23T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""M-bull021-Ferdinand""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""maleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""active""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Male""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34956,
+                    52.51178
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow021""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 757,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        }
+    },
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow028"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 52,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow028""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Star""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2021-08-10T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow028-Star""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person002""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""active""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34816,
+                    52.51118
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow028""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 367,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        }
+    },
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow029"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 53,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow029""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Clover""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2023-07-24T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow029-Clover""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person002""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""inHeat""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34957,
+                    52.51114
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow029""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 295,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        }
+    },
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow101"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 55,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K""
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Bumble""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2025-04-17T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""M-bull101-Bumble""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""grazingBaby""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""noStatus""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Male""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34806,
+                    52.51186
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 50,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        },
+        ""calvedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Animal:cow002""
+        },
+        ""siredBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Animal:cow001""
+        }
+    },
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow032"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 55,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow032""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Citrus""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2021-04-08T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow032-Citrus""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""active""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34898,
+                    52.51147
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow032""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 411,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        }
+    },
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow037"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 55,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow037""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Marble""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2020-01-11T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Hay""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow037-Marble""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""active""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34942,
+                    52.5118
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow037""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 347,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        }
+    }
+]";;
+20;1;Which animals are currently located in North Pasture?;system2.1.md;gpt-5-mini;json_subset;"[
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow002"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 54,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow002""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Trotter""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2022-04-12T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow002-Trotter""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""active""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34806,
+                    52.51186
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow002""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 373,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        }
+    },
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow010"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 55,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow010""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Tulip""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2023-05-12T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow010-Tulip""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person002""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""active""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34856,
+                    52.51121
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow010""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 232,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        }
+    },
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow013"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 53,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow013""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Silver""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2018-05-21T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Hay""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow013-Silver""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""active""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34984,
+                    52.51133
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow013""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 376,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        }
+    },
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow021"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 50,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow021""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Ferdinand""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2018-03-23T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""M-bull021-Ferdinand""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""maleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""active""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Male""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34956,
+                    52.51178
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow021""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 757,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        }
+    },
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow028"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 52,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow028""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Star""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2021-08-10T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow028-Star""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person002""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""active""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34816,
+                    52.51118
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow028""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 367,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        }
+    },
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow029"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 53,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow029""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Clover""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2023-07-24T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow029-Clover""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person002""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""inHeat""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34957,
+                    52.51114
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow029""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 295,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        }
+    },
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow101"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 55,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K""
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Bumble""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2025-04-17T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""M-bull101-Bumble""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""grazingBaby""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""noStatus""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Male""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34806,
+                    52.51186
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 50,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        },
+        ""calvedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Animal:cow002""
+        },
+        ""siredBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Animal:cow001""
+        }
+    },
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow032"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 55,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow032""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Citrus""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2021-04-08T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Grass""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow032-Citrus""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""active""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34898,
+                    52.51147
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow032""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 411,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        }
+    },
+    {
+        ""@context"": [
+            ""http://context/user-context.jsonld"",
+            ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ],
+        ""id"": ""urn:ngsi-ld:Animal:cow037"",
+        ""type"": ""Animal"",
+        ""heartRate"": {
+            ""type"": ""Property"",
+            ""value"": 55,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""5K"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow037""
+            }
+        },
+        ""name"": {
+            ""type"": ""Property"",
+            ""value"": ""Marble""
+        },
+        ""birthdate"": {
+            ""type"": ""Property"",
+            ""value"": ""2020-01-11T00:00:00.000Z""
+        },
+        ""fedWith"": {
+            ""type"": ""Property"",
+            ""value"": ""Hay""
+        },
+        ""legalId"": {
+            ""type"": ""Property"",
+            ""value"": ""F-cow037-Marble""
+        },
+        ""locatedAt"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+            ""observedAt"": ""2025-11-17T12:24:45.754Z""
+        },
+        ""ownedBy"": {
+            ""type"": ""Relationship"",
+            ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""phenologicalCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""femaleAdult""
+        },
+        ""reproductiveCondition"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""active""
+        },
+        ""sex"": {
+            ""type"": ""VocabProperty"",
+            ""vocab"": ""Female""
+        },
+        ""species"": {
+            ""type"": ""Property"",
+            ""value"": ""dairy cattle""
+        },
+        ""location"": {
+            ""type"": ""GeoProperty"",
+            ""value"": {
+                ""type"": ""Point"",
+                ""coordinates"": [
+                    13.34942,
+                    52.5118
+                ]
+            },
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""providedBy"": {
+                ""type"": ""Relationship"",
+                ""object"": ""urn:ngsi-ld:Device:cow037""
+            }
+        },
+        ""weight"": {
+            ""type"": ""Property"",
+            ""value"": 347,
+            ""observedAt"": ""2025-11-17T12:24:45.754Z"",
+            ""unitCode"": ""KGM""
+        }
+    }
+]";;
+20;1;Which animals are currently located in North Pasture?;system2.1.md;gpt-5-nano;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow002"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow010"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow013"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow021"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow028"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow029"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow032"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow037"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow101"" }
+    ],
+    ""numeric"": 9,
+    ""reasoning"": ""Resolve the AgriParcel entity whose name is \""North Pasture\"" to obtain its ID (urn:ngsi-ld:AgriParcel:003); then list Animal entities filtered by locatedAt equal to that ID, ensuring the limit or pagination returns all animals."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=AgriParcel&q=name==%22North%20Pasture%22"",
+      ""/ngsi-ld/v1/entities?type=Animal&q=locatedAt==%22urn:ngsi-ld:AgriParcel:003%22&limit=100""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering and additional properties so long as exactly these nine animals are returned. Either structured JSON or clear natural-language statements are valid.""
+}";;
+20;1;Which animals are currently located in North Pasture?;system2.1.md;gpt-5-mini;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow002"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow010"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow013"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow021"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow028"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow029"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow032"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow037"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow101"" }
+    ],
+    ""numeric"": 9,
+    ""reasoning"": ""Resolve the AgriParcel entity whose name is \""North Pasture\"" to obtain its ID (urn:ngsi-ld:AgriParcel:003); then list Animal entities filtered by locatedAt equal to that ID, ensuring the limit or pagination returns all animals."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=AgriParcel&q=name==%22North%20Pasture%22"",
+      ""/ngsi-ld/v1/entities?type=Animal&q=locatedAt==%22urn:ngsi-ld:AgriParcel:003%22&limit=100""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering and additional properties so long as exactly these nine animals are returned. Either structured JSON or clear natural-language statements are valid.""
+}";;

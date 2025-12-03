@@ -1,0 +1,34 @@
+{
+  "gold": {
+    "answer_json": [
+      {
+        "id": "urn:ngsi-ld:Animal:cow103",
+        "name": {
+          "type": "Property",
+          "value": "Buttercup"
+        }
+      },
+      {
+        "id": "urn:ngsi-ld:Animal:cow101",
+        "name": {
+          "type": "Property",
+          "value": "Bumble"
+        }
+      }
+    ],
+    "numeric": 2,
+    "reasoning": "List Animal entities with ownedBy, locatedAt, siredBy, and calvedBy; identify those whose parents exist and compare each parent’s locatedAt. Buttercup and Bumble are the only animals whose parents reside in different farms.",
+    "queries": [
+      "/ngsi-ld/v1/entities?type=Animal&pick=id,name,ownedBy,locatedAt,siredBy,calvedBy&limit=1000&count=true",
+      "/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow006&pick=id,locatedAt",
+      "/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow001&pick=id,locatedAt",
+      "/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow002&pick=id,locatedAt"
+    ]
+  },
+  "weights": { "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1 },
+  "pass_threshold": 0.7,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 4,
+  "notes": "Accept JSON or natural-language answers that clearly state only Buttercup (urn:ngsi-ld:Animal:cow103) and Bumble (urn:ngsi-ld:Animal:cow101) have parents located on different farms; any extra or missing animals should be marked incorrect."
+}

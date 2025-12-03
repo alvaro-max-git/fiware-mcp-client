@@ -1,0 +1,123 @@
+id;difficulty;question;system_prompt_file;model;eval_mode;expected;cli_command;notes
+11;1;List all animals located at AgriParcel 005. Answer only with a number.;system2.3.md;gpt-5-nano;exact_text;13;;
+11;1;List all animals located at AgriParcel 005. Answer only with a number.;system2.3.md;gpt-5-mini;exact_text;13;;
+11;1;List all animals located at AgriParcel 005;system2.3.md;gpt-5-nano;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow003"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow005"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow007"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow016"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow017"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow024"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow025"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow026"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow027"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow030"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow031"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow034"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow038"" }
+    ],
+    ""numeric"": 13,
+    ""reasoning"": ""Query Animal entities filtered by locatedAt relationship equal to urn:ngsi-ld:AgriParcel:005. No need to find AgriParcel ID first since it's directly referenced in the question (AgriParcel 005 maps to urn:ngsi-ld:AgriParcel:005)."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=locatedAt==%22urn:ngsi-ld:AgriParcel:005%22""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering and additional properties; ids must match exactly these 13 animals (no extras or missing). The query should directly filter by locatedAt=urn:ngsi-ld:AgriParcel:005. Setting count=true or limit parameter is optional since default page size (20) is sufficient for 13 results. Using limit >= 13 or pagination is also acceptable.""
+}";;
+11;1;List all animals located at AgriParcel 005;system3.3.md;gpt-5-nano;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow003"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow005"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow007"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow016"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow017"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow024"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow025"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow026"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow027"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow030"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow031"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow034"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow038"" }
+    ],
+    ""numeric"": 13,
+    ""reasoning"": ""Query Animal entities filtered by locatedAt relationship equal to urn:ngsi-ld:AgriParcel:005. No need to find AgriParcel ID first since it's directly referenced in the question (AgriParcel 005 maps to urn:ngsi-ld:AgriParcel:005)."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=locatedAt==%22urn:ngsi-ld:AgriParcel:005%22""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering and additional properties; ids must match exactly these 13 animals (no extras or missing). The query should directly filter by locatedAt=urn:ngsi-ld:AgriParcel:005. Setting count=true or limit parameter is optional since default page size (20) is sufficient for 13 results. Using limit >= 13 or pagination is also acceptable.""
+}";;
+11;1;List all animals located at AgriParcel 005;system2.3.md;gpt-5-mini;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow003"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow005"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow007"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow016"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow017"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow024"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow025"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow026"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow027"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow030"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow031"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow034"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow038"" }
+    ],
+    ""numeric"": 13,
+    ""reasoning"": ""Query Animal entities filtered by locatedAt relationship equal to urn:ngsi-ld:AgriParcel:005. No need to find AgriParcel ID first since it's directly referenced in the question (AgriParcel 005 maps to urn:ngsi-ld:AgriParcel:005)."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=locatedAt==%22urn:ngsi-ld:AgriParcel:005%22""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering and additional properties; ids must match exactly these 13 animals (no extras or missing). The query should directly filter by locatedAt=urn:ngsi-ld:AgriParcel:005. Setting count=true or limit parameter is optional since default page size (20) is sufficient for 13 results. Using limit >= 13 or pagination is also acceptable.""
+}";;
+11;1;List all animals located at AgriParcel 005;system3.3.md;gpt-5-mini;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow003"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow005"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow007"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow016"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow017"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow024"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow025"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow026"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow027"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow030"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow031"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow034"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow038"" }
+    ],
+    ""numeric"": 13,
+    ""reasoning"": ""Query Animal entities filtered by locatedAt relationship equal to urn:ngsi-ld:AgriParcel:005. No need to find AgriParcel ID first since it's directly referenced in the question (AgriParcel 005 maps to urn:ngsi-ld:AgriParcel:005)."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=locatedAt==%22urn:ngsi-ld:AgriParcel:005%22""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering and additional properties; ids must match exactly these 13 animals (no extras or missing). The query should directly filter by locatedAt=urn:ngsi-ld:AgriParcel:005. Setting count=true or limit parameter is optional since default page size (20) is sufficient for 13 results. Using limit >= 13 or pagination is also acceptable.""
+}";;

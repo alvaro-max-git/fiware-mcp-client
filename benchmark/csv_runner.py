@@ -25,7 +25,15 @@ def _detect_delimiter(sample: str) -> str:
         return ","
 
 def load_rows(csv_path: Path) -> Iterable[Dict[str, str]]:
-    with csv_path.open("r", encoding="utf-8-sig", newline="") as f:
+    # Detect encoding: try utf-8-sig first, fallback to latin-1 (common for Excel/Windows CSVs)
+    encoding = "utf-8-sig"
+    try:
+        with csv_path.open("r", encoding=encoding, newline="") as f:
+            f.read()
+    except UnicodeDecodeError:
+        encoding = "latin-1"
+
+    with csv_path.open("r", encoding=encoding, newline="") as f:
         sample = f.read(2048)
         f.seek(0)
         delimiter = _detect_delimiter(sample)

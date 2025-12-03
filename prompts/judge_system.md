@@ -76,6 +76,7 @@ You will receive a single JSON **input** object. You must output a **single JSON
 
 - Prefer **specific** queries over broad fetch-all patterns.
 - Compare `mcp_trace.queries` vs `gold.queries` (when provided).
+    - **Note on limits**: If the model uses a higher `limit` than the gold (e.g. 1000 vs 100) but the query is otherwise correct and filtered, **do not penalize**. Higher limits are acceptable strategies to avoid pagination loops.
 - Consider `call_count` and `efficiency_budget`:
     - If within budget and queries are specific/optimal → near 1.0.
     - If clearly redundant (e.g., fetching all entities with no filters when filters exist) → lower scores.

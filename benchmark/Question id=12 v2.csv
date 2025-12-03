@@ -1,0 +1,103 @@
+id;difficulty;question;system_prompt_file;model;eval_mode;expected;cli_command;notes
+11;1;Tell me how many female animals are currently in heat. Answer only with a number;system2.3.md;gpt-5-nano;exact_text;8;;
+11;1;Tell me how many female animals are currently in heat. Answer only with a number;system2.3.md;gpt-5-mini;exact_text;8;;
+11;1;List all female animals currently in heat;system2.3.md;gpt-5-nano;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow022"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow029"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow015"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow008"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow036"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig022"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig008"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig036"" }
+    ],
+    ""numeric"": 8,
+    ""reasoning"": ""Filter Animal entities by sex==\""Female\"" and reproductiveCondition==\""inHeat\"" using a single NGSI-LD query."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=sex==%22Female%22;reproductiveCondition==%22inHeat%22&count=true""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering or extra properties but ensure only these eight female animals in heat are returned. Either structured JSON or clear natural-language answers identifying all eight are valid. Using count=true is recommended; limit >= 8 or pagination is also acceptable.""
+}";;
+11;1;List all female animals currently in heat;system3.3.md;gpt-5-nano;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow022"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow029"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow015"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow008"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow036"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig022"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig008"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig036"" }
+    ],
+    ""numeric"": 8,
+    ""reasoning"": ""Filter Animal entities by sex==\""Female\"" and reproductiveCondition==\""inHeat\"" using a single NGSI-LD query."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=sex==%22Female%22;reproductiveCondition==%22inHeat%22&count=true""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering or extra properties but ensure only these eight female animals in heat are returned. Either structured JSON or clear natural-language answers identifying all eight are valid. Using count=true is recommended; limit >= 8 or pagination is also acceptable.""
+}";;
+11;1;List all female animals currently in heat;system2.3.md;gpt-5-mini;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow022"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow029"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow015"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow008"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow036"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig022"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig008"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig036"" }
+    ],
+    ""numeric"": 8,
+    ""reasoning"": ""Filter Animal entities by sex==\""Female\"" and reproductiveCondition==\""inHeat\"" using a single NGSI-LD query."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=sex==%22Female%22;reproductiveCondition==%22inHeat%22&count=true""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering or extra properties but ensure only these eight female animals in heat are returned. Either structured JSON or clear natural-language answers identifying all eight are valid. Using count=true is recommended; limit >= 8 or pagination is also acceptable.""
+}";;
+11;1;List all female animals currently in heat;system3.3.md;gpt-5-mini;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow022"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow029"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow015"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow008"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow036"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig022"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig008"" },
+      { ""id"": ""urn:ngsi-ld:Animal:pig036"" }
+    ],
+    ""numeric"": 8,
+    ""reasoning"": ""Filter Animal entities by sex==\""Female\"" and reproductiveCondition==\""inHeat\"" using a single NGSI-LD query."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=sex==%22Female%22;reproductiveCondition==%22inHeat%22&count=true""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering or extra properties but ensure only these eight female animals in heat are returned. Either structured JSON or clear natural-language answers identifying all eight are valid. Using count=true is recommended; limit >= 8 or pagination is also acceptable.""
+}";;

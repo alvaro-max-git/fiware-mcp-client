@@ -2,36 +2,131 @@
   "gold": {
     "answer_json": [
       {
-        "@context": [
-          "http://context/user-context.jsonld",
-          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
-        ],
-        "id": "urn:ngsi-ld:Person:person001",
-        "type": "Person",
-        "jobTitle": {
+        "id": "urn:ngsi-ld:Building:tower003",
+        "type": "Building",
+        "address": {
           "type": "Property",
           "value": {
-            "name": "Agricultural Manager",
-            "inDefinedTermSet": "https://targetjobs.co.uk/careers-advice/job-descriptions",
-            "termCode": "277119-agricultural-manager-job-description",
-            "url": "https://targetjobs.co.uk/careers-advice/job-descriptions/277119-agricultural-manager-job-description"
+            "addressLocality": "Tiergarten",
+            "addressRegion": "Berlin",
+            "postalCode": "10557",
+            "streetAddress": "John-Foster-Dulles-Allee"
           }
         },
         "name": {
           "type": "Property",
-          "value": "Old MacDonald"
+          "value": "Triton Tower"
         },
-        "owns": {
+        "category": {
+          "type": "VocabProperty",
+          "vocab": "water_tower"
+        },
+        "owner": {
           "type": "Relationship",
-          "object": "urn:ngsi-ld:AgriFarm:farm001"
-        }
+          "object": "urn:ngsi-ld:Person:person001"
+        },
+        "location": {
+          "type": "GeoProperty",
+          "value": {
+            "type": "Point",
+            "coordinates": [
+              13.3598,
+              52.5165
+            ]
+          },
+          "observedAt": "2025-11-27T18:42:39.021Z"
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      },
+      {
+        "id": "urn:ngsi-ld:Building:farm001",
+        "type": "Building",
+        "address": {
+          "type": "Property",
+          "value": {
+            "addressLocality": "Tiergarten",
+            "addressRegion": "Berlin",
+            "postalCode": "10557",
+            "streetAddress": "Großer Stern 1"
+          }
+        },
+        "name": {
+          "type": "Property",
+          "value": "Victory Farm"
+        },
+        "category": {
+          "type": "VocabProperty",
+          "vocab": "farm"
+        },
+        "owner": {
+          "type": "Relationship",
+          "object": "urn:ngsi-ld:Person:person001"
+        },
+        "location": {
+          "type": "GeoProperty",
+          "value": {
+            "type": "Point",
+            "coordinates": [
+              13.3505,
+              52.5144
+            ]
+          },
+          "observedAt": "2025-11-27T18:42:39.021Z"
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      },
+      {
+        "id": "urn:ngsi-ld:Building:barn002",
+        "type": "Building",
+        "address": {
+          "type": "Property",
+          "value": {
+            "addressLocality": "Tiergarten",
+            "addressRegion": "Berlin",
+            "postalCode": "10557",
+            "streetAddress": "Straße des 17. Juni"
+          }
+        },
+        "name": {
+          "type": "Property",
+          "value": "Big Red Barn"
+        },
+        "category": {
+          "type": "VocabProperty",
+          "vocab": "barn"
+        },
+        "owner": {
+          "type": "Relationship",
+          "object": "urn:ngsi-ld:Person:person001"
+        },
+        "location": {
+          "type": "GeoProperty",
+          "value": {
+            "type": "Point",
+            "coordinates": [
+              13.3698,
+              52.5163
+            ]
+          },
+          "observedAt": "2025-11-27T18:42:39.021Z"
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
       }
     ],
-    "numeric": 1,
-    "reasoning": "Resolve the Person entity ID by querying name==\"Old MacDonald\"; then list Building entities filtered by ownedBy equal to urn:ngsi-ld:Person:person001.",
+    "numeric": 3,
+    "reasoning": "Resolve the Person entity ID by querying name==\"Old MacDonald\"; then list Building entities filtered by owner equal to urn:ngsi-ld:Person:person001.",
     "queries": [
       "/ngsi-ld/v1/entities?type=Person&q=name==%22Old%20MacDonald%22",
-      "/ngsi-ld/v1/entities?type=Building&q=ownedBy==%22urn:ngsi-ld:Person:person001%22&limit=100"
+      "/ngsi-ld/v1/entities?type=Building&q=owner==%22urn:ngsi-ld:Person:person001%22&limit=100"
     ]
   },
   "weights": { "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1 },
@@ -39,5 +134,5 @@
   "grading_mode": "gated",
   "min_correctness": 1.0,
   "efficiency_budget": 3,
-  "notes": "Accept either structured JSON or natural-language answers that clearly state Old MacDonald owns urn:ngsi-ld:AgriFarm:farm001; additional properties are fine but no contradictory claims."
+  "notes": "Accept either structured JSON or natural-language answers that clearly state Old MacDonald owns the 3 buildings."
 }

@@ -1,0 +1,50 @@
+{
+  "gold": {
+    "answer_json": [
+      {
+        "id": "urn:ngsi-ld:Animal:cow001",
+        "type": "Animal",
+        "name": {
+          "type": "Property",
+          "value": "Beany"
+        },
+        "ownedBy": {
+          "type": "Relationship",
+          "object": "urn:ngsi-ld:Person:person001"
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      },
+      {
+        "id": "urn:ngsi-ld:Animal:cow004",
+        "type": "Animal",
+        "name": {
+          "type": "Property",
+          "value": "River"
+        },
+        "ownedBy": {
+          "type": "Relationship",
+          "object": "urn:ngsi-ld:Person:person002"
+        },
+        "@context": [
+          "http://context/user-context.jsonld",
+          "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
+        ]
+      }
+    ],
+    "numeric": 2,
+    "reasoning": "List Animal entities with ownedBy, siredBy, and calvedBy attributes, then locate offspring (e.g., Blossom) whose parents belong to different owners; the parents Beany (cow001) and River (cow004) are the only animals that mate across owners.",
+    "queries": [
+      "/ngsi-ld/v1/entities?type=Animal&pick=id,name,ownedBy,siredBy,calvedBy&limit=1000&count=true",
+      "/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow102&pick=id,name,siredBy,calvedBy"
+    ]
+  },
+  "weights": { "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1 },
+  "pass_threshold": 0.7,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 4,
+  "notes": "Accept JSON or natural-language answers that clearly identify Beany (urn:ngsi-ld:Animal:cow001) and River (urn:ngsi-ld:Animal:cow004) as the only animals mating across different owners; any additional or missing animals should be marked incorrect."
+}

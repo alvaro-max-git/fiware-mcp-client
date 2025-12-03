@@ -1,0 +1,91 @@
+id;difficulty;question;system_prompt_file;model;eval_mode;expected
+23;1;How many animals are being fed with Hay? Answer only with a number.;system2.3.md;gpt-5-nano;exact_text;5
+23;1;How many animals are being fed with Hay? Answer only with a number.;system2.3.md;gpt-5-mini;exact_text;5
+23;1;What animals are being fed with Hay?;system2.3.md;gpt-5-nano;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow031"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow037"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow019"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow013"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow025"" }
+    ],
+    ""numeric"": 5,
+    ""reasoning"": ""Filter Animal entities by fedWith==\""Hay\""; no additional lookups are required because fedWith is a direct Property."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=fedWith==%22Hay%22""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering or extra attributes while ensuring exactly these five hay-fed animals are reported, either as JSON or clear natural language.""
+}"
+23;1;What animals are being fed with Hay?;system3.3.md;gpt-5-nano;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow031"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow037"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow019"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow013"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow025"" }
+    ],
+    ""numeric"": 5,
+    ""reasoning"": ""Filter Animal entities by fedWith==\""Hay\""; no additional lookups are required because fedWith is a direct Property."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=fedWith==%22Hay%22""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering or extra attributes while ensuring exactly these five hay-fed animals are reported, either as JSON or clear natural language.""
+}"
+23;1;What animals are being fed with Hay?;system2.3.md;gpt-5-mini;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow031"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow037"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow019"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow013"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow025"" }
+    ],
+    ""numeric"": 5,
+    ""reasoning"": ""Filter Animal entities by fedWith==\""Hay\""; no additional lookups are required because fedWith is a direct Property."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=fedWith==%22Hay%22""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering or extra attributes while ensuring exactly these five hay-fed animals are reported, either as JSON or clear natural language.""
+}"
+23;1;What animals are being fed with Hay?;system3.3.md;gpt-5-mini;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      { ""id"": ""urn:ngsi-ld:Animal:cow031"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow037"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow019"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow013"" },
+      { ""id"": ""urn:ngsi-ld:Animal:cow025"" }
+    ],
+    ""numeric"": 5,
+    ""reasoning"": ""Filter Animal entities by fedWith==\""Hay\""; no additional lookups are required because fedWith is a direct Property."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&q=fedWith==%22Hay%22""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 3,
+  ""notes"": ""Accept any ordering or extra attributes while ensuring exactly these five hay-fed animals are reported, either as JSON or clear natural language.""
+}"
