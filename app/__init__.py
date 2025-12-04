@@ -1,0 +1,1 @@
+"""FIWARE MCP client package."""

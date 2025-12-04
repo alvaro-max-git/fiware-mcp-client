@@ -9,6 +9,8 @@ logs/
 __pycache__/
 *.py[cod]
 *.pyo
+*.egg-info/
+
 
 # Ignore local virtual env
 .venv/

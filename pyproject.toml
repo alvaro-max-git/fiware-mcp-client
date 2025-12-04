@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fiware-mcp-client"
+version = "0.1.0"
+description = "FIWARE MCP client utilities and CLI"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Alvaro Max" }
+]
+dependencies = [
+    "openai",
+    "python-dotenv"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-mock"
+]
+
+[tool.setuptools]
+packages = ["app"]
