@@ -1,7 +1,7 @@
 import json
 import re
 import logging
-from typing import Any, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 from openai import OpenAI
 from app.config import AppConfig
@@ -85,112 +85,88 @@ def _extract_json_object(text: str) -> Optional[Any]:
 
 # ------------------------------------------------------------
 
-def evaluate(result: RunResult, expected: ExpectedSpec) -> EvalResult:
-    if not result.ok:
-        return EvalResult(passed=False, reason=f"Run failed: {result.error}")
+def _build_client(cfg: AppConfig) -> OpenAI:
+    return OpenAI(api_key=cfg.openai_api_key)
 
-    text = result.output_text or ""
+def _eval_exact_text(output: RunResult, expected: ExpectedSpec) -> EvalResult:
+    return EvalResult(passed=(output.output_text.strip() == (expected.exact_text or "").strip()))
 
-    # 1) exact text
-    if expected.exact_text is not None:
-        passed = text == expected.exact_text
-        return EvalResult(passed=passed, reason=None if passed else "exact_text mismatch")
+def _eval_regex(output: RunResult, expected: ExpectedSpec) -> EvalResult:
+    import re
+    pat = expected.regex or ""
+    ok = re.search(pat, output.output_text or "") is not None
+    return EvalResult(passed=ok)
 
-    # 2) equals_json
-    if expected.equals_json is not None:
-        if result.parsed_json is None:
-            return EvalResult(passed=False, reason="output is not valid JSON")
-        passed = _json_equal(result.parsed_json, expected.equals_json)
-        return EvalResult(passed=passed, reason=None if passed else "equals_json mismatch")
-
-    # 3) json_subset
-    if expected.json_subset is not None:
-        if result.parsed_json is None:
-            return EvalResult(passed=False, reason="output is not valid JSON")
-        passed = _json_is_subset(expected.json_subset, result.parsed_json)
-        return EvalResult(passed=passed, reason=None if passed else "json_subset mismatch")
-
-    # 4) regex
-    if expected.regex is not None:
-        passed = re.search(expected.regex, text, re.DOTALL) is not None
-        return EvalResult(passed=passed, reason=None if passed else "regex mismatch")
-
-    return EvalResult(passed=False, reason="No evaluation criterion provided")
-
-
-def evaluate_llm_judge(cfg: AppConfig, result: RunResult, spec: LLMJudgeSpec, user_prompt: Optional[str] = None) -> EvalResult:
-    client = OpenAI(api_key=cfg.openai_api_key)
-    judge_instructions = cfg.load_judge_prompt()
-
-    judge_input = _build_judge_input(result, spec, user_prompt)
-
-    if logger.isEnabledFor(logging.DEBUG):
-        try:
-            logger.debug("LLM-judge input:\n%s", json.dumps(judge_input, ensure_ascii=False, indent=2))
-        except Exception:
-            logger.debug("LLM-judge input (raw, non-serializable): %s", str(judge_input)[:2000])
-
-    # Build request (sin temperature)
-    req = {
-        "model": cfg.judge_model,
-        "instructions": judge_instructions,
-        "input": json.dumps(judge_input, ensure_ascii=False),  # pasar JSON como string
-        "max_output_tokens": 30000,
-        # "modalities": ["text"],  # opcional
-    }
-    # No enviar temperature; algunos modelos no lo admiten.
-
-    resp = client.responses.create(**req)
-
-    # Log de salida cruda
-    out_text = _response_to_text(resp)
-    if logger.isEnabledFor(logging.DEBUG):
-        logger.debug("LLM-judge raw output_text:\n%s", out_text)
-
-    # Aviso si truncó por tokens
+def _eval_equals_json(output: RunResult, expected: ExpectedSpec) -> EvalResult:
     try:
-        inc = getattr(resp, "incomplete_details", None)
-        if inc and getattr(inc, "reason", "") == "max_output_tokens":
-            logger.debug("LLM-judge output truncated by max_output_tokens")
+        got = output.parsed_json if output.parsed_json is not None else json.loads(output.output_text)
     except Exception:
-        pass
+        return EvalResult(passed=False, reason="output is not valid JSON")
+    return EvalResult(passed=(got == expected.equals_json))
 
-    # Intentar parsear JSON robustamente
-    judge_json = _extract_json_object(out_text)
-    if judge_json is None:
-        return EvalResult(
-            passed=False,
-            reason="judge did not return valid JSON",
-            details={"raw": out_text}
-        )
+def _eval_json_subset(output: RunResult, expected: ExpectedSpec) -> EvalResult:
+    try:
+        got = output.parsed_json if output.parsed_json is not None else json.loads(output.output_text)
+    except Exception:
+        return EvalResult(passed=False, reason="output is not valid JSON")
+    # mínima implementación: igualdad directa por ahora
+    return EvalResult(passed=(got == expected.json_subset))
 
-    total = float(judge_json.get("scores", {}).get("weighted_total", 0.0))
-    verdict = str(judge_json.get("verdict", "")).lower() == "pass"
-    feedback = judge_json.get("feedback_short")
-    return EvalResult(passed=verdict, reason=feedback, details=judge_json)
+def _eval_llm_judge(cfg: AppConfig, output: RunResult, expected: ExpectedSpec) -> EvalResult:
+    assert expected.llm_judge is not None
+    spec: LLMJudgeSpec = expected.llm_judge
+    client = _build_client(cfg)
 
-
-def _build_judge_input(result: RunResult, spec: LLMJudgeSpec, user_prompt: Optional[str]) -> dict:
-    meta = result.metadata or {}
-    prompt_value = user_prompt or meta.get("user_prompt") or getattr(result.raw_response, "input", None)
-    trace = meta.get("mcp_trace") or meta.get("mcp_traces") or {}
-    return {
-        "user_prompt": prompt_value,
-        "model_answer_text": result.output_text,
-        "model_answer_json": result.parsed_json,
-        "mcp_trace": trace,
-        "gold": {
-            "answer_text": spec.gold.answer_text,
-            "answer_json": spec.gold.answer_json,
-            "numeric": spec.gold.numeric,
-            "reasoning": spec.gold.reasoning,
-            "queries": spec.gold.queries or [],
-        },
+    payload: Dict[str, Any] = {
+        "user_prompt": output.metadata.get("user_prompt"),
+        "model_answer_text": output.output_text,
+        "model_answer_json": output.parsed_json,
+        "mcp_trace": output.metadata.get("mcp_trace"),
+        "gold": spec.gold.__dict__,
         "weights": spec.weights,
         "pass_threshold": spec.pass_threshold,
+        "grading_mode": spec.grading_mode,
+        "min_correctness": spec.min_correctness,
         "efficiency_budget": spec.efficiency_budget,
         "notes": spec.notes,
-        "grading_mode": spec.grading_mode,
-        "min_correctness": spec.min_correctness
     }
+
+    logger.debug("LLM-judge input:\n%s", json.dumps(payload, indent=2, ensure_ascii=False))
+
+    resp = client.responses.create(
+        model=cfg.judge_model,
+        input=json.dumps(payload, ensure_ascii=False),
+        instructions=cfg.load_judge_prompt(),
+        max_output_tokens=30000,
+    )
+
+    output_text = getattr(resp, "output_text", None) or str(resp)
+    logger.debug("LLM-judge raw output_text:\n%s", output_text)
+
+    try:
+        verdict = json.loads(output_text)
+    except Exception:
+        return EvalResult(passed=False, reason="Judge response is not valid JSON")
+
+    passed = (verdict.get("verdict") == "pass")
+    reason = verdict.get("feedback_short") or verdict.get("reason")
+    return EvalResult(passed=passed, reason=reason, details=verdict)
+
+def evaluate(cfg: AppConfig, output: RunResult, expected: ExpectedSpec) -> EvalResult:
+    if expected.exact_text is not None:
+        return _eval_exact_text(output, expected)
+    if expected.regex is not None:
+        return _eval_regex(output, expected)
+    if expected.equals_json is not None:
+        return _eval_equals_json(output, expected)
+    if expected.json_subset is not None:
+        return _eval_json_subset(output, expected)
+    if expected.llm_judge is not None:
+        return _eval_llm_judge(cfg, output, expected)
+    return EvalResult(passed=False, reason="No evaluation mode specified")
+
+
+def evaluate_llm_judge(cfg: AppConfig, output: RunResult, spec: LLMJudgeSpec) -> EvalResult:
+    # wrapper directo
+    return _eval_llm_judge(cfg, output, ExpectedSpec(llm_judge=spec))
 

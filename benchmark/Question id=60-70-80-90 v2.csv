@@ -1,0 +1,1233 @@
+id;difficulty;question;system_prompt_file;model;eval_mode;expected
+60;4;List animals that mate animals from different owners, using the NGSI-LD data you retrieve via MCP tools and any necessary in-model post-processing.;system2.4.md;gpt-5.1;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow001"",
+        ""type"": ""Animal"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Beany""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow004"",
+        ""type"": ""Animal"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""River""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person002""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      }
+    ],
+    ""numeric"": 2,
+    ""reasoning"": ""List Animal entities with ownedBy, siredBy, and calvedBy attributes, then locate offspring (e.g., Blossom) whose parents belong to different owners; the parents Beany (cow001) and River (cow004) are the only animals that mate across owners."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&pick=id,name,ownedBy,siredBy,calvedBy&limit=1000&count=true"",
+      ""/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow102&pick=id,name,siredBy,calvedBy""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 4,
+  ""notes"": ""Accept JSON or natural-language answers that clearly identify Beany (urn:ngsi-ld:Animal:cow001) and River (urn:ngsi-ld:Animal:cow004) as the only animals mating across different owners; any additional or missing animals should be marked incorrect.""
+}"
+70;4;List all animals currently located in a building or parcel that does not belong to their owner, using the NGSI-LD data you retrieve via MCP tools and any necessary in-model post-processing.;system2.4.md;gpt-5.1;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow101"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Bumble""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow002"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Trotter""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow013"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Silver""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow021"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Ferdinand""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow032"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Citrus""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow037"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Marble""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow001"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Beany""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:004"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow018"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Rice""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:004"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow014"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Stamps""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:004"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow039"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Pepsi""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:004"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow005"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Sun""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:005"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow003"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Petal""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:005"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow024"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Fluffy""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:005"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow027"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Fresian""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:005"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow026"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Opal""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:005"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow025"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Bug""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:005"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow031"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Grape""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:005"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow102"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Blossom""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:006"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow009"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Juicey""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:006"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow008"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Pollen""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:006"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow015"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Button""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:006"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow011"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Oats""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:006"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow040"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Spots""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:006"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      }
+    ],
+    ""numeric"": 23,
+    ""reasoning"": ""Enumerate animals with their owner and location, then retrieve ownership for parcels/buildings to detect mismatches; list animals whose current location is owned by a different person."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&pick=id,name,ownedBy,locatedAt&limit=1000&count=true"",
+      ""/ngsi-ld/v1/entities?type=AgriParcel&pick=id,ownedBy&limit=1000&count=true"",
+      ""/ngsi-ld/v1/entities?type=Building&pick=id,owner,category&limit=1000&count=true""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 6,
+  ""notes"": ""Accept JSON or natural-language answers that clearly enumerate exactly these 23 animals whose current parcel/building is owned by someone other than their owner; extra or missing animals should be marked incorrect.""
+}"
+80;4;List animals whose parents are located on different farms, using NGSI-LD data from MCP tools to resolve parents and compare their locations.;system2.4.md;gpt-5.1;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow103"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Buttercup""
+        }
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow101"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Bumble""
+        }
+      }
+    ],
+    ""numeric"": 2,
+    ""reasoning"": ""List Animal entities with ownedBy, locatedAt, siredBy, and calvedBy; identify those whose parents exist and compare each parent�s locatedAt. Buttercup and Bumble are the only animals whose parents reside in different farms."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&pick=id,name,ownedBy,locatedAt,siredBy,calvedBy&limit=1000&count=true"",
+      ""/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow006&pick=id,locatedAt"",
+      ""/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow001&pick=id,locatedAt"",
+      ""/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow002&pick=id,locatedAt""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 4,
+  ""notes"": ""Accept JSON or natural-language answers that clearly state only Buttercup (urn:ngsi-ld:Animal:cow103) and Bumble (urn:ngsi-ld:Animal:cow101) have parents located on different farms; any extra or missing animals should be marked incorrect.""
+}"
+90;5;Show the complete three-generation family lineage of Beany, using NGSI-LD data retrieved via MCP tools to follow siredBy/calvedBy relationships recursively.;system2.4.md;gpt-5.1;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow001"",
+        ""name"": { ""type"": ""Property"", ""value"": ""Beany"" }
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow101"",
+        ""name"": { ""type"": ""Property"", ""value"": ""Bumble"" },
+        ""siredBy"": { ""type"": ""Relationship"", ""object"": ""urn:ngsi-ld:Animal:cow001"" },
+        ""calvedBy"": { ""type"": ""Relationship"", ""object"": ""urn:ngsi-ld:Animal:cow002"" }
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow102"",
+        ""name"": { ""type"": ""Property"", ""value"": ""Blossom"" },
+        ""siredBy"": { ""type"": ""Relationship"", ""object"": ""urn:ngsi-ld:Animal:cow001"" },
+        ""calvedBy"": { ""type"": ""Relationship"", ""object"": ""urn:ngsi-ld:Animal:cow004"" }
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow103"",
+        ""name"": { ""type"": ""Property"", ""value"": ""Buttercup"" },
+        ""siredBy"": { ""type"": ""Relationship"", ""object"": ""urn:ngsi-ld:Animal:cow001"" },
+        ""calvedBy"": { ""type"": ""Relationship"", ""object"": ""urn:ngsi-ld:Animal:cow006"" }
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow002"",
+        ""name"": { ""type"": ""Property"", ""value"": ""Trotter"" }
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow004"",
+        ""name"": { ""type"": ""Property"", ""value"": ""River"" }
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow006"",
+        ""name"": { ""type"": ""Property"", ""value"": ""Twilight"" }
+      }
+    ],
+    ""numeric"": 7,
+    ""reasoning"": ""Resolve Beany (urn:ngsi-ld:Animal:cow001), then recursively traverse siredBy/calvedBy relationships to list all ancestors and descendants within three generations; Beany has no ancestors, three offspring (Bumble, Blossom, Buttercup), and three co-parents (Trotter, River, Twilight)."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow001&pick=id,name,siredBy,calvedBy"",
+      ""/ngsi-ld/v1/entities?type=Animal&q=siredBy==%22urn:ngsi-ld:Animal:cow001%22&pick=id,name,siredBy,calvedBy&limit=1000&count=true"",
+      ""/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow002,urn:ngsi-ld:Animal:cow004,urn:ngsi-ld:Animal:cow006&pick=id,name,siredBy,calvedBy""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 5,
+  ""notes"": ""Accept JSON or natural-language answers that enumerate Beany plus exactly these six related animals (three offspring and three co-parents) across up to three generations; any additional or missing lineage members should be marked incorrect.""
+}"
+60;4;List animals that mate animals from different owners, using the NGSI-LD data you retrieve via MCP tools and any necessary in-model post-processing.;system3.4.md;gpt-5.1;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow001"",
+        ""type"": ""Animal"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Beany""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow004"",
+        ""type"": ""Animal"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""River""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person002""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      }
+    ],
+    ""numeric"": 2,
+    ""reasoning"": ""List Animal entities with ownedBy, siredBy, and calvedBy attributes, then locate offspring (e.g., Blossom) whose parents belong to different owners; the parents Beany (cow001) and River (cow004) are the only animals that mate across owners."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&pick=id,name,ownedBy,siredBy,calvedBy&limit=1000&count=true"",
+      ""/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow102&pick=id,name,siredBy,calvedBy""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 4,
+  ""notes"": ""Accept JSON or natural-language answers that clearly identify Beany (urn:ngsi-ld:Animal:cow001) and River (urn:ngsi-ld:Animal:cow004) as the only animals mating across different owners; any additional or missing animals should be marked incorrect.""
+}"
+70;4;List all animals currently located in a building or parcel that does not belong to their owner, using the NGSI-LD data you retrieve via MCP tools and any necessary in-model post-processing.;system3.4.md;gpt-5.1;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow101"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Bumble""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow002"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Trotter""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow013"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Silver""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow021"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Ferdinand""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow032"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Citrus""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow037"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Marble""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:003"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow001"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Beany""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:004"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow018"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Rice""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:004"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow014"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Stamps""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:004"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow039"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Pepsi""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:004"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow005"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Sun""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:005"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow003"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Petal""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:005"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow024"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Fluffy""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:005"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow027"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Fresian""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:005"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow026"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Opal""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:005"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow025"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Bug""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:005"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow031"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Grape""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:005"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow102"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Blossom""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:006"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow009"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Juicey""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:006"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow008"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Pollen""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:006"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow015"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Button""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:006"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow011"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Oats""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:006"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow040"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Spots""
+        },
+        ""locatedAt"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:AgriParcel:006"",
+          ""observedAt"": ""2025-12-02T18:28:53.631Z""
+        },
+        ""ownedBy"": {
+          ""type"": ""Relationship"",
+          ""object"": ""urn:ngsi-ld:Person:person001""
+        },
+        ""@context"": [
+          ""http://context/user-context.jsonld"",
+          ""https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld""
+        ]
+      }
+    ],
+    ""numeric"": 23,
+    ""reasoning"": ""Enumerate animals with their owner and location, then retrieve ownership for parcels/buildings to detect mismatches; list animals whose current location is owned by a different person."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&pick=id,name,ownedBy,locatedAt&limit=1000&count=true"",
+      ""/ngsi-ld/v1/entities?type=AgriParcel&pick=id,ownedBy&limit=1000&count=true"",
+      ""/ngsi-ld/v1/entities?type=Building&pick=id,owner,category&limit=1000&count=true""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 6,
+  ""notes"": ""Accept JSON or natural-language answers that clearly enumerate exactly these 23 animals whose current parcel/building is owned by someone other than their owner; extra or missing animals should be marked incorrect.""
+}"
+80;4;List animals whose parents are located on different farms, using NGSI-LD data from MCP tools to resolve parents and compare their locations.;system3.4.md;gpt-5.1;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow103"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Buttercup""
+        }
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow101"",
+        ""name"": {
+          ""type"": ""Property"",
+          ""value"": ""Bumble""
+        }
+      }
+    ],
+    ""numeric"": 2,
+    ""reasoning"": ""List Animal entities with ownedBy, locatedAt, siredBy, and calvedBy; identify those whose parents exist and compare each parent�s locatedAt. Buttercup and Bumble are the only animals whose parents reside in different farms."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?type=Animal&pick=id,name,ownedBy,locatedAt,siredBy,calvedBy&limit=1000&count=true"",
+      ""/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow006&pick=id,locatedAt"",
+      ""/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow001&pick=id,locatedAt"",
+      ""/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow002&pick=id,locatedAt""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 4,
+  ""notes"": ""Accept JSON or natural-language answers that clearly state only Buttercup (urn:ngsi-ld:Animal:cow103) and Bumble (urn:ngsi-ld:Animal:cow101) have parents located on different farms; any extra or missing animals should be marked incorrect.""
+}"
+90;5;Show the complete three-generation family lineage of Beany, using NGSI-LD data retrieved via MCP tools to follow siredBy/calvedBy relationships recursively.;system3.4.md;gpt-5.1;llm_judge;"{
+  ""gold"": {
+    ""answer_json"": [
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow001"",
+        ""name"": { ""type"": ""Property"", ""value"": ""Beany"" }
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow101"",
+        ""name"": { ""type"": ""Property"", ""value"": ""Bumble"" },
+        ""siredBy"": { ""type"": ""Relationship"", ""object"": ""urn:ngsi-ld:Animal:cow001"" },
+        ""calvedBy"": { ""type"": ""Relationship"", ""object"": ""urn:ngsi-ld:Animal:cow002"" }
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow102"",
+        ""name"": { ""type"": ""Property"", ""value"": ""Blossom"" },
+        ""siredBy"": { ""type"": ""Relationship"", ""object"": ""urn:ngsi-ld:Animal:cow001"" },
+        ""calvedBy"": { ""type"": ""Relationship"", ""object"": ""urn:ngsi-ld:Animal:cow004"" }
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow103"",
+        ""name"": { ""type"": ""Property"", ""value"": ""Buttercup"" },
+        ""siredBy"": { ""type"": ""Relationship"", ""object"": ""urn:ngsi-ld:Animal:cow001"" },
+        ""calvedBy"": { ""type"": ""Relationship"", ""object"": ""urn:ngsi-ld:Animal:cow006"" }
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow002"",
+        ""name"": { ""type"": ""Property"", ""value"": ""Trotter"" }
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow004"",
+        ""name"": { ""type"": ""Property"", ""value"": ""River"" }
+      },
+      {
+        ""id"": ""urn:ngsi-ld:Animal:cow006"",
+        ""name"": { ""type"": ""Property"", ""value"": ""Twilight"" }
+      }
+    ],
+    ""numeric"": 7,
+    ""reasoning"": ""Resolve Beany (urn:ngsi-ld:Animal:cow001), then recursively traverse siredBy/calvedBy relationships to list all ancestors and descendants within three generations; Beany has no ancestors, three offspring (Bumble, Blossom, Buttercup), and three co-parents (Trotter, River, Twilight)."",
+    ""queries"": [
+      ""/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow001&pick=id,name,siredBy,calvedBy"",
+      ""/ngsi-ld/v1/entities?type=Animal&q=siredBy==%22urn:ngsi-ld:Animal:cow001%22&pick=id,name,siredBy,calvedBy&limit=1000&count=true"",
+      ""/ngsi-ld/v1/entities?id=urn:ngsi-ld:Animal:cow002,urn:ngsi-ld:Animal:cow004,urn:ngsi-ld:Animal:cow006&pick=id,name,siredBy,calvedBy""
+    ]
+  },
+  ""weights"": { ""correctness"": 0.7, ""reasoning"": 0.2, ""efficiency"": 0.1 },
+  ""pass_threshold"": 0.7,
+  ""grading_mode"": ""gated"",
+  ""min_correctness"": 1.0,
+  ""efficiency_budget"": 5,
+  ""notes"": ""Accept JSON or natural-language answers that enumerate Beany plus exactly these six related animals (three offspring and three co-parents) across up to three generations; any additional or missing lineage members should be marked incorrect.""
+}"

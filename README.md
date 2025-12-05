@@ -47,6 +47,8 @@ Key variables (loaded by AppConfig.from_env):
 - SYSTEM_PROMPT_FILE: Default system prompt file (e.g., system3.md).
 - LOG_LEVEL, LOG_TO_FILE, LOGS_DIR: Logging configuration.
 - READ_ONLY: true/false.
+- ENABLE_CODE_INTERPRETER: true/false to expose OpenAI's python sandbox (default: true).
+- CODE_INTERPRETER_MEMORY_LIMIT: Memory quota for the sandbox (default: 4g).
 
 Multiple MCP servers (optional):
 - Use MCP_0_, MCP_1_, etc. prefixes (LABEL, URL, ALLOWED_TOOLS) to register several toolsets.
@@ -114,7 +116,13 @@ CSV format:
   - Plain text for exact_text
   - JSON for equals_json/json_subset
   - Regex pattern for regex
-  - JSON object with judge specification for llm_judge (see below)
+
+Code Interpreter:
+- Controlled by env var `ENABLE_CODE_INTERPRETER` (`true` by default if unset).
+- To disable: `ENABLE_CODE_INTERPRETER=false`.
+- When enabled, `AppConfig.build_tools()` adds:
+  - `{"type": "code_interpreter", "container": {"type": "auto", "memory_limit": "4g"}}`
+  which is then passed to `OpenAI.responses.create(...)` for all runs.
 
 #### LLM-as-Judge mode
 
@@ -154,14 +162,11 @@ Tips:
 
 ## Prompts
 
-Place system prompts in prompts/ (e.g., system1.md, system2.md, system3.md). Switch with --system-prompt-file as needed.
+Place system prompts in prompts/ (e.g., system1.md, system2.md, system2.4.md, system3.md, system3.4.md). Prompts 2.4/3.4 expect the Code Interpreter tool to be enabled (default) so they can offload JSON post-processing when needed.
 
 ## Notes
 
 - Ensure the MCP server is reachable and configured with the allowed tools expected by the client.
 - Do not commit the .env file or API keys.
 - `--out` accepts either a directory (defaulting to results.csv inside it) or a full CSV file path.
-
-## License
-
-This project is licensed under the Apache License 2.0.
+- To trace whether the Code Interpreter tool was enabled or executed, set `LOG_LEVEL=DEBUG`; the runner will log the prepared tool payload and any Code Interpreter invocations in `logs/run.log`.

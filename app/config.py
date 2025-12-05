@@ -1,11 +1,14 @@
 from __future__ import annotations
 import os
+import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Optional
 
 from dotenv import load_dotenv
 from app.prompts import load_prompt
+
+logger = logging.getLogger("config")
 
 # Load environment variables from .env file
 load_dotenv()
@@ -34,6 +37,8 @@ class AppConfig:
     openai_api_key: Optional[str] = field(default=None)
     model: str = field(default="gpt-4o-mini")
     max_output_tokens: int = field(default=800)
+    enable_code_interpreter: bool = field(default=True)
+    code_interpreter_memory_limit: str = field(default="4g")
 
     mcp_servers: List[MCPServerConfig] = field(default_factory=list)
     
@@ -104,7 +109,10 @@ class AppConfig:
             system_prompt_file=os.getenv("SYSTEM_PROMPT_FILE") or AppConfig.system_prompt_file,
             judge_model=os.getenv("EVAL_MODEL") or os.getenv("OPENAI_MODEL") or AppConfig.judge_model,
             judge_system_prompt_file=os.getenv("EVAL_SYSTEM_PROMPT_FILE") or AppConfig.judge_system_prompt_file,
-            judge_temperature=eval_temperature,  # <- sólo si está en .env
+            judge_temperature=eval_temperature,
+            # Ensure it defaults to "true" if the env var is missing
+            enable_code_interpreter=os.getenv("ENABLE_CODE_INTERPRETER", "true").lower() == "true",
+            code_interpreter_memory_limit=os.getenv("CODE_INTERPRETER_MEMORY_LIMIT", "4g"),
         )
         cfg.validate()
         return cfg
@@ -119,14 +127,54 @@ class AppConfig:
         if self.log_level not in {"DEBUG", "INFO", "WARNING", "ERROR"}:
             raise ValueError("LOG_LEVEL must be DEBUG|INFO|WARNING|ERROR.")
         self.logs_dir.mkdir(parents=True, exist_ok=True)
-        # ensure prompts dir exists (helps future prompt switching UX)
         self.prompts_dir.mkdir(parents=True, exist_ok=True)
+
+        # NEW: log resumen de configuración clave
+        logger.info(
+            "AppConfig validated: model=%s, judge_model=%s, read_only=%s, "
+            "enable_code_interpreter=%s, ci_memory=%s, mcp_servers=%d",
+            self.model,
+            self.judge_model,
+            self.read_only,
+            self.enable_code_interpreter,
+            self.code_interpreter_memory_limit,
+            len(self.mcp_servers),
+        )
 
     def build_tools(self) -> List[dict]:
         """
         Returns OpenAI compatible tool list.
         """
-        return [srv.to_openai_tool() for srv in self.mcp_servers]
+        tools = [srv.to_openai_tool() for srv in self.mcp_servers]
+
+        # Log config state explicitly
+        logger.info(
+            "Building tools: enable_code_interpreter=%s, memory_limit=%s, mcp_servers=%d",
+            self.enable_code_interpreter,
+            self.code_interpreter_memory_limit,
+            len(self.mcp_servers),
+        )
+
+        if self.enable_code_interpreter:
+            logger.info("Enabling Code Interpreter tool (memory=%s)", self.code_interpreter_memory_limit)
+            tools.append({
+                "type": "code_interpreter",
+                "container": {"type": "auto", "memory_limit": self.code_interpreter_memory_limit},
+            })
+        else:
+            logger.warning("Code Interpreter tool is DISABLED. (Check ENABLE_CODE_INTERPRETER env var)")
+
+        # Log a compact summary of tools
+        try:
+            summary = [
+                {"type": t.get("type"), "server_label": t.get("server_label"), "allowed_tools": t.get("allowed_tools")}
+                for t in tools
+            ]
+            logger.info("Tools payload for OpenAI: %s", summary)
+        except Exception:
+            logger.debug("Failed to summarize tools payload", exc_info=True)
+
+        return tools
 
     def load_system_prompt(self) -> str:
         return load_prompt(self.prompts_dir, self.system_prompt_file)

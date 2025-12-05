@@ -131,3 +131,32 @@ def main() -> int:
 if __name__ == "__main__":
     sys.exit(main())
 
+import argparse
+import logging
+from pathlib import Path
+
+from app.config import AppConfig
+from benchmark.csv_runner import run_benchmark  # asumiendo que este módulo ya existe
+
+logger = logging.getLogger("cli")
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    sub = parser.add_subparsers(dest="cmd", required=True)
+
+    bench_p = sub.add_parser("bench", help="Run CSV benchmark")
+    bench_p.add_argument("--csv", type=Path, required=True, help="Input benchmark CSV file")
+    bench_p.add_argument("--out", type=Path, required=True, help="Output directory")
+
+    args = parser.parse_args()
+
+    if args.cmd == "bench":
+        cfg = AppConfig.from_env()
+        logger.info("CLI bench: model=%s, enable_code_interpreter=%s", cfg.model, cfg.enable_code_interpreter)
+        out_path = run_benchmark(cfg, args.csv, args.out)
+        logger.info("Benchmark finished. Results at %s", out_path)
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    main()
+

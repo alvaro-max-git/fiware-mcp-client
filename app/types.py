@@ -50,67 +50,27 @@ class LLMJudgeSpec:
         "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1
     })
     pass_threshold: float = 0.8
+    grading_mode: str = "gated"           # "gated" | "hierarchical" | "weighted"
+    min_correctness: float = 1.0
     efficiency_budget: Optional[int] = None
     notes: Optional[str] = None
 
-    grading_mode: str = "gated"           # "gated" | "hierarchical" | "weighted"
-    min_correctness: float = field(default=1.0)
-
-    @staticmethod
-    def from_dict(data: Dict[str, Any]) -> "LLMJudgeSpec":
-        if not isinstance(data, dict):
-            raise ValueError("--llm-judge expects a JSON object")
-
-        gold_data = data.get("gold")
-        if not isinstance(gold_data, dict):
-            raise ValueError("--llm-judge payload requires a 'gold' object")
-
-        queries = gold_data.get("queries")
-        if queries is not None and not isinstance(queries, list):
-            raise ValueError("'gold.queries' must be a list")
-
-        numeric = gold_data.get("numeric")
-        if numeric is not None:
-            numeric = float(numeric)
-
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "LLMJudgeSpec":
+        gold_data = data.get("gold") or {}
         gold = LLMJudgeGold(
             answer_text=gold_data.get("answer_text"),
             answer_json=gold_data.get("answer_json"),
-            numeric=numeric,
+            numeric=gold_data.get("numeric"),
             reasoning=gold_data.get("reasoning"),
-            queries=[str(q) for q in queries] if queries is not None else None,
+            queries=gold_data.get("queries") or [],
         )
-
-        weights_obj = data.get("weights")
-        if weights_obj is not None and not isinstance(weights_obj, dict):
-            raise ValueError("'weights' must be an object")
-        weights = {"correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1}
-        if isinstance(weights_obj, dict):
-            weights = {str(k): float(v) for k, v in weights_obj.items()}
-
-        eff_budget = data.get("efficiency_budget")
-        if eff_budget is not None:
-            eff_budget = int(eff_budget)
-
-        pass_threshold = data.get("pass_threshold")
-        pass_threshold = float(pass_threshold) if pass_threshold is not None else 0.8
-
-        grading_mode = data.get("grading_mode")
-        grading_mode = str(grading_mode) if grading_mode is not None else "gated"
-
-        min_correctness = data.get("min_correctness")
-        min_correctness = float(min_correctness) if min_correctness is not None else 1.0
-
-        notes = data.get("notes")
-        if notes is not None:
-            notes = str(notes)
-
-        return LLMJudgeSpec(
+        return cls(
             gold=gold,
-            weights=weights,
-            pass_threshold=pass_threshold,
-            efficiency_budget=eff_budget,
-            notes=notes,
-            grading_mode=grading_mode,
-            min_correctness=min_correctness,
+            weights=data.get("weights") or {"correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1},
+            pass_threshold=float(data.get("pass_threshold", 0.8)),
+            grading_mode=data.get("grading_mode", "gated"),
+            min_correctness=float(data.get("min_correctness", 1.0)),
+            efficiency_budget=data.get("efficiency_budget"),
+            notes=data.get("notes"),
         )
