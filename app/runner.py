@@ -3,9 +3,9 @@ import json
 import logging
 from typing import Any, Dict, List, Optional
 from openai import OpenAI
-from app.config import AppConfig
+from app.core.config import AppConfig
 from app.prompts import load_prompt
-from app.types import RunRequest, RunResult
+from app.core.types import RunRequest, RunResult
 
 log = logging.getLogger("runner")
 

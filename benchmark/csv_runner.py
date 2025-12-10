@@ -3,9 +3,9 @@ import json
 import logging
 from pathlib import Path
 from typing import Dict, Any, Iterable
-from app.config import AppConfig
+from app.core.config import AppConfig
 from app.runner import run_once
-from app.types import RunRequest, ExpectedSpec, LLMJudgeSpec, LLMJudgeGold
+from app.core.types import RunRequest, ExpectedSpec, LLMJudgeSpec, LLMJudgeGold
 from app.evaluator import evaluate, evaluate_llm_judge
 
 # CSV columns:

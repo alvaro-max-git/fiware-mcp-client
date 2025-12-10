@@ -4,8 +4,8 @@ import logging
 from typing import Any, Optional, Tuple
 
 from openai import OpenAI
-from app.config import AppConfig
-from app.types import RunResult, ExpectedSpec, EvalResult, LLMJudgeSpec
+from app.core.config import AppConfig
+from app.core.types import RunResult, ExpectedSpec, EvalResult, LLMJudgeSpec
 
 logger = logging.getLogger("evaluator")
 

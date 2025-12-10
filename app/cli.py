@@ -3,10 +3,10 @@ import argparse
 import logging
 import json
 from pathlib import Path
-from app.config import AppConfig
+from app.core.config import AppConfig
 from app.logging_conf import setup_logging
 from app.runner import run_once
-from app.types import RunRequest, ExpectedSpec, LLMJudgeSpec
+from app.core.types import RunRequest, ExpectedSpec, LLMJudgeSpec
 from app.evaluator import evaluate, evaluate_llm_judge
 from benchmark.csv_runner import run_benchmark
 
