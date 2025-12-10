@@ -7,6 +7,8 @@ class RunRequest:
     user_prompt: str
     system_prompt_file: Optional[str] = None
     max_output_tokens: Optional[int] = None
+    profiles_yaml: Optional[str] = None
+    agent_id: Optional[str] = None
 
 @dataclass
 class RunResult:
