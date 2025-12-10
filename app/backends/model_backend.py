@@ -9,7 +9,7 @@ class ModelBackend(abc.ABC):
 
 	The backend only knows how to talk to the model provider (model id, API key,
 	endpoints, and default generation params). Agent-level concerns (system
-	prompt, tools list, memory) live elsewhere.
+	prompt, tools list, memory) live in core.Agent.
 	"""
 
 	def __init__(

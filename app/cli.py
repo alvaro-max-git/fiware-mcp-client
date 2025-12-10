@@ -29,7 +29,12 @@ def _debug_dump_mcp_trace(metadata: dict, label: str = "") -> None:
     logger.debug("%s:\n%s", header, trace_str)
 
 def cmd_run(cfg: AppConfig, args: argparse.Namespace) -> int:
-    req = RunRequest(user_prompt=args.prompt, system_prompt_file=args.system_prompt_file)
+    req = RunRequest(
+        user_prompt=args.prompt,
+        system_prompt_file=args.system_prompt_file,
+        profiles_yaml=args.profiles_yaml,
+        agent_id=args.agent_id,
+    )
     res = run_once(cfg, req)
     print(res.output_text if res.ok else f"[ERROR] {res.error}")
     _debug_dump_mcp_trace(getattr(res, "metadata", {}), label="run")
@@ -37,7 +42,12 @@ def cmd_run(cfg: AppConfig, args: argparse.Namespace) -> int:
     return 0 if res.ok else 1
 
 def cmd_eval(cfg: AppConfig, args: argparse.Namespace) -> int:
-    req = RunRequest(user_prompt=args.prompt, system_prompt_file=args.system_prompt_file)
+    req = RunRequest(
+        user_prompt=args.prompt,
+        system_prompt_file=args.system_prompt_file,
+        profiles_yaml=args.profiles_yaml,
+        agent_id=args.agent_id,
+    )
     res = run_once(cfg, req)
 
     judge_spec = None
@@ -91,6 +101,8 @@ def build_parser() -> argparse.ArgumentParser:
     pr = sub.add_parser("run")
     pr.add_argument("--prompt", required=True)
     pr.add_argument("--system-prompt-file", default=None)
+    pr.add_argument("--profiles-yaml", default=None, help="YAML file with agent profiles")
+    pr.add_argument("--agent-id", default=None, help="Agent id to target (defaults to YAML default)")
     pr.set_defaults(func=cmd_run)
 
     pe = sub.add_parser("eval")
@@ -101,6 +113,8 @@ def build_parser() -> argparse.ArgumentParser:
     pe.add_argument("--json-subset")
     pe.add_argument("--regex")
     pe.add_argument("--llm-judge-file")
+    pe.add_argument("--profiles-yaml", default=None, help="YAML file with agent profiles")
+    pe.add_argument("--agent-id", default=None, help="Agent id to target (defaults to YAML default)")
     pe.set_defaults(func=cmd_eval)
 
     pb = sub.add_parser("bench")

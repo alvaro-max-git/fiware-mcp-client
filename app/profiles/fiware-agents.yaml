@@ -7,7 +7,7 @@ agents:
     system_prompt: "system2.3.md"
     
     backend:
-      type: "openai_agent"
+      type: "openai_responses"
       model: "gpt-5"
     
     mcp_servers: ["fiware-mcp"] 
