@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from app.core.config import AppConfig
 from app.logging_conf import setup_logging
-from app.runner import run_once
+from app.core.runner import run_once
 from app.core.types import RunRequest, ExpectedSpec, LLMJudgeSpec
 from app.evaluator.evaluator import evaluate, evaluate_llm_judge
 from benchmark.csv_runner import run_benchmark
@@ -71,7 +71,14 @@ def cmd_eval(cfg: AppConfig, args: argparse.Namespace) -> int:
             return 2
 
     if judge_spec:
-        ev = evaluate_llm_judge(cfg, res, judge_spec, req.user_prompt)
+        ev = evaluate_llm_judge(
+            cfg,
+            res,
+            judge_spec,
+            req.user_prompt,
+            profiles_yaml=args.profiles_yaml,
+            judge_agent_id="fiware-evaluator",
+        )
     else:
         expected = ExpectedSpec()
         if args.exact_text:

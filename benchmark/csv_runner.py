@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 from typing import Dict, Any, Iterable
 from app.core.config import AppConfig
-from app.runner import run_once
+from app.core.runner import run_once
 from app.core.types import RunRequest, ExpectedSpec, LLMJudgeSpec, LLMJudgeGold
 from app.evaluator.evaluator import evaluate, evaluate_llm_judge
 
@@ -166,7 +166,14 @@ def run_benchmark(cfg: AppConfig, csv_file: Path, out_path: Path) -> Path:
             
             # Use appropriate evaluator
             if judge_spec is not None:
-                ev = evaluate_llm_judge(cfg, res, judge_spec, req.user_prompt)
+                ev = evaluate_llm_judge(
+                    cfg,
+                    res,
+                    judge_spec,
+                    req.user_prompt,
+                    profiles_yaml=profiles_yaml,
+                    judge_agent_id="fiware-evaluator",
+                )
             else:
                 ev = evaluate(res, exp)
 
