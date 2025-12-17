@@ -10,19 +10,44 @@ from app.core.config import (
 	ProfilesConfig,
 	load_mcp_servers_from_env,
 	load_profiles_config,
+	load_tools_config,
 )
+from app.core.tool_factory import ToolFactory
 from app.prompts import load_prompt
 
 
-def _resolve_tools(server_labels: List[str]) -> List[dict]:
-	available = load_mcp_servers_from_env()
-	tools: List[dict] = []
-	for label in server_labels:
-		srv = available.get(label)
-		if not srv:
-			raise ValueError(f"MCP server '{label}' not found in environment config")
-		tools.append(srv.to_openai_tool())
-	return tools
+def _load_tool_factory_if_available(tools_yaml: Optional[Path]) -> Optional[ToolFactory]:
+	candidates: List[Path] = []
+	if tools_yaml is not None:
+		candidates.append(Path(tools_yaml))
+	else:
+		candidates.append(Path("app/tools/tools.yaml"))
+
+	for candidate in candidates:
+		if candidate.exists():
+			catalog = load_tools_config(candidate)
+			return ToolFactory(catalog)
+	return None
+
+
+def _resolve_tools(tool_names: List[str], tool_factory: Optional[ToolFactory]) -> List[dict]:
+	if tool_names:
+		if tool_factory:
+			return tool_factory.build_tools(tool_names)
+
+		# Backward compatibility: fallback to environment-defined MCP servers.
+		available = load_mcp_servers_from_env()
+		tools: List[dict] = []
+		for name in tool_names:
+			srv = available.get(name)
+			if not srv:
+				raise ValueError(
+					f"Tool '{name}' not found in catalog and no MCP env config present"
+				)
+			tools.append(srv.to_openai_tool())
+		return tools
+
+	return []
 
 
 def _load_profiles(yaml_path: Path) -> ProfilesConfig:
@@ -41,12 +66,14 @@ def load_agent(
 	*,
 	prompts_dir: Path = Path("prompts"),
 	read_only: bool = True,
+	tools_yaml: Optional[Path] = None,
 ) -> Agent:
 	cfg = _load_profiles(Path(yaml_path))
 	profile = cfg.get_agent(profile_id)
+	tool_factory = _load_tool_factory_if_available(tools_yaml)
 
 	backend = create_backend(profile.backend)
-	tools = _resolve_tools(profile.mcp_servers)
+	tools = _resolve_tools(profile.tools, tool_factory)
 	system_prompt = _compose_system_prompt(
 		load_prompt(prompts_dir, profile.system_prompt), read_only=read_only
 	)
@@ -86,13 +113,15 @@ class AgentSession:
 		default_agent: Optional[str] = None,
 		prompts_dir: Path = Path("prompts"),
 		read_only: bool = True,
+		tools_yaml: Optional[Path] = None,
 	) -> "AgentSession":
 		profiles = _load_profiles(yaml_path)
+		tool_factory = _load_tool_factory_if_available(tools_yaml)
 		session = cls(default_agent=default_agent or profiles.default_agent)
 
 		for profile in profiles.agents:
 			backend = create_backend(profile.backend)
-			tools = _resolve_tools(profile.mcp_servers)
+			tools = _resolve_tools(profile.tools, tool_factory)
 			system_prompt = _compose_system_prompt(
 				load_prompt(prompts_dir, profile.system_prompt), read_only=read_only
 			)

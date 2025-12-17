@@ -6,7 +6,7 @@ from typing import Dict, Any, Iterable
 from app.core.config import AppConfig
 from app.runner import run_once
 from app.core.types import RunRequest, ExpectedSpec, LLMJudgeSpec, LLMJudgeGold
-from app.evaluator import evaluate, evaluate_llm_judge
+from app.evaluator.evaluator import evaluate, evaluate_llm_judge
 
 # CSV columns:
 # id, question, model, system_prompt_file, eval_mode, expected
@@ -109,7 +109,7 @@ def run_benchmark(cfg: AppConfig, csv_file: Path, out_path: Path) -> Path:
             f_out,
             fieldnames=[
                 "id","passed","reason","model","system_prompt_file","eval_mode",
-                "question","output_text",
+                "question","output_text","profiles_yaml","agent_id",
                 "score_correctness","score_reasoning","score_efficiency","score_total",
                 "mcp_call_count","queries"
             ],
@@ -125,6 +125,8 @@ def run_benchmark(cfg: AppConfig, csv_file: Path, out_path: Path) -> Path:
 
             question = (row.get("question") or "").strip()
             system_prompt_file = (row.get("system_prompt_file") or "").strip() or None
+            profiles_yaml = (row.get("profiles_yaml") or "").strip() or None
+            agent_id = (row.get("agent_id") or "").strip() or None
             eval_mode = (row.get("eval_mode") or "").strip()
 
             if not question:
@@ -139,6 +141,8 @@ def run_benchmark(cfg: AppConfig, csv_file: Path, out_path: Path) -> Path:
                     "eval_mode": eval_mode,
                     "question": "",
                     "output_text": "",
+                    "profiles_yaml": row.get("profiles_yaml") or "",
+                    "agent_id": row.get("agent_id") or "",
                     "score_correctness": "",
                     "score_reasoning": "",
                     "score_efficiency": "",
@@ -151,6 +155,8 @@ def run_benchmark(cfg: AppConfig, csv_file: Path, out_path: Path) -> Path:
             req = RunRequest(
                 user_prompt=question,
                 system_prompt_file=system_prompt_file,
+                profiles_yaml=profiles_yaml,
+                agent_id=agent_id,
             )
             res = run_once(cfg, req)
 
@@ -192,6 +198,8 @@ def run_benchmark(cfg: AppConfig, csv_file: Path, out_path: Path) -> Path:
                 "eval_mode": row.get("eval_mode") or "",
                 "question": req.user_prompt,
                 "output_text": res.output_text,
+                "profiles_yaml": profiles_yaml or "",
+                "agent_id": agent_id or "",
                 "score_correctness": scores.get("correctness", ""),
                 "score_reasoning": scores.get("reasoning", ""),
                 "score_efficiency": scores.get("efficiency", ""),

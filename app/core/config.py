@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import os
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import yaml
 from dotenv import load_dotenv
@@ -13,6 +14,28 @@ from app.prompts import load_prompt
 
 # Load environment variables from .env file
 load_dotenv()
+
+_ENV_VAR_PATTERN = re.compile(r"\$\{([^}]+)\}")
+
+
+def _replace_env_var(match: re.Match[str]) -> str:
+    var_name = match.group(1)
+    val = os.getenv(var_name)
+    if val is None:
+        raise ValueError(f"Environment variable '{var_name}' not set but required in config")
+    return val
+
+
+def _resolve_env_placeholders(value: Any) -> Any:
+    """Recursively resolve ${VAR} placeholders using current environment."""
+
+    if isinstance(value, str):
+        return _ENV_VAR_PATTERN.sub(_replace_env_var, value)
+    if isinstance(value, list):
+        return [_resolve_env_placeholders(v) for v in value]
+    if isinstance(value, dict):
+        return {k: _resolve_env_placeholders(v) for k, v in value.items()}
+    return value
 
 # ---------------------------------------------------------------------------
 # 1. Legacy / Shared Configuration (Dataclasses)
@@ -67,7 +90,7 @@ class AppConfig:
 
     #Load values from .env file
     @staticmethod
-    def from_env() -> "AppConfig":
+    def from_env(*, require_mcp: bool = True) -> "AppConfig":
         api_key = os.getenv("OPENAI_API_KEY")
         
         # Reuse the standalone function for MCP loading to avoid duplication
@@ -94,13 +117,13 @@ class AppConfig:
             judge_system_prompt_file=os.getenv("EVAL_SYSTEM_PROMPT_FILE") or AppConfig.judge_system_prompt_file,
             judge_temperature=eval_temperature,
         )
-        cfg.validate()
+        cfg.validate(require_mcp=require_mcp)
         return cfg
-    
-    def validate(self) -> None:
+
+    def validate(self, *, require_mcp: bool = True) -> None:
         if not self.openai_api_key:
             raise ValueError("OPENAI_API_KEY not defined. Review .env file")
-        if not self.mcp_servers:
+        if require_mcp and not self.mcp_servers:
             raise ValueError("At least one MCP Server must be defined")
         if self.max_output_tokens <= 0:
             raise ValueError("MAX_OUTPUT_TOKENS must be > 0.")
@@ -138,6 +161,7 @@ class AgentProfile(BaseModel):
     system_prompt: str
     backend: BackendConfig
     description: Optional[str] = None
+    tools: List[str] = Field(default_factory=list)
     mcp_servers: List[str] = Field(default_factory=list)
 
 
@@ -159,11 +183,42 @@ class ProfilesConfig(BaseModel):
                 raise ValueError(f"default_agent '{default_agent}' not found in agents list")
         return values
 
+    @model_validator(mode="before")
+    def _migrate_mcp_servers(cls, values: Dict[str, object]) -> Dict[str, object]:
+        """Backward compatibility: if tools are missing, reuse mcp_servers."""
+
+        if isinstance(values, dict):
+            tools = values.get("tools")
+            mcp_servers = values.get("mcp_servers")
+            if (not tools or len(tools) == 0) and mcp_servers: # type: ignore
+                values["tools"] = mcp_servers
+        return values
+
     def get_agent(self, agent_id: str) -> AgentProfile: # type: ignore
         for agent in self.agents:
             if agent.id == agent_id:
                 return agent
         raise KeyError(f"Agent profile '{agent_id}' not found")
+
+
+# ---------------------------------------------------------------------------
+# 2.a Tool catalog config (YAML-driven)
+# ---------------------------------------------------------------------------
+
+class ToolDefinition(BaseModel):
+    name: str
+    type: str
+    config: Dict[str, Any] = Field(default_factory=dict)
+
+
+class ToolsCatalog(BaseModel):
+    tools_definitions: List[ToolDefinition] = Field(default_factory=list)
+
+    def get(self, name: str) -> ToolDefinition:
+        for tool in self.tools_definitions:
+            if tool.name == name:
+                return tool
+        raise KeyError(f"Tool '{name}' not found in catalog")
 
 
 # ---------------------------------------------------------------------------
@@ -182,10 +237,30 @@ def load_profiles_config(yaml_path: Path) -> ProfilesConfig:
         if candidate.exists():
             with open(candidate, "r", encoding="utf-8") as f:
                 data = yaml.safe_load(f) or {}
+            data = _resolve_env_placeholders(data)
             return ProfilesConfig(**data)
 
     searched = ", ".join(str(p) for p in candidates)
     raise FileNotFoundError(f"Profiles config not found. Tried: {searched}")
+
+
+def load_tools_config(yaml_path: Path) -> ToolsCatalog:
+    """Load tool catalog definitions from YAML with env placeholder support."""
+
+    candidates = [yaml_path]
+    if not yaml_path.is_absolute():
+        candidates.append(Path.cwd() / yaml_path)
+        candidates.append(Path("app/tools") / yaml_path.name)
+
+    for candidate in candidates:
+        if candidate.exists():
+            with open(candidate, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f) or {}
+            data = _resolve_env_placeholders(data)
+            return ToolsCatalog(**data)
+
+    searched = ", ".join(str(p) for p in candidates)
+    raise FileNotFoundError(f"Tools config not found. Tried: {searched}")
 
 
 def load_mcp_servers_from_env() -> Dict[str, MCPServerConfig]:

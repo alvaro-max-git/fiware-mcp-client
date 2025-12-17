@@ -7,7 +7,7 @@ from app.core.config import AppConfig
 from app.logging_conf import setup_logging
 from app.runner import run_once
 from app.core.types import RunRequest, ExpectedSpec, LLMJudgeSpec
-from app.evaluator import evaluate, evaluate_llm_judge
+from app.evaluator.evaluator import evaluate, evaluate_llm_judge
 from benchmark.csv_runner import run_benchmark
 
 logger = logging.getLogger("client")
@@ -126,7 +126,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     try:
-        cfg = AppConfig.from_env()
+        # When using tool catalogs in YAML, MCP servers may be defined there instead of env.
+        cfg = AppConfig.from_env(require_mcp=False)
     except Exception as e:
         print(f"[FATAL] Config error: {e}")
         return 2

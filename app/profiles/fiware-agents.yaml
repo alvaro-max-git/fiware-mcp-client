@@ -9,8 +9,8 @@ agents:
     backend:
       type: "openai_responses"
       model: "gpt-5"
-    
-    mcp_servers: ["fiware-mcp"] 
+
+    tools: ["fiware-mcp"]
 
   - id: "fiware-evaluator"
     description: "LLM judge for evaluation and benchmarks"
@@ -19,5 +19,5 @@ agents:
     backend:
       type: "openai_responses"
       model: "gpt-5-nano"
-    
-    mcp_servers: []
+
+    tools: []
