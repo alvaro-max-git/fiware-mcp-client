@@ -1,11 +1,13 @@
 import json
 import re
 import logging
+from pathlib import Path
 from typing import Any, Optional, Tuple
 
 from openai import OpenAI
-from app.config import AppConfig
-from app.types import RunResult, ExpectedSpec, EvalResult, LLMJudgeSpec
+from app.core.config import AppConfig
+from app.core.types import RunResult, ExpectedSpec, EvalResult, LLMJudgeSpec
+from app.core.agent_session import AgentSession
 
 logger = logging.getLogger("evaluator")
 
@@ -118,10 +120,16 @@ def evaluate(result: RunResult, expected: ExpectedSpec) -> EvalResult:
     return EvalResult(passed=False, reason="No evaluation criterion provided")
 
 
-def evaluate_llm_judge(cfg: AppConfig, result: RunResult, spec: LLMJudgeSpec, user_prompt: Optional[str] = None) -> EvalResult:
-    client = OpenAI(api_key=cfg.openai_api_key)
-    judge_instructions = cfg.load_judge_prompt()
-
+def evaluate_llm_judge(
+    cfg: AppConfig,
+    result: RunResult,
+    spec: LLMJudgeSpec,
+    user_prompt: Optional[str] = None,
+    *,
+    profiles_yaml: Optional[str] = None,
+    tools_yaml: Optional[str] = None,
+    judge_agent_id: Optional[str] = None,
+) -> EvalResult:
     judge_input = _build_judge_input(result, spec, user_prompt)
 
     if logger.isEnabledFor(logging.DEBUG):
@@ -130,30 +138,32 @@ def evaluate_llm_judge(cfg: AppConfig, result: RunResult, spec: LLMJudgeSpec, us
         except Exception:
             logger.debug("LLM-judge input (raw, non-serializable): %s", str(judge_input)[:2000])
 
-    # Build request (sin temperature)
-    req = {
-        "model": cfg.judge_model,
-        "instructions": judge_instructions,
-        "input": json.dumps(judge_input, ensure_ascii=False),  # pasar JSON como string
-        "max_output_tokens": 30000,
-        # "modalities": ["text"],  # opcional
-    }
-    # No enviar temperature; algunos modelos no lo admiten.
+    # Prefer evaluator agent from YAML if provided; otherwise legacy OpenAI path.
+    if profiles_yaml:
+        judge_id = judge_agent_id or "fiware-evaluator"
+        try:
+            session = AgentSession.from_yaml(
+                yaml_path=Path(profiles_yaml),
+                default_agent=judge_id,
+                prompts_dir=cfg.prompts_dir,
+                read_only=True,
+                tools_yaml=Path(tools_yaml) if tools_yaml else None,
+            )
+            # JSON string input, mirroring the legacy request payload.
+            resp = session.ask(
+                json.dumps(judge_input, ensure_ascii=False),
+                agent_id=judge_id,
+                max_output_tokens=30000,
+            )
+        except Exception:
+            logger.exception("Falling back to legacy judge because evaluator agent failed")
+            resp = _legacy_judge_request(cfg, judge_input)
+    else:
+        resp = _legacy_judge_request(cfg, judge_input)
 
-    resp = client.responses.create(**req)
-
-    # Log de salida cruda
     out_text = _response_to_text(resp)
     if logger.isEnabledFor(logging.DEBUG):
         logger.debug("LLM-judge raw output_text:\n%s", out_text)
-
-    # Aviso si truncó por tokens
-    try:
-        inc = getattr(resp, "incomplete_details", None)
-        if inc and getattr(inc, "reason", "") == "max_output_tokens":
-            logger.debug("LLM-judge output truncated by max_output_tokens")
-    except Exception:
-        pass
 
     # Intentar parsear JSON robustamente
     judge_json = _extract_json_object(out_text)
@@ -164,10 +174,21 @@ def evaluate_llm_judge(cfg: AppConfig, result: RunResult, spec: LLMJudgeSpec, us
             details={"raw": out_text}
         )
 
-    total = float(judge_json.get("scores", {}).get("weighted_total", 0.0))
     verdict = str(judge_json.get("verdict", "")).lower() == "pass"
     feedback = judge_json.get("feedback_short")
     return EvalResult(passed=verdict, reason=feedback, details=judge_json)
+
+
+def _legacy_judge_request(cfg: AppConfig, judge_input: dict):
+    client = OpenAI(api_key=cfg.openai_api_key)
+    judge_instructions = cfg.load_judge_prompt()
+    req = {
+        "model": cfg.judge_model,
+        "instructions": judge_instructions,
+        "input": json.dumps(judge_input, ensure_ascii=False),
+        "max_output_tokens": 30000,
+    }
+    return client.responses.create(**req)
 
 
 def _build_judge_input(result: RunResult, spec: LLMJudgeSpec, user_prompt: Optional[str]) -> dict:

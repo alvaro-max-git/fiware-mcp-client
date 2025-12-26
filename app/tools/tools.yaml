@@ -1,0 +1,7 @@
+tools_definitions:
+  - name: fiware-mcp
+    type: mcp
+    config:
+      label: "fiware-mcp"
+      url: "https://acronychous-nonelevating-jinny.ngrok-free.dev/mcp"
+      allowed_tools: "execute_query, get_entity_types, CB_version"

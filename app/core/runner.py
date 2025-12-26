@@ -1,11 +1,16 @@
 from __future__ import annotations
+
 import json
 import logging
+from pathlib import Path
 from typing import Any, Dict, List, Optional
+
 from openai import OpenAI
-from app.config import AppConfig
+
+from app.core.agent_session import AgentSession
+from app.core.config import AppConfig
 from app.prompts import load_prompt
-from app.types import RunRequest, RunResult
+from app.core.types import RunRequest, RunResult
 
 log = logging.getLogger("runner")
 
@@ -128,17 +133,43 @@ def _extract_mcp_trace_from_response(resp: Any) -> Dict[str, Any]:
 
 def run_once(cfg: AppConfig, req: RunRequest) -> RunResult:
     try:
-        client = build_client(cfg)
-        tools = cfg.build_tools()
-        instructions = build_system_instructions(cfg, req.system_prompt_file)
+        resp = None
+        tools: List[dict] = []
+        model_name = cfg.model
 
-        resp = client.responses.create(
-            model=cfg.model,
-            tools=tools,  # type: ignore
-            instructions=instructions,
-            input=req.user_prompt,
-            max_output_tokens=req.max_output_tokens or cfg.max_output_tokens,
-        )
+        if req.profiles_yaml:
+            session = AgentSession.from_yaml(
+                yaml_path=Path(req.profiles_yaml),
+                default_agent=req.agent_id,
+                prompts_dir=cfg.prompts_dir,
+                read_only=cfg.read_only,
+                tools_yaml=Path(req.tools_yaml) if req.tools_yaml else None,
+            )
+            agent = session.get_agent(req.agent_id)
+            resp = session.ask(
+                req.user_prompt,
+                agent_id=req.agent_id,
+                max_output_tokens=req.max_output_tokens or cfg.max_output_tokens,
+            )
+            tools = agent.tools
+            model_name = getattr(agent.model_backend, "model", cfg.model)
+        else:
+            client = build_client(cfg)
+            tools = cfg.build_tools()
+            if not tools:
+                raise ValueError(
+                    "No tools configured for legacy mode. Define MCP servers in config.yaml under 'mcp_servers' "
+                    "(preferred), or use legacy env vars MCP_URL/MCP_LABEL (or MCP0_URL/MCP0_LABEL...) in .env. "
+                    "Alternatively, run with --profiles-yaml (YAML-first mode)."
+                )
+            instructions = build_system_instructions(cfg, req.system_prompt_file)
+            resp = client.responses.create(
+                model=cfg.model,
+                tools=tools,  # type: ignore
+                instructions=instructions,
+                input=req.user_prompt,
+                max_output_tokens=req.max_output_tokens or cfg.max_output_tokens,
+            )
 
         output_text = ""
         try:
@@ -154,12 +185,12 @@ def run_once(cfg: AppConfig, req: RunRequest) -> RunResult:
                 parsed = None
 
         mcp_trace = _extract_mcp_trace_from_response(resp)
-        
+
         return RunResult(
             ok=True,
             output_text=output_text,
             raw_response=resp,
-            model=cfg.model,
+            model=model_name,
             parsed_json=parsed,
             metadata={"tools": tools, "mcp_trace": mcp_trace},
         )

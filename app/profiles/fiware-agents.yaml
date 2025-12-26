@@ -1,0 +1,23 @@
+default_agent: "fiware-client"
+
+agents:
+  
+  - id: "fiware-client"
+    description: "NGSI-LD expert assistant"
+    system_prompt: "system2.3.md"
+    
+    backend:
+      type: "openai_responses"
+      model: "gpt-5"
+
+    tools: ["fiware-mcp"]
+
+  - id: "fiware-evaluator"
+    description: "LLM judge for evaluation and benchmarks"
+    system_prompt: "judge_system.md"
+    
+    backend:
+      type: "openai_responses"
+      model: "gpt-5-nano"
+
+    tools: []

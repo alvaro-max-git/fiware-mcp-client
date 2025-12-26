@@ -17,3 +17,10 @@ __pycache__/
 
 # Ignore result files
 bench_out/
+
+# Ignore configuration files
+profiles/
+tools/
+
+# Ignore local runtime config
+config.yaml
