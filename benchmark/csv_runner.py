@@ -94,7 +94,15 @@ def parse_expected(row: Dict[str, str]) -> tuple[ExpectedSpec, LLMJudgeSpec | No
     
     return ExpectedSpec(), None
 
-def run_benchmark(cfg: AppConfig, csv_file: Path, out_path: Path) -> Path:
+def run_benchmark(
+    cfg: AppConfig,
+    csv_file: Path,
+    out_path: Path,
+    *,
+    default_profiles_yaml: str | None = None,
+    default_tools_yaml: str | None = None,
+    default_agent_id: str | None = None,
+) -> Path:
     out_is_file = out_path.suffix.lower() == ".csv" or (out_path.exists() and out_path.is_file())
     if out_is_file:
         out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -129,6 +137,11 @@ def run_benchmark(cfg: AppConfig, csv_file: Path, out_path: Path) -> Path:
             agent_id = (row.get("agent_id") or "").strip() or None
             eval_mode = (row.get("eval_mode") or "").strip()
 
+            if not profiles_yaml and default_profiles_yaml:
+                profiles_yaml = default_profiles_yaml
+            if not agent_id and default_agent_id:
+                agent_id = default_agent_id
+
             if not question:
                 bench_logger.error("Row %s is missing a question; skipping benchmark execution.", row_id)
                 cfg.model = original_model
@@ -156,6 +169,7 @@ def run_benchmark(cfg: AppConfig, csv_file: Path, out_path: Path) -> Path:
                 user_prompt=question,
                 system_prompt_file=system_prompt_file,
                 profiles_yaml=profiles_yaml,
+                tools_yaml=default_tools_yaml,
                 agent_id=agent_id,
             )
             res = run_once(cfg, req)
@@ -172,6 +186,7 @@ def run_benchmark(cfg: AppConfig, csv_file: Path, out_path: Path) -> Path:
                     judge_spec,
                     req.user_prompt,
                     profiles_yaml=profiles_yaml,
+                    tools_yaml=default_tools_yaml,
                     judge_agent_id="fiware-evaluator",
                 )
             else:

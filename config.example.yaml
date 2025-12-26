@@ -1,0 +1,35 @@
+# Example runtime configuration (YAML-first).
+# Copy to config.yaml for local use.
+# Secrets should stay in .env (e.g., OPENAI_API_KEY).
+
+# Defaults for YAML-mode runs (AgentSession)
+profiles_yaml: app/profiles/fiware-agents.yaml
+tools_yaml: app/tools/tools.yaml
+agent_id: fiware-client
+
+# Legacy mode tools (only used when running WITHOUT profiles_yaml)
+mcp_servers:
+  - label: fiware-mcp
+    url: https://example.com/mcp
+    allowed_tools: execute_query, get_entity_types, CB_version
+
+# Runtime
+read_only: true
+
+# Logging
+log_level: DEBUG
+log_to_file: true
+logs_dir: logs
+
+# Prompts
+prompts_dir: prompts
+
+# Legacy-mode defaults (only used when running without profiles_yaml)
+# model: gpt-5-nano
+# max_output_tokens: 30000
+# system_prompt_file: system2.3.md
+
+# Judge defaults (used by legacy judge path)
+# judge_model: gpt-5-nano
+# judge_system_prompt_file: judge_system.md
+# judge_temperature: 0.0

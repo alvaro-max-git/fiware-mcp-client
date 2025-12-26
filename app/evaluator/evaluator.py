@@ -127,6 +127,7 @@ def evaluate_llm_judge(
     user_prompt: Optional[str] = None,
     *,
     profiles_yaml: Optional[str] = None,
+    tools_yaml: Optional[str] = None,
     judge_agent_id: Optional[str] = None,
 ) -> EvalResult:
     judge_input = _build_judge_input(result, spec, user_prompt)
@@ -146,6 +147,7 @@ def evaluate_llm_judge(
                 default_agent=judge_id,
                 prompts_dir=cfg.prompts_dir,
                 read_only=True,
+                tools_yaml=Path(tools_yaml) if tools_yaml else None,
             )
             # JSON string input, mirroring the legacy request payload.
             resp = session.ask(

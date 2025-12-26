@@ -12,8 +12,14 @@ from pydantic import BaseModel, Field, model_validator
 
 from app.prompts import load_prompt
 
-# Load environment variables from .env file
-load_dotenv()
+_DOTENV_LOADED = False
+
+
+def _load_dotenv_once() -> None:
+    global _DOTENV_LOADED
+    if not _DOTENV_LOADED:
+        load_dotenv()
+        _DOTENV_LOADED = True
 
 _ENV_VAR_PATTERN = re.compile(r"\$\{([^}]+)\}")
 
@@ -90,7 +96,8 @@ class AppConfig:
 
     #Load values from .env file
     @staticmethod
-    def from_env(*, require_mcp: bool = True) -> "AppConfig":
+    def from_env(*, require_mcp: bool = False) -> "AppConfig":
+        _load_dotenv_once()
         api_key = os.getenv("OPENAI_API_KEY")
         
         # Reuse the standalone function for MCP loading to avoid duplication
@@ -222,11 +229,108 @@ class ToolsCatalog(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# 2.b Runtime client config (config.yaml)
+# ---------------------------------------------------------------------------
+
+class ClientConfig(BaseModel):
+    """YAML-first runtime configuration.
+
+    Secrets should be provided via environment variables and referenced via
+    ${VAR} placeholders when needed.
+    """
+
+    # Session defaults
+    profiles_yaml: Optional[str] = None
+    tools_yaml: Optional[str] = None
+    agent_id: Optional[str] = None
+
+    # Legacy tools (MCP servers) for env-only mode
+    mcp_servers: Optional[List[Dict[str, Any]]] = None
+
+    # Runtime behavior
+    read_only: Optional[bool] = None
+
+    # Logging
+    log_level: Optional[str] = None
+    log_to_file: Optional[bool] = None
+    logs_dir: Optional[str] = None
+
+    # Prompts
+    prompts_dir: Optional[str] = None
+    system_prompt_file: Optional[str] = None  # legacy mode default
+
+    # Legacy model defaults
+    model: Optional[str] = None
+    max_output_tokens: Optional[int] = None
+
+    # Judge defaults
+    judge_model: Optional[str] = None
+    judge_system_prompt_file: Optional[str] = None
+    judge_temperature: Optional[float] = None
+
+
+def apply_client_config_overrides(cfg: AppConfig, client_cfg: ClientConfig) -> AppConfig:
+    """Apply config.yaml overrides over the env-derived AppConfig."""
+
+    if client_cfg.read_only is not None:
+        cfg.read_only = bool(client_cfg.read_only)
+
+    if client_cfg.log_level is not None:
+        cfg.log_level = str(client_cfg.log_level).upper()
+    if client_cfg.log_to_file is not None:
+        cfg.log_to_file = bool(client_cfg.log_to_file)
+    if client_cfg.logs_dir is not None:
+        cfg.logs_dir = Path(str(client_cfg.logs_dir))
+
+    if client_cfg.prompts_dir is not None:
+        cfg.prompts_dir = Path(str(client_cfg.prompts_dir))
+    if client_cfg.system_prompt_file is not None:
+        cfg.system_prompt_file = str(client_cfg.system_prompt_file)
+
+    if client_cfg.model is not None:
+        cfg.model = str(client_cfg.model)
+    if client_cfg.max_output_tokens is not None:
+        cfg.max_output_tokens = int(client_cfg.max_output_tokens)
+
+    if client_cfg.mcp_servers is not None:
+        servers: List[MCPServerConfig] = []
+        for item in client_cfg.mcp_servers:
+            if not isinstance(item, dict):
+                raise ValueError("config.yaml: 'mcp_servers' items must be mappings")
+            label = item.get("label") or item.get("name")
+            url = item.get("url")
+            allowed_raw = item.get("allowed_tools")
+            if not label or not url:
+                raise ValueError("config.yaml: each mcp_servers item requires 'label' and 'url'")
+            if isinstance(allowed_raw, str):
+                allowed = [t.strip() for t in allowed_raw.split(",") if t.strip()]
+            elif isinstance(allowed_raw, list):
+                allowed = [str(t).strip() for t in allowed_raw if str(t).strip()]
+            elif allowed_raw is None:
+                allowed = None
+            else:
+                raise ValueError("config.yaml: 'allowed_tools' must be a string, list, or null")
+            servers.append(MCPServerConfig(label=str(label), url=str(url), allowed_tools=allowed))
+        cfg.mcp_servers = servers
+
+    if client_cfg.judge_model is not None:
+        cfg.judge_model = str(client_cfg.judge_model)
+    if client_cfg.judge_system_prompt_file is not None:
+        cfg.judge_system_prompt_file = str(client_cfg.judge_system_prompt_file)
+    if client_cfg.judge_temperature is not None:
+        cfg.judge_temperature = float(client_cfg.judge_temperature)
+
+    return cfg
+
+
+# ---------------------------------------------------------------------------
 # 3. Helper Loaders
 # ---------------------------------------------------------------------------
 
 def load_profiles_config(yaml_path: Path) -> ProfilesConfig:
     """Load agent profiles from a YAML file with a couple of sensible fallbacks."""
+
+    _load_dotenv_once()
 
     candidates = [yaml_path]
     if not yaml_path.is_absolute():
@@ -246,6 +350,8 @@ def load_profiles_config(yaml_path: Path) -> ProfilesConfig:
 
 def load_tools_config(yaml_path: Path) -> ToolsCatalog:
     """Load tool catalog definitions from YAML with env placeholder support."""
+
+    _load_dotenv_once()
 
     candidates = [yaml_path]
     if not yaml_path.is_absolute():
@@ -300,6 +406,38 @@ def load_mcp_servers_from_env() -> Dict[str, MCPServerConfig]:
             servers[single_label] = MCPServerConfig(label=single_label, url=single_url, allowed_tools=allowed_list)
 
     return servers
+
+
+def load_client_config(yaml_path: Optional[Path] = None) -> ClientConfig:
+    """Load config.yaml (runtime configuration) with env placeholder support.
+
+    If yaml_path is None, it will try ./config.yaml.
+    """
+
+    _load_dotenv_once()
+
+    candidates: List[Path] = []
+    if yaml_path is not None:
+        candidates.append(Path(yaml_path))
+    else:
+        candidates.append(Path("config.yaml"))
+
+    # If relative, also try from CWD explicitly.
+    expanded: List[Path] = []
+    for c in candidates:
+        expanded.append(c)
+        if not c.is_absolute():
+            expanded.append(Path.cwd() / c)
+
+    for candidate in expanded:
+        if candidate.exists():
+            with open(candidate, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f) or {}
+            data = _resolve_env_placeholders(data)
+            return ClientConfig(**data)
+
+    searched = ", ".join(str(p) for p in expanded)
+    raise FileNotFoundError(f"Client config not found. Tried: {searched}")
 
 
 

@@ -3,7 +3,7 @@ import argparse
 import logging
 import json
 from pathlib import Path
-from app.core.config import AppConfig
+from app.core.config import AppConfig, apply_client_config_overrides, load_client_config, ClientConfig
 from app.logging_conf import setup_logging
 from app.core.runner import run_once
 from app.core.types import RunRequest, ExpectedSpec, LLMJudgeSpec
@@ -29,11 +29,15 @@ def _debug_dump_mcp_trace(metadata: dict, label: str = "") -> None:
     logger.debug("%s:\n%s", header, trace_str)
 
 def cmd_run(cfg: AppConfig, args: argparse.Namespace) -> int:
+    profiles_yaml = args.profiles_yaml or getattr(args, "default_profiles_yaml", None)
+    tools_yaml = args.tools_yaml or getattr(args, "default_tools_yaml", None)
+    agent_id = args.agent_id or getattr(args, "default_agent_id", None)
     req = RunRequest(
         user_prompt=args.prompt,
         system_prompt_file=args.system_prompt_file,
-        profiles_yaml=args.profiles_yaml,
-        agent_id=args.agent_id,
+        profiles_yaml=profiles_yaml,
+        tools_yaml=tools_yaml,
+        agent_id=agent_id,
     )
     res = run_once(cfg, req)
     print(res.output_text if res.ok else f"[ERROR] {res.error}")
@@ -42,11 +46,15 @@ def cmd_run(cfg: AppConfig, args: argparse.Namespace) -> int:
     return 0 if res.ok else 1
 
 def cmd_eval(cfg: AppConfig, args: argparse.Namespace) -> int:
+    profiles_yaml = args.profiles_yaml or getattr(args, "default_profiles_yaml", None)
+    tools_yaml = args.tools_yaml or getattr(args, "default_tools_yaml", None)
+    agent_id = args.agent_id or getattr(args, "default_agent_id", None)
     req = RunRequest(
         user_prompt=args.prompt,
         system_prompt_file=args.system_prompt_file,
-        profiles_yaml=args.profiles_yaml,
-        agent_id=args.agent_id,
+        profiles_yaml=profiles_yaml,
+        tools_yaml=tools_yaml,
+        agent_id=agent_id,
     )
     res = run_once(cfg, req)
 
@@ -76,7 +84,8 @@ def cmd_eval(cfg: AppConfig, args: argparse.Namespace) -> int:
             res,
             judge_spec,
             req.user_prompt,
-            profiles_yaml=args.profiles_yaml,
+            profiles_yaml=profiles_yaml,
+            tools_yaml=tools_yaml,
             judge_agent_id="fiware-evaluator",
         )
     else:
@@ -97,22 +106,39 @@ def cmd_eval(cfg: AppConfig, args: argparse.Namespace) -> int:
     return 0 if ev.passed else 2
 
 def cmd_bench(cfg: AppConfig, args: argparse.Namespace) -> int:
-    out = run_benchmark(cfg, Path(args.csv), Path(args.out))
+    default_profiles_yaml = args.profiles_yaml or getattr(args, "default_profiles_yaml", None)
+    default_tools_yaml = args.tools_yaml or getattr(args, "default_tools_yaml", None)
+    default_agent_id = args.agent_id or getattr(args, "default_agent_id", None)
+    out = run_benchmark(
+        cfg,
+        Path(args.csv),
+        Path(args.out),
+        default_profiles_yaml=default_profiles_yaml,
+        default_tools_yaml=default_tools_yaml,
+        default_agent_id=default_agent_id,
+    )
     print(f"Benchmark results: {out}")
     return 0
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="fiware-mcp-client")
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument(
+        "--config",
+        default="config.yaml",
+        help="Runtime YAML config (default: config.yaml). Use .env only for secrets like OPENAI_API_KEY.",
+    )
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    pr = sub.add_parser("run")
+    pr = sub.add_parser("run", parents=[common])
     pr.add_argument("--prompt", required=True)
     pr.add_argument("--system-prompt-file", default=None)
     pr.add_argument("--profiles-yaml", default=None, help="YAML file with agent profiles")
+    pr.add_argument("--tools-yaml", default=None, help="YAML file with tool catalog definitions")
     pr.add_argument("--agent-id", default=None, help="Agent id to target (defaults to YAML default)")
     pr.set_defaults(func=cmd_run)
 
-    pe = sub.add_parser("eval")
+    pe = sub.add_parser("eval", parents=[common])
     pe.add_argument("--prompt", required=True)
     pe.add_argument("--system-prompt-file", default=None)
     pe.add_argument("--exact-text")
@@ -121,28 +147,51 @@ def build_parser() -> argparse.ArgumentParser:
     pe.add_argument("--regex")
     pe.add_argument("--llm-judge-file")
     pe.add_argument("--profiles-yaml", default=None, help="YAML file with agent profiles")
+    pe.add_argument("--tools-yaml", default=None, help="YAML file with tool catalog definitions")
     pe.add_argument("--agent-id", default=None, help="Agent id to target (defaults to YAML default)")
     pe.set_defaults(func=cmd_eval)
 
-    pb = sub.add_parser("bench")
+    pb = sub.add_parser("bench", parents=[common])
     pb.add_argument("--csv", required=True)
     pb.add_argument("--out", default="bench_out", help="Output directory or CSV file path (default: bench_out)")
+    pb.add_argument("--profiles-yaml", default=None, help="Default profiles YAML for rows missing profiles_yaml")
+    pb.add_argument("--tools-yaml", default=None, help="Default tools YAML for YAML-mode rows")
+    pb.add_argument("--agent-id", default=None, help="Default agent id for rows missing agent_id")
     pb.set_defaults(func=cmd_bench)
 
     return p
 
 def main() -> int:
+    parser = build_parser()
+    args = parser.parse_args()
+
+    client_cfg: ClientConfig | None = None
+    config_path = getattr(args, "config", None)
+    if config_path:
+        try:
+            client_cfg = load_client_config(Path(config_path))
+        except FileNotFoundError:
+            # Backward compat: if the default config.yaml is missing, continue env-only.
+            client_cfg = None
+        except Exception as e:
+            print(f"[FATAL] Invalid config YAML ({config_path}): {e}")
+            return 2
+
     try:
-        # When using tool catalogs in YAML, MCP servers may be defined there instead of env.
         cfg = AppConfig.from_env(require_mcp=False)
     except Exception as e:
         print(f"[FATAL] Config error: {e}")
         return 2
 
+    if client_cfg is not None:
+        cfg = apply_client_config_overrides(cfg, client_cfg)
+        # Defaults for YAML-mode execution
+        setattr(args, "default_profiles_yaml", client_cfg.profiles_yaml)
+        setattr(args, "default_tools_yaml", client_cfg.tools_yaml)
+        setattr(args, "default_agent_id", client_cfg.agent_id)
+
     setup_logging(level=cfg.log_level, log_to_file=cfg.log_to_file, logs_dir=cfg.logs_dir)
 
-    parser = build_parser()
-    args = parser.parse_args()
     try:
         return args.func(cfg, args)
     except Exception as e:

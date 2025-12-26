@@ -3,10 +3,10 @@
 Client that queries a FIWARE NGSI-LD Context Broker via an MCP server using an OpenAI model. It supports single runs and response evaluation.
 
 - CLI: app/cli.py
-- Config: app/config.py
-- Runner: app/runner.py
-- Evaluator: app/evaluator.py
-- Types: app/types.py
+- Config: app/core/config.py (+ config.yaml)
+- Runner: app/core/runner.py
+- Evaluator: app/evaluator/evaluator.py
+- Types: app/core/types.py
 - Prompts: prompts/
 
 ## Requirements
@@ -33,23 +33,32 @@ Install:
 
 ## Configuration
 
-Do not commit secrets. Use .template.env as a starting point:
-- Copy: cp .template.env .env (macOS/Linux) or copy .template.env .env (Windows)
+This project is **YAML-first**.
 
-Key variables (loaded by AppConfig.from_env):
-- OPENAI_API_KEY: OpenAI API key.
-- OPENAI_MODEL: e.g., gpt-5-nano.
-- MAX_OUTPUT_TOKENS: Max output tokens.
-- MCP_LABEL: Display name for the MCP toolset (e.g., fiware-mcp).
-- MCP_URL: MCP server endpoint (must end with /mcp).
-- MCP_ALLOWED_TOOLS: Comma-separated tools to expose (e.g., execute_query,get_entity_types,CB_version).
-- PROMPTS_DIR: Prompts directory (e.g., prompts).
-- SYSTEM_PROMPT_FILE: Default system prompt file (e.g., system3.md).
-- LOG_LEVEL, LOG_TO_FILE, LOGS_DIR: Logging configuration.
-- READ_ONLY: true/false.
+1) **Secrets & environment** (local, do not commit):
+- Copy `.template.env` to `.env` and set at least:
+  - `OPENAI_API_KEY=...`
+
+2) **Runtime config** (`config.yaml`, local per use-case):
+- Copy `config.example.yaml` to `config.yaml` and edit:
+  - `profiles_yaml`: agent profiles (YAML)
+  - `tools_yaml`: tool catalog (YAML)
+  - `agent_id`: default agent
+  - `mcp_servers`: MCP servers for legacy env-only mode
+
+### YAML-mode (recommended)
+
+In YAML-mode (when `profiles_yaml` is set), tools are loaded from the tools catalog YAML.
+There is **no fallback** to MCP servers defined in `.env`.
+
+### Legacy env-only mode (compat)
+
+If you run without `profiles_yaml`, the client uses the legacy path (OpenAI Responses directly) and MCP servers are configured via `config.yaml` (`mcp_servers`).
+
+Optional backward-compat (not recommended): you can still configure MCP servers via `.env`.
 
 Multiple MCP servers (optional):
-- Use MCP_0_, MCP_1_, etc. prefixes (LABEL, URL, ALLOWED_TOOLS) to register several toolsets.
+- Use `MCP0_LABEL`, `MCP0_URL`, `MCP0_ALLOWED_TOOLS`, then `MCP1_...`, etc.
 
 ## Usage
 
@@ -57,16 +66,16 @@ Run the CLI:
 - python -m app.cli <command> [options]
 
 System prompt selection:
-- Defaults to SYSTEM_PROMPT_FILE in .env.
+- Defaults to `config.yaml` (`system_prompt_file`) in legacy mode.
 - Override per run with --system-prompt-file.
 
 ### Single run
 
 - Example:
   - Windows (PowerShell):
-    - python -m app.cli run --prompt "List available entity types" --system-prompt-file prompts/system3.md
+    - python -m app.cli run --prompt "List available entity types"
   - macOS/Linux (bash):
-    - python -m app.cli run --prompt 'List available entity types' --system-prompt-file prompts/system3.md
+    - python -m app.cli run --prompt 'List available entity types'
 
 Prints the LLM output.
 
@@ -107,7 +116,7 @@ Run multiple prompts and evaluate them from a CSV file.
 CSV format (columns):
 - **id**: identifier
 - **question**: user prompt
-- **model** (optional): override OPENAI_MODEL for this row (ignored if profiles_yaml+agent_id are used)
+- **model** (optional): override the default model for this row (ignored if profiles_yaml+agent_id are used)
 - **system_prompt_file** (optional): override the default system prompt (legacy path; ignored when using profiles_yaml)
 - **profiles_yaml** (optional): path to an agents YAML. If set, the row uses AgentSession loading (tools from catalog, agent backends, prompts from profile).
 - **agent_id** (optional): agent id from the profiles YAML (falls back to default_agent if empty)
@@ -146,8 +155,8 @@ Example CSV (see sample: benchmark/benchmark_tests.csv):
 
 Tips:
 - For JSON inside CSV, escape quotes with "".
-- If system_prompt_file is empty, the default from .env is used.
-- If model is empty, the default OPENAI_MODEL from .env is used.
+- If system_prompt_file is empty, the legacy default from `config.yaml` is used (or the built-in default if config.yaml is missing).
+- If model is empty, the legacy default from `config.yaml` is used (or the env/built-in default if config.yaml is missing).
 - For llm_judge mode, compact the JSON in one line or use a tool to escape it properly.
  - id,question,model,system_prompt_file,eval_mode,expected,profiles_yaml,agent_id
  - T1,"Tell me how many animals are located at AgriParcel 005. Answer only with a number",,system3.md,exact_text,"13",,
@@ -156,10 +165,17 @@ Tips:
  
  Tips:
  - For JSON inside CSV, escape quotes with "".
- - If system_prompt_file is empty, the default from .env is used.
- - If model is empty, the default OPENAI_MODEL from .env is used.
+ - If system_prompt_file is empty, the legacy default from `config.yaml` is used (or the built-in default if config.yaml is missing).
+ - If model is empty, the legacy default from `config.yaml` is used (or the env/built-in default if config.yaml is missing).
  - If profiles_yaml is provided, tools/backends/prompts come from that YAML; system_prompt_file and model columns are ignored for that row.
  - For llm_judge mode, compact the JSON in one line or use a tool to escape it properly.
+
+### config.yaml selection
+
+All commands accept `--config` (defaults to `config.yaml`):
+- `python -m app.cli run --config config.yaml --prompt "..."`
+
+If `config.yaml` is missing, the CLI falls back to env-only mode.
 
 ## Prompts
 

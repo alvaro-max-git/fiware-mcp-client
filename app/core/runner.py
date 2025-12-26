@@ -143,6 +143,7 @@ def run_once(cfg: AppConfig, req: RunRequest) -> RunResult:
                 default_agent=req.agent_id,
                 prompts_dir=cfg.prompts_dir,
                 read_only=cfg.read_only,
+                tools_yaml=Path(req.tools_yaml) if req.tools_yaml else None,
             )
             agent = session.get_agent(req.agent_id)
             resp = session.ask(
@@ -155,6 +156,12 @@ def run_once(cfg: AppConfig, req: RunRequest) -> RunResult:
         else:
             client = build_client(cfg)
             tools = cfg.build_tools()
+            if not tools:
+                raise ValueError(
+                    "No tools configured for legacy mode. Define MCP servers in config.yaml under 'mcp_servers' "
+                    "(preferred), or use legacy env vars MCP_URL/MCP_LABEL (or MCP0_URL/MCP0_LABEL...) in .env. "
+                    "Alternatively, run with --profiles-yaml (YAML-first mode)."
+                )
             instructions = build_system_instructions(cfg, req.system_prompt_file)
             resp = client.responses.create(
                 model=cfg.model,

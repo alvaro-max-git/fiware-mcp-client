@@ -8,7 +8,6 @@ from app.backends.backend_factory import create_backend
 from app.core.agent import Agent
 from app.core.config import (
 	ProfilesConfig,
-	load_mcp_servers_from_env,
 	load_profiles_config,
 	load_tools_config,
 )
@@ -32,20 +31,12 @@ def _load_tool_factory_if_available(tools_yaml: Optional[Path]) -> Optional[Tool
 
 def _resolve_tools(tool_names: List[str], tool_factory: Optional[ToolFactory]) -> List[dict]:
 	if tool_names:
-		if tool_factory:
-			return tool_factory.build_tools(tool_names)
-
-		# Backward compatibility: fallback to environment-defined MCP servers.
-		available = load_mcp_servers_from_env()
-		tools: List[dict] = []
-		for name in tool_names:
-			srv = available.get(name)
-			if not srv:
-				raise ValueError(
-					f"Tool '{name}' not found in catalog and no MCP env config present"
-				)
-			tools.append(srv.to_openai_tool())
-		return tools
+		if not tool_factory:
+			raise ValueError(
+				"Tools were requested by the agent profile, but no tools catalog was found. "
+				"Create 'app/tools/tools.yaml' or set tools_yaml in config/CLI."
+			)
+		return tool_factory.build_tools(tool_names)
 
 	return []
 
