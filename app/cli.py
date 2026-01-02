@@ -36,7 +36,7 @@ def cmd_run(cfg: AppConfig, args: argparse.Namespace) -> int:
         user_prompt=args.prompt,
         system_prompt_file=args.system_prompt_file,
         profiles_yaml=profiles_yaml,
-        tools_yaml=tools_yaml,
+        tools_yaml=tools_yaml,  
         agent_id=agent_id,
     )
     res = run_once(cfg, req)

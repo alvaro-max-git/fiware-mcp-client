@@ -416,6 +416,7 @@ def load_client_config(yaml_path: Optional[Path] = None) -> ClientConfig:
 
     _load_dotenv_once()
 
+    # Looks for config.yaml
     candidates: List[Path] = []
     if yaml_path is not None:
         candidates.append(Path(yaml_path))

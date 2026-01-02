@@ -19,8 +19,8 @@ __pycache__/
 bench_out/
 
 # Ignore configuration files
-profiles/
-tools/
+# profiles/ -> for the moment, there's no sensible info on profile config
+tools.yaml
 
 # Ignore local runtime config
 config.yaml

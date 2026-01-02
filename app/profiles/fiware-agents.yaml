@@ -8,7 +8,7 @@ agents:
     
     backend:
       type: "openai_responses"
-      model: "gpt-5"
+      model: "gpt-5.2"
 
     tools: ["fiware-mcp"]
 
