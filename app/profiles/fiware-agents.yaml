@@ -12,6 +12,26 @@ agents:
 
     tools: ["fiware-mcp"]
 
+  - id: "fiware-client-gpt4.1"
+    description: "NGSI-LD expert assistant for MCP Experiments"
+    system_prompt: "mcp_experiments_instructions_01.md"
+
+    backend:
+      type: "openai_responses"
+      model: "gpt-4.1"
+
+    tools: ["fiware-mcp"]
+
+  - id: "fiware-client-gpt5.2"
+    description: NGSI-LD expert assistant for MCP Experiments"
+    system_prompt: "mcp_experiments_instructions_01.md"
+
+    backend:
+      type: "openai_responses"
+      model: "gpt-5.2"
+
+    tools: ["fiware-mcp"]
+
   - id: "fiware-evaluator"
     description: "LLM judge for evaluation and benchmarks"
     system_prompt: "judge_system.md"
