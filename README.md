@@ -120,8 +120,8 @@ CSV format (columns):
 - **system_prompt_file** (optional): override the default system prompt (legacy path; ignored when using profiles_yaml)
 - **profiles_yaml** (optional): path to an agents YAML. If set, the row uses AgentSession loading (tools from catalog, agent backends, prompts from profile).
 - **agent_id** (optional): agent id from the profiles YAML (falls back to default_agent if empty)
-- **eval_mode**: exact_text | equals_json | json_subset | regex | llm_judge
-- **expected**: payload matching eval_mode
+- **eval_mode**: exact_text | equals_json | json_subset | regex | llm_judge | *(empty for run-only)*
+- **expected**: payload matching eval_mode (ignored if eval_mode is empty)
 
 #### LLM-as-Judge mode
 

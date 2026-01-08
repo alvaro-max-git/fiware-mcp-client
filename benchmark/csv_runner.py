@@ -175,7 +175,48 @@ def run_benchmark(
             res = run_once(cfg, req)
 
             cfg.model = original_model
-            
+
+            # Debug-print MCP trace per row when log level is DEBUG
+            if bench_logger.isEnabledFor(logging.DEBUG):
+                meta = getattr(res, "metadata", {}) if res else {}
+                trace = None
+                if isinstance(meta, dict):
+                    trace = meta.get("mcp_trace") or meta.get("mcp_traces")
+                if trace:
+                    try:
+                        trace_str = json.dumps(trace, ensure_ascii=False, indent=2)
+                    except Exception:
+                        trace_str = str(trace)
+                    bench_logger.debug("MCP trace for id=%s:\n%s", row.get("id") or "", trace_str)
+
+            # Extract MCP trace metadata for output
+            meta = getattr(res, "metadata", {}) if res else {}
+            trace = meta.get("mcp_trace", {}) if isinstance(meta, dict) else {}
+            queries_list = trace.get("queries") or []
+
+            # If eval_mode is empty, skip evaluation and write run-only results
+            if not eval_mode:
+                writer.writerow({
+                    "id": row.get("id") or "",
+                    "passed": "",
+                    "reason": "",
+                    "model": res.model or "",
+                    "system_prompt_file": req.system_prompt_file or "",
+                    "eval_mode": "",
+                    "question": req.user_prompt,
+                    "output_text": res.output_text,
+                    "profiles_yaml": profiles_yaml or "",
+                    "agent_id": agent_id or "",
+                    "score_correctness": "",
+                    "score_reasoning": "",
+                    "score_efficiency": "",
+                    "score_total": "",
+                    "mcp_call_count": trace.get("call_count", ""),
+                    "queries": "|".join(str(q) for q in queries_list[:10]),
+                })
+                continue
+
+            # Parse expected and run evaluation
             exp, judge_spec = parse_expected(row)
             
             # Use appropriate evaluator
@@ -192,24 +233,8 @@ def run_benchmark(
             else:
                 ev = evaluate(res, exp)
 
-            # Debug-print MCP trace per row when log level is DEBUG
-            if bench_logger.isEnabledFor(logging.DEBUG):
-                meta = getattr(res, "metadata", {}) if res else {}
-                trace = None
-                if isinstance(meta, dict):
-                    trace = meta.get("mcp_trace") or meta.get("mcp_traces")
-                if trace:
-                    try:
-                        trace_str = json.dumps(trace, ensure_ascii=False, indent=2)
-                    except Exception:
-                        trace_str = str(trace)
-                    bench_logger.debug("MCP trace for id=%s:\n%s", row.get("id") or "", trace_str)
-
             details = ev.details or {}
             scores = details.get("scores", {}) if isinstance(details, dict) else {}
-            meta = getattr(res, "metadata", {}) if res else {}
-            trace = meta.get("mcp_trace", {}) if isinstance(meta, dict) else {}
-            queries_list = trace.get("queries") or []
             
             writer.writerow({
                 "id": row.get("id") or "",

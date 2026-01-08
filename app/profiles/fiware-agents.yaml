@@ -12,7 +12,7 @@ agents:
 
     tools: ["fiware-mcp"]
 
-  - id: "fiware-client-gpt4.1"
+  - id: "mcp-experiments-gpt4.1"
     description: "NGSI-LD expert assistant for MCP Experiments"
     system_prompt: "mcp_experiments_instructions_01.md"
 
@@ -22,7 +22,7 @@ agents:
 
     tools: ["fiware-mcp"]
 
-  - id: "fiware-client-gpt5.2"
+  - id: "mcp-experiments-gpt5.2"
     description: NGSI-LD expert assistant for MCP Experiments"
     system_prompt: "mcp_experiments_instructions_01.md"
 
