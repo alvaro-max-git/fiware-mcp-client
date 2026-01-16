@@ -169,6 +169,7 @@ class AgentProfile(BaseModel):
     backend: BackendConfig
     description: Optional[str] = None
     tools: List[str] = Field(default_factory=list)
+    tool_overrides: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
     mcp_servers: List[str] = Field(default_factory=list)
 
 
