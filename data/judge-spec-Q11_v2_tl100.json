@@ -1,0 +1,33 @@
+{
+  "gold": {
+    "answer_json": [
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1212" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1200" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1148" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1174" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1084" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1301" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1254" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1300" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1299" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1109" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1239" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1297" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1311" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1103" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1251" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1248" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1283" },
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1004" }
+    ],
+    "numeric": 18,
+    "reasoning": "Filter traffic lights with status Red, find associated luminaires within 2500 meters with peopleAffluence < 5, then return all matching traffic light ids.",
+    "queries": []
+  },
+  "weights": { "correctness": 1.0, "reasoning": 0.0, "efficiency": 0.0 },
+  "pass_threshold": 1.0,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 999,
+  "notes": "Accept JSON or natural-language answers listing exactly these 18 traffic lights. Query count/type should not affect scoring."
+}

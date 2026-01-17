@@ -1,0 +1,20 @@
+{
+  "gold": {
+    "answer_json": [
+      {
+        "intersection": "urn:ngsi-ld:TrafficLightSignal:1099",
+        "luminaire": "urn:ngsi-ld:Luminaries:230456",
+        "distance_m": 29.52
+      }
+    ],
+    "numeric": 29.52,
+    "reasoning": "Filter traffic lights with status Green, find luminaires within 8 km that are Off or Broken, compute distances, and return the closest intersection-luminaire pair.",
+    "queries": []
+  },
+  "weights": { "correctness": 1.0, "reasoning": 0.0, "efficiency": 0.0 },
+  "pass_threshold": 1.0,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 999,
+  "notes": "Accept JSON or natural-language answers identifying TrafficLightSignal urn:ngsi-ld:TrafficLightSignal:1099 and Luminaire urn:ngsi-ld:Luminaries:230456 with distance 29.52 meters. Query count/type should not affect scoring."
+}
