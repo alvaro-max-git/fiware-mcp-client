@@ -73,7 +73,7 @@ class AppConfig:
     #Model config
     openai_api_key: Optional[str] = field(default=None)
     model: str = field(default="gpt-4o-mini")
-    max_output_tokens: int = field(default=30000)
+    max_output_tokens: int = field(default=200000)
 
     mcp_servers: List[MCPServerConfig] = field(default_factory=list)
     
