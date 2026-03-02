@@ -29,14 +29,18 @@ def _load_tool_factory_if_available(tools_yaml: Optional[Path]) -> Optional[Tool
 	return None
 
 
-def _resolve_tools(tool_names: List[str], tool_factory: Optional[ToolFactory]) -> List[dict]:
+def _resolve_tools(
+	tool_names: List[str],
+	tool_factory: Optional[ToolFactory],
+	overrides: Optional[Dict[str, Dict[str, object]]] = None,
+) -> List[dict]:
 	if tool_names:
 		if not tool_factory:
 			raise ValueError(
 				"Tools were requested by the agent profile, but no tools catalog was found. "
 				"Create 'app/tools/tools.yaml' or set tools_yaml in config/CLI."
 			)
-		return tool_factory.build_tools(tool_names)
+		return tool_factory.build_tools(tool_names, overrides=overrides)
 
 	return []
 
@@ -64,7 +68,7 @@ def load_agent(
 	tool_factory = _load_tool_factory_if_available(tools_yaml)
 
 	backend = create_backend(profile.backend)
-	tools = _resolve_tools(profile.tools, tool_factory)
+	tools = _resolve_tools(profile.tools, tool_factory, profile.tool_overrides)
 	system_prompt = _compose_system_prompt(
 		load_prompt(prompts_dir, profile.system_prompt), read_only=read_only
 	)
@@ -112,7 +116,7 @@ class AgentSession:
 
 		for profile in profiles.agents:
 			backend = create_backend(profile.backend)
-			tools = _resolve_tools(profile.tools, tool_factory)
+			tools = _resolve_tools(profile.tools, tool_factory, profile.tool_overrides)
 			system_prompt = _compose_system_prompt(
 				load_prompt(prompts_dir, profile.system_prompt), read_only=read_only
 			)

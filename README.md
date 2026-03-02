@@ -46,6 +46,46 @@ This project is **YAML-first**.
   - `agent_id`: default agent
   - `mcp_servers`: MCP servers for legacy env-only mode
 
+### Tool catalog (YAML)
+
+Tools are defined in `tools_yaml` and referenced by name in agent profiles. Each tool has a `type` (builder) and a `config` (defaults). Examples:
+
+```yaml
+tools_definitions:
+  - name: fiware-mcp
+    type: mcp
+    config:
+      label: fiware-mcp
+      url: https://example.com/mcp
+      allowed_tools: execute_query, get_entity_types
+
+  - name: code-interpreter
+    type: openai-responses-tool
+    config:
+      type: code_interpreter
+      container:
+        type: auto
+        memory_limit: 4g
+```
+
+### Tool overrides per agent
+
+Profiles can override tool defaults using `tool_overrides` (deep-merged over the catalog defaults):
+
+```yaml
+agents:
+  - id: fiware-client
+    system_prompt: system2.3.md
+    backend:
+      type: openai_responses
+      model: gpt-5.2
+    tools: [fiware-mcp, code-interpreter]
+    tool_overrides:
+      code-interpreter:
+        container:
+          memory_limit: 8g
+```
+
 ### YAML-mode (recommended)
 
 In YAML-mode (when `profiles_yaml` is set), tools are loaded from the tools catalog YAML.

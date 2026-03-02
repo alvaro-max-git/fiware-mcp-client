@@ -73,7 +73,7 @@ class AppConfig:
     #Model config
     openai_api_key: Optional[str] = field(default=None)
     model: str = field(default="gpt-4o-mini")
-    max_output_tokens: int = field(default=30000)
+    max_output_tokens: int = field(default=200000)
 
     mcp_servers: List[MCPServerConfig] = field(default_factory=list)
     
@@ -169,6 +169,7 @@ class AgentProfile(BaseModel):
     backend: BackendConfig
     description: Optional[str] = None
     tools: List[str] = Field(default_factory=list)
+    tool_overrides: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
     mcp_servers: List[str] = Field(default_factory=list)
 
 

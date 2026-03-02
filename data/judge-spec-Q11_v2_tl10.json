@@ -1,0 +1,16 @@
+{
+  "gold": {
+    "answer_json": [
+      { "id": "urn:ngsi-ld:TrafficLightSignal:1004" }
+    ],
+    "numeric": 1,
+    "reasoning": "Filter traffic lights with status Red, find associated luminaires within 2500 meters with peopleAffluence < 5, then return the matching traffic light(s).",
+    "queries": []
+  },
+  "weights": { "correctness": 1.0, "reasoning": 0.0, "efficiency": 0.0 },
+  "pass_threshold": 1.0,
+  "grading_mode": "gated",
+  "min_correctness": 1.0,
+  "efficiency_budget": 999,
+  "notes": "Accept JSON or natural-language answers identifying urn:ngsi-ld:TrafficLightSignal:1004 as the only matching traffic light. Query count/type should not affect scoring."
+}
