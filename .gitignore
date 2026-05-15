@@ -24,3 +24,6 @@ tools.yaml
 
 # Ignore local runtime config
 config.yaml
+
+# Ignore private dev folders
+dev-docs/

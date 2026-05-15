@@ -131,7 +131,7 @@ def _extract_mcp_trace_from_response(resp: Any) -> Dict[str, Any]:
     }   
 
 
-def run_once(cfg: AppConfig, req: RunRequest) -> RunResult:
+def run_turn(cfg: AppConfig, req: RunRequest) -> RunResult:
     try:
         resp = None
         tools: List[dict] = []
@@ -152,7 +152,7 @@ def run_once(cfg: AppConfig, req: RunRequest) -> RunResult:
                 max_output_tokens=req.max_output_tokens or cfg.max_output_tokens,
             )
             tools = agent.tools
-            model_name = getattr(agent.model_backend, "model", cfg.model)
+            model_name = getattr(agent.model_backend, "model_name", cfg.model)
         else:
             client = build_client(cfg)
             tools = cfg.build_tools()
@@ -190,10 +190,16 @@ def run_once(cfg: AppConfig, req: RunRequest) -> RunResult:
             ok=True,
             output_text=output_text,
             raw_response=resp,
-            model=model_name,
+            model_name=model_name,
             parsed_json=parsed,
             metadata={"tools": tools, "mcp_trace": mcp_trace},
         )
     except Exception as e:
         log.exception("run_once failed")
-        return RunResult(ok=False, output_text="", error=str(e), model=cfg.model)
+        return RunResult(ok=False, output_text="", error=str(e), model_name=cfg.model)
+
+
+def run_once(cfg: AppConfig, req: RunRequest) -> RunResult:
+    """Compatibility wrapper for the current CLI/eval/benchmark entry point."""
+
+    return run_turn(cfg, req)

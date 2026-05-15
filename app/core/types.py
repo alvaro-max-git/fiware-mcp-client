@@ -1,9 +1,13 @@
 from __future__ import annotations
-from dataclasses import dataclass, field
+
 from typing import Any, Dict, List, Optional
 
-@dataclass
-class RunRequest:
+from pydantic import AliasChoices, BaseModel, Field
+
+from app.core.model_name import ModelName
+
+
+class RunRequest(BaseModel):
     user_prompt: str
     system_prompt_file: Optional[str] = None
     max_output_tokens: Optional[int] = None
@@ -11,34 +15,27 @@ class RunRequest:
     tools_yaml: Optional[str] = None
     agent_id: Optional[str] = None
 
-@dataclass
-class RunResult:
+
+class RunResult(BaseModel):
     ok: bool
     output_text: str
     raw_response: Any = None
-    model: Optional[str] = None
+    model_name: Optional[ModelName] = Field(
+        default=None,
+        validation_alias=AliasChoices("model_name", "model"),
+    )
     error: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    parsed_json: Optional[Any] = None  # best-effort JSON parse
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+    parsed_json: Optional[Any] = None
 
-@dataclass
-class ExpectedSpec:
-    # One of the following can be set depending on evaluation mode
-    exact_text: Optional[str] = None
-    equals_json: Optional[Any] = None
-    json_subset: Optional[Any] = None
-    regex: Optional[str] = None
-    llm_judge: Optional[LLMJudgeSpec] = None
+    @property
+    def model(self) -> Optional[str]:
+        """Compatibility accessor for older benchmark and CLI code."""
 
-@dataclass
-class EvalResult:
-    passed: bool
-    reason: Optional[str] = None
-    details: Dict[str, Any] = field(default_factory=dict)
+        return self.model_name
 
 
-@dataclass
-class LLMJudgeGold:
+class LLMJudgeGold(BaseModel):
     answer_text: Optional[str] = None
     answer_json: Optional[Any] = None
     numeric: Optional[float] = None
@@ -46,18 +43,21 @@ class LLMJudgeGold:
     queries: Optional[List[str]] = None
 
 
-@dataclass
-class LLMJudgeSpec:
+class LLMJudgeSpec(BaseModel):
     gold: LLMJudgeGold
-    weights: Dict[str, float] = field(default_factory=lambda: {
-        "correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1
-    })
+    weights: Dict[str, float] = Field(
+        default_factory=lambda: {
+            "correctness": 0.7,
+            "reasoning": 0.2,
+            "efficiency": 0.1,
+        }
+    )
     pass_threshold: float = 0.8
     efficiency_budget: Optional[int] = None
     notes: Optional[str] = None
 
-    grading_mode: str = "gated"           # "gated" | "hierarchical" | "weighted"
-    min_correctness: float = field(default=1.0)
+    grading_mode: str = "gated"
+    min_correctness: float = 1.0
 
     @staticmethod
     def from_dict(data: Dict[str, Any]) -> "LLMJudgeSpec":
@@ -117,3 +117,17 @@ class LLMJudgeSpec:
             grading_mode=grading_mode,
             min_correctness=min_correctness,
         )
+
+
+class ExpectedSpec(BaseModel):
+    exact_text: Optional[str] = None
+    equals_json: Optional[Any] = None
+    json_subset: Optional[Any] = None
+    regex: Optional[str] = None
+    llm_judge: Optional[LLMJudgeSpec] = None
+
+
+class EvalResult(BaseModel):
+    passed: bool
+    reason: Optional[str] = None
+    details: Dict[str, Any] = Field(default_factory=dict)

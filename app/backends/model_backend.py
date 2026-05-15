@@ -15,19 +15,25 @@ class ModelBackend(abc.ABC):
 	def __init__(
 		self,
 		*, #any arguments must be passed with keyword (model="gpt-5-mini")
-		model: str,
+		model_name: str,
 		api_key: Optional[str] = None,
 		base_url: Optional[str] = None,
 		temperature: Optional[float] = None,
 		max_output_tokens: Optional[int] = None,
 		client_options: Optional[Dict[str, Any]] = None,
 	) -> None:
-		self.model = model
+		self.model_name = model_name
 		self.api_key = api_key
 		self.base_url = base_url
 		self.temperature = temperature
 		self.max_output_tokens = max_output_tokens
 		self.client_options = client_options or {}
+
+	@property
+	def model(self) -> str:
+		"""Deprecated compatibility accessor for Phase 1 callers."""
+
+		return self.model_name
 
 	@abc.abstractmethod
 	def generate(
@@ -49,7 +55,7 @@ class ModelBackend(abc.ABC):
 		overrides: Optional[Dict[str, Any]] = None,
 	) -> Dict[str, Any]:
 		payload: Dict[str, Any] = {
-			"model": self.model,
+			"model": self.model_name,
 			"instructions": instructions,
 			"input": user_prompt,
 		}

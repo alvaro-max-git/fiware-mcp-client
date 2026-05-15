@@ -1,9 +1,16 @@
 import os
+import textwrap
 from pathlib import Path
 
 import pytest
 
-from app.core.config import AppConfig, apply_client_config_overrides, load_client_config
+from app.core.config import (
+    AppConfig,
+    BackendConfig,
+    apply_client_config_overrides,
+    load_client_config,
+    load_profiles_config,
+)
 
 
 def test_load_client_config_missing_raises(tmp_path: Path):
@@ -57,3 +64,49 @@ def test_config_yaml_mcp_servers_apply_overrides(tmp_path: Path, monkeypatch: py
     assert tools[0]["server_label"] == "fiware-mcp"
     assert tools[0]["server_url"] == "https://example.com/mcp"
     assert tools[0]["allowed_tools"] == ["execute_query", "get_entity_types"]
+
+
+def test_backend_config_accepts_model_name():
+    cfg = BackendConfig(type="openai_responses", model_name="gpt-5")
+
+    assert cfg.model_name == "gpt-5"
+    assert cfg.model == "gpt-5"
+
+
+def test_backend_config_accepts_legacy_model_alias():
+    cfg = BackendConfig(type="openai_responses", model="gpt-5")
+
+    assert cfg.model_name == "gpt-5"
+    assert cfg.model == "gpt-5"
+
+
+def test_profiles_yaml_accepts_legacy_model_alias(tmp_path: Path):
+    profiles_yaml = tmp_path / "agents.yaml"
+    profiles_yaml.write_text(
+        textwrap.dedent(
+            """
+            default_agent: a
+            agents:
+              - id: a
+                system_prompt: system.md
+                backend:
+                  type: openai_responses
+                  model: gpt-5
+            """
+        ).strip(),
+        encoding="utf-8",
+    )
+
+    cfg = load_profiles_config(profiles_yaml)
+
+    assert cfg.agents[0].backend.model_name == "gpt-5"
+
+
+def test_client_config_accepts_legacy_model_alias(tmp_path: Path):
+    p = tmp_path / "config.yaml"
+    p.write_text("model: gpt-5-nano\n", encoding="utf-8")
+
+    cfg = load_client_config(p)
+
+    assert cfg.model_name == "gpt-5-nano"
+    assert cfg.model == "gpt-5-nano"

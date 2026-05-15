@@ -13,7 +13,7 @@ class OpenAIResponsesBackend(ModelBackend):
 	def __init__(
 		self,
 		*,
-		model: str,
+		model_name: str,
 		api_key: str,
 		base_url: Optional[str] = None,
 		temperature: Optional[float] = None,
@@ -21,7 +21,7 @@ class OpenAIResponsesBackend(ModelBackend):
 		client_options: Optional[Dict[str, Any]] = None,
 	) -> None:
 		super().__init__(
-			model=model,
+			model_name=model_name,
 			api_key=api_key,
 			base_url=base_url,
 			temperature=temperature,

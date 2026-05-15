@@ -8,7 +8,7 @@ agents:
     
     backend:
       type: "openai_responses"
-      model: "gpt-5.2"
+      model_name: "gpt-5.2"
 
     tools: ["fiware-mcp", "code-interpreter"]
 
@@ -18,7 +18,7 @@ agents:
 
     backend:
       type: "openai_responses"
-      model: "gpt-4.1"
+      model_name: "gpt-4.1"
 
     tools: ["fiware-mcp"]
 
@@ -28,7 +28,7 @@ agents:
 
     backend:
       type: "openai_responses"
-      model: "gpt-5.2"
+      model_name: "gpt-5.2"
 
     tools: ["fiware-mcp", "code-interpreter"]
 
@@ -38,6 +38,6 @@ agents:
     
     backend:
       type: "openai_responses"
-      model: "gpt-5-nano"
+      model_name: "gpt-5-nano"
 
     tools: []

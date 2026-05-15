@@ -12,7 +12,7 @@ class BackendConfig(Protocol):
 	"""Minimal shape required to build a backend."""
 
 	type: str
-	model: str
+	model_name: str
 	temperature: Optional[float]
 	max_output_tokens: Optional[int]
 	base_url: Optional[str]
@@ -32,13 +32,13 @@ def create_backend(config: BackendConfig, *, api_key: Optional[str] = None) -> M
 	if not backend_type:
 		raise ValueError("Backend type must be provided")
 
-	model = getattr(config, "model", None)
-	if not model:
+	model_name = getattr(config, "model_name", None) or getattr(config, "model", None)
+	if not model_name:
 		raise ValueError("Backend model must be provided")
 
 	resolved_api_key = _resolve_api_key(config, api_key)
 	common_kwargs = {
-		"model": model,
+		"model_name": model_name,
 		"api_key": resolved_api_key,
 		"temperature": getattr(config, "temperature", None),
 		"max_output_tokens": getattr(config, "max_output_tokens", None),
