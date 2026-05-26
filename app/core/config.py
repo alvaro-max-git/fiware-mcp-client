@@ -96,6 +96,7 @@ class BackendConfig(BaseModel):
     max_output_tokens: Optional[int] = None
     base_url: Optional[str] = None
     client_options: Optional[Dict[str, Any]] = None
+    session: Optional[Dict[str, Any]] = None
     api_key: Optional[str] = None
 
     @property
@@ -113,6 +114,7 @@ class AgentProfile(BaseModel):
     tools: List[str] = Field(default_factory=list)
     tool_overrides: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
     mcp_servers: List[str] = Field(default_factory=list)
+    handoffs: List[str] = Field(default_factory=list)
 
     @model_validator(mode="before")
     @classmethod

@@ -11,6 +11,22 @@ agents:
       model_name: "gpt-5.2"
 
     tools: ["fiware-mcp", "code-interpreter"]
+    handoffs: []
+
+  - id: "fiware-client-agents-local"
+    description: "NGSI-LD expert assistant using the OpenAI Agents SDK and local MCP"
+    system_prompt: "system2.3.md"
+
+    backend:
+      type: "openai_agents"
+      model_name: "gpt-5.2"
+      session:
+        enabled: true
+        provider: "sqlite"
+        path: "data/sessions.sqlite"
+
+    tools: ["fiware-mcp-local"]
+    handoffs: []
 
   - id: "mcp-experiments-gpt4.1"
     description: "NGSI-LD expert assistant for MCP Experiments"
@@ -21,6 +37,7 @@ agents:
       model_name: "gpt-4.1"
 
     tools: ["fiware-mcp"]
+    handoffs: []
 
   - id: "mcp-experiments-gpt5.2"
     description: "NGSI-LD expert assistant for MCP Experiments"
@@ -31,6 +48,7 @@ agents:
       model_name: "gpt-5.2"
 
     tools: ["fiware-mcp", "code-interpreter"]
+    handoffs: []
 
   - id: "fiware-evaluator"
     description: "LLM judge for evaluation and benchmarks"
@@ -41,3 +59,4 @@ agents:
       model_name: "gpt-5-nano"
 
     tools: []
+    handoffs: []

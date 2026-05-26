@@ -4,9 +4,9 @@ import logging
 from pathlib import Path
 from typing import Dict, Any, Iterable
 from app.core.config import AppConfig
-from app.core.runner import run_once
 from app.core.types import RunRequest, ExpectedSpec, LLMJudgeSpec, LLMJudgeGold
 from app.evaluator.evaluator import evaluate, evaluate_llm_judge
+from app.services.run_service import RunService
 
 # CSV columns:
 # id, question, model, system_prompt_file, eval_mode, expected
@@ -111,6 +111,7 @@ def run_benchmark(
         out_path.mkdir(parents=True, exist_ok=True)
         results_csv = out_path / "results.csv"
     bench_logger = logging.getLogger("benchmark")
+    run_service = RunService(cfg)
 
     with results_csv.open("w", encoding="utf-8", newline="") as f_out:
         writer = csv.DictWriter(
@@ -172,7 +173,7 @@ def run_benchmark(
                 tools_yaml=default_tools_yaml,
                 agent_id=agent_id,
             )
-            res = run_once(cfg, req)
+            res = run_service.run_turn(req)
 
             cfg.model = original_model
 

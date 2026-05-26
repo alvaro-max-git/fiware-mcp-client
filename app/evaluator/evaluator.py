@@ -1,13 +1,11 @@
 import json
 import re
 import logging
-from pathlib import Path
-from typing import Any, Optional, Tuple
+from typing import Any, Optional
 
-from openai import OpenAI
 from app.core.config import AppConfig
-from app.core.types import RunResult, ExpectedSpec, EvalResult, LLMJudgeSpec
-from app.core.agent_session import AgentSession
+from app.core.types import RunRequest, RunResult, ExpectedSpec, EvalResult, LLMJudgeSpec
+from app.services.run_service import RunService
 
 logger = logging.getLogger("evaluator")
 
@@ -20,38 +18,6 @@ def _json_is_subset(small: Any, big: Any) -> bool:
     if isinstance(small, list) and isinstance(big, list):
         return all(any(_json_is_subset(s, b) for b in big) for s in small)
     return small == big
-
-# --- NEW: helpers to extract text/JSON from Responses API ---
-
-def _response_to_text(resp) -> str:
-    # 1) official convenience if available
-    t = getattr(resp, "output_text", None)
-    if isinstance(t, str) and t.strip():
-        return t
-    # 2) walk output items and collect text content
-    try:
-        parts = []
-        for item in getattr(resp, "output", []) or []:
-            content = getattr(item, "content", None)
-            if not content:
-                continue
-            for c in content:
-                # SDK structs often have c.text or c.text.value
-                txt = None
-                if hasattr(c, "text"):
-                    v = c.text
-                    txt = getattr(v, "value", v) if v is not None else None
-                elif hasattr(c, "input_text"):
-                    v = c.input_text
-                    txt = getattr(v, "value", v) if v is not None else None
-                if isinstance(txt, str):
-                    parts.append(txt)
-        if parts:
-            return "".join(parts)
-    except Exception:
-        pass
-    # 3) last resort
-    return str(resp)
 
 def _extract_json_object(text: str) -> Optional[Any]:
     # Fast path
@@ -84,8 +50,6 @@ def _extract_json_object(text: str) -> Optional[Any]:
                         break
         start = text.find("{", start + 1)
     return None
-
-# ------------------------------------------------------------
 
 def evaluate(result: RunResult, expected: ExpectedSpec) -> EvalResult:
     if not result.ok:
@@ -138,30 +102,35 @@ def evaluate_llm_judge(
         except Exception:
             logger.debug("LLM-judge input (raw, non-serializable): %s", str(judge_input)[:2000])
 
-    # Prefer evaluator agent from YAML if provided; otherwise legacy OpenAI path.
+    run_service = RunService(cfg)
+
+    # Prefer evaluator agent from YAML if provided; otherwise legacy no-tool judge path.
+    judge_result: RunResult
     if profiles_yaml:
         judge_id = judge_agent_id or "fiware-evaluator"
-        try:
-            session = AgentSession.from_yaml(
-                yaml_path=Path(profiles_yaml),
-                default_agent=judge_id,
-                prompts_dir=cfg.prompts_dir,
-                read_only=True,
-                tools_yaml=Path(tools_yaml) if tools_yaml else None,
-            )
-            # JSON string input, mirroring the legacy request payload.
-            resp = session.ask(
-                json.dumps(judge_input, ensure_ascii=False),
+        judge_result = run_service.run_turn(
+            RunRequest(
+                user_prompt=json.dumps(judge_input, ensure_ascii=False),
+                profiles_yaml=profiles_yaml,
+                tools_yaml=tools_yaml,
                 agent_id=judge_id,
                 max_output_tokens=30000,
             )
-        except Exception:
-            logger.exception("Falling back to legacy judge because evaluator agent failed")
-            resp = _legacy_judge_request(cfg, judge_input)
+        )
+        if not judge_result.ok:
+            logger.warning("Falling back to legacy judge because evaluator agent failed: %s", judge_result.error)
+            judge_result = _legacy_judge_request(run_service, cfg, judge_input)
     else:
-        resp = _legacy_judge_request(cfg, judge_input)
+        judge_result = _legacy_judge_request(run_service, cfg, judge_input)
 
-    out_text = _response_to_text(resp)
+    if not judge_result.ok:
+        return EvalResult(
+            passed=False,
+            reason=f"judge run failed: {judge_result.error}",
+            details={"raw": judge_result.output_text},
+        )
+
+    out_text = judge_result.output_text
     if logger.isEnabledFor(logging.DEBUG):
         logger.debug("LLM-judge raw output_text:\n%s", out_text)
 
@@ -179,16 +148,17 @@ def evaluate_llm_judge(
     return EvalResult(passed=verdict, reason=feedback, details=judge_json)
 
 
-def _legacy_judge_request(cfg: AppConfig, judge_input: dict):
-    client = OpenAI(api_key=cfg.openai_api_key)
-    judge_instructions = cfg.load_judge_prompt()
-    req = {
-        "model": cfg.judge_model,
-        "instructions": judge_instructions,
-        "input": json.dumps(judge_input, ensure_ascii=False),
-        "max_output_tokens": 30000,
-    }
-    return client.responses.create(**req)
+def _legacy_judge_request(run_service: RunService, cfg: AppConfig, judge_input: dict) -> RunResult:
+    return run_service.run_turn(
+        RunRequest(
+            user_prompt=json.dumps(judge_input, ensure_ascii=False),
+            model_name=cfg.judge_model,
+            system_prompt_file=cfg.judge_system_prompt_file,
+            max_output_tokens=30000,
+            use_tools=False,
+            include_runtime_instructions=False,
+        )
+    )
 
 
 def _build_judge_input(result: RunResult, spec: LLMJudgeSpec, user_prompt: Optional[str]) -> dict:

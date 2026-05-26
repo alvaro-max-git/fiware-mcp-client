@@ -9,11 +9,15 @@ from app.core.model_name import ModelName
 
 class RunRequest(BaseModel):
     user_prompt: str
+    model_name: Optional[ModelName] = None
     system_prompt_file: Optional[str] = None
     max_output_tokens: Optional[int] = None
     profiles_yaml: Optional[str] = None
     tools_yaml: Optional[str] = None
     agent_id: Optional[str] = None
+    session_id: Optional[str] = None
+    use_tools: bool = True
+    include_runtime_instructions: bool = True
 
 
 class RunResult(BaseModel):

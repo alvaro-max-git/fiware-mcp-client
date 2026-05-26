@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 import abc
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Union
+
+from app.tools.specs import ToolSpec
+
+ToolLike = Union[ToolSpec, dict]
+TextDeltaHandler = Callable[[str], None]
 
 
 class ModelBackend(abc.ABC):
@@ -41,10 +46,23 @@ class ModelBackend(abc.ABC):
 		*,
 		instructions: str,
 		user_prompt: str,
-		tools: Optional[List[dict]] = None,
+		tools: Optional[List[ToolLike]] = None,
 		**kwargs: Any,
 	) -> Any:
 		"""Execute a generation request against the backend."""
+
+	def stream(
+		self,
+		*,
+		instructions: str,
+		user_prompt: str,
+		on_text_delta: TextDeltaHandler,
+		tools: Optional[List[ToolLike]] = None,
+		**kwargs: Any,
+	) -> Any:
+		"""Execute a streaming generation request against the backend."""
+
+		raise NotImplementedError(f"{type(self).__name__} does not support streaming")
 
 	def _compose_request(
 		self,

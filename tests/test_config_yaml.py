@@ -80,6 +80,16 @@ def test_backend_config_accepts_legacy_model_alias():
     assert cfg.model == "gpt-5"
 
 
+def test_backend_config_accepts_agents_session_config():
+    cfg = BackendConfig(
+        type="openai_agents",
+        model_name="gpt-5",
+        session={"enabled": True, "provider": "sqlite", "path": "data/sessions.sqlite"},
+    )
+
+    assert cfg.session["provider"] == "sqlite"
+
+
 def test_profiles_yaml_accepts_legacy_model_alias(tmp_path: Path):
     profiles_yaml = tmp_path / "agents.yaml"
     profiles_yaml.write_text(
@@ -100,6 +110,34 @@ def test_profiles_yaml_accepts_legacy_model_alias(tmp_path: Path):
     cfg = load_profiles_config(profiles_yaml)
 
     assert cfg.agents[0].backend.model_name == "gpt-5"
+
+
+def test_profiles_yaml_accepts_handoff_ids(tmp_path: Path):
+    profiles_yaml = tmp_path / "agents.yaml"
+    profiles_yaml.write_text(
+        textwrap.dedent(
+            """
+            default_agent: triage
+            agents:
+              - id: triage
+                system_prompt: triage.md
+                handoffs: [specialist]
+                backend:
+                  type: openai_agents
+                  model_name: gpt-5
+              - id: specialist
+                system_prompt: specialist.md
+                backend:
+                  type: openai_agents
+                  model_name: gpt-5-mini
+            """
+        ).strip(),
+        encoding="utf-8",
+    )
+
+    cfg = load_profiles_config(profiles_yaml)
+
+    assert cfg.get_agent("triage").handoffs == ["specialist"]
 
 
 def test_client_config_accepts_legacy_model_alias(tmp_path: Path):

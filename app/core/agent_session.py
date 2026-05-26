@@ -13,6 +13,7 @@ from app.core.config import (
 )
 from app.core.tool_factory import ToolFactory
 from app.prompts import load_prompt
+from app.tools.specs import ToolSpec
 
 
 def _load_tool_factory_if_available(tools_yaml: Optional[Path]) -> Optional[ToolFactory]:
@@ -33,7 +34,7 @@ def _resolve_tools(
 	tool_names: List[str],
 	tool_factory: Optional[ToolFactory],
 	overrides: Optional[Dict[str, Dict[str, object]]] = None,
-) -> List[dict]:
+) -> List[ToolSpec]:
 	if tool_names:
 		if not tool_factory:
 			raise ValueError(
@@ -100,6 +101,10 @@ class AgentSession:
 		agent = self.get_agent(agent_id)
 		return agent.generate(prompt, **kwargs)
 
+	def ask_stream(self, prompt: str, *, agent_id: Optional[str] = None, **kwargs):
+		agent = self.get_agent(agent_id)
+		return agent.stream(prompt, **kwargs)
+
 	@classmethod
 	def from_yaml(
 		cls,
@@ -114,6 +119,8 @@ class AgentSession:
 		tool_factory = _load_tool_factory_if_available(tools_yaml)
 		session = cls(default_agent=default_agent or profiles.default_agent)
 
+		profiles_by_id = {profile.id: profile for profile in profiles.agents}
+
 		for profile in profiles.agents:
 			backend = create_backend(profile.backend)
 			tools = _resolve_tools(profile.tools, tool_factory, profile.tool_overrides)
@@ -126,5 +133,14 @@ class AgentSession:
 				model_backend=backend,
 				tools=tools,
 			)
+
+		for profile in profiles.agents:
+			agent = session.agents[profile.id]
+			for handoff_id in profile.handoffs:
+				if handoff_id not in profiles_by_id:
+					raise ValueError(
+						f"Agent '{profile.id}' declares unknown handoff target '{handoff_id}'"
+					)
+				agent.delegates.append(session.agents[handoff_id])
 
 		return session

@@ -17,6 +17,7 @@ class BackendConfig(Protocol):
 	max_output_tokens: Optional[int]
 	base_url: Optional[str]
 	client_options: Optional[Dict[str, Any]]
+	session: Optional[Dict[str, Any]]
 	api_key: Optional[str]
 
 
@@ -49,6 +50,9 @@ def create_backend(config: BackendConfig, *, api_key: Optional[str] = None) -> M
 	if backend_type in {"openai_responses", "openai"}:
 		return OpenAIResponsesBackend(**common_kwargs)
 	if backend_type in {"openai_agent", "openai_agents"}:
-		return OpenAIAgentsBackend(**common_kwargs)
+		return OpenAIAgentsBackend(
+			**common_kwargs,
+			session_config=getattr(config, "session", None),
+		)
 
 	raise ValueError(f"Unknown backend type: {backend_type}")
