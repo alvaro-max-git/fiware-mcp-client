@@ -1,231 +1,261 @@
 # fiware-mcp-client
 
-Client that queries a FIWARE NGSI-LD Context Broker via an MCP server using an OpenAI model. It supports single runs and response evaluation.
+Small FIWARE MCP client and agent orchestration CLI for querying a FIWARE NGSI-LD Context Broker through OpenAI models.
 
-- CLI: app/cli.py
-- Config: app/core/config.py (+ config.yaml)
-- Runner: app/core/runner.py
-- Evaluator: app/evaluator/evaluator.py
-- Types: app/core/types.py
-- Prompts: prompts/
+The project is YAML-first and organized around a thin CLI, application services, validated Pydantic contracts, backend adapters, and a normalized `RunResult` used by run, chat, eval, and benchmark flows.
+
+## Capabilities
+
+- Single-turn runs with the OpenAI Responses API compatibility backend.
+- OpenAI Agents SDK backend with local MCP transports, SQLite chat sessions, streaming, and optional handoff configuration.
+- YAML profile and tool catalog configuration.
+- Backend-neutral tool specs with backend-specific adapters.
+- Evaluation modes: exact text, JSON equality, JSON subset, regex, and LLM-as-judge.
+- CSV benchmarks using the same `RunService` pipeline as normal runs.
 
 ## Requirements
 
 - Python 3.10+
-- An MCP server exposing tools (e.g., execute_query, get_entity_types, CB_version) pointing to your Context Broker.
+- OpenAI API key
+- MCP server exposing FIWARE tools such as `execute_query`, `get_entity_types`, `CB_version`, and `haversine_dist`
 
-Right now using:
-- Server: https://github.com/dncampo/FIWARE-MCP-Server
-- Context-broker: https://github.com/jason-fox/Context-Data-Loader
+References used by this academic project:
+
+- FIWARE MCP server: https://github.com/dncampo/FIWARE-MCP-Server
+- Context broker data loader: https://github.com/jason-fox/Context-Data-Loader
 
 ## Installation
 
-Create a virtual environment and install dependencies:
-- Windows (PowerShell)
-  - python -m venv .venv
-  - .\.venv\Scripts\Activate
-- macOS/Linux (bash)
-  - python3 -m venv .venv
-  - source .venv/bin/activate
+Create and activate a virtual environment:
 
-Install:
-- pip install -r requirements.txt
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate
+pip install -r requirements.txt
+```
+
+On macOS/Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
 ## Configuration
 
-This project is **YAML-first**.
+Copy `.template.env` to `.env` and set:
 
-1) **Secrets & environment** (local, do not commit):
-- Copy `.template.env` to `.env` and set at least:
-  - `OPENAI_API_KEY=...`
+```text
+OPENAI_API_KEY=...
+```
 
-2) **Runtime config** (`config.yaml`, local per use-case):
-- Copy `config.example.yaml` to `config.yaml` and edit:
-  - `profiles_yaml`: agent profiles (YAML)
-  - `tools_yaml`: tool catalog (YAML)
-  - `agent_id`: default agent
-  - `mcp_servers`: MCP servers for legacy env-only mode
+Copy `config.example.yaml` to `config.yaml` and edit the YAML defaults:
 
-### Tool catalog (YAML)
+```yaml
+profiles_yaml: app/profiles/fiware-agents.yaml
+tools_yaml: app/tools/tools.yaml
+agent_id: fiware-client
 
-Tools are defined in `tools_yaml` and referenced by name in agent profiles. Each tool has a `type` (builder) and a `config` (defaults). Examples:
+read_only: true
+prompts_dir: prompts
+log_level: DEBUG
+log_to_file: true
+logs_dir: logs
+```
+
+Use `agent_id: fiware-client` for the Responses compatibility profile. Use `agent_id: fiware-client-agents-local` for the OpenAI Agents SDK profile with local streamable HTTP MCP at `http://127.0.0.1:5001/mcp`.
+
+## Profiles
+
+Profiles live in `app/profiles/fiware-agents.yaml`. Each profile selects a system prompt, backend, tools, and optional handoffs:
+
+```yaml
+default_agent: fiware-client
+
+agents:
+  - id: fiware-client-agents-local
+    description: NGSI-LD expert assistant using the OpenAI Agents SDK
+    system_prompt: system2.3.md
+    backend:
+      type: openai_agents
+      model_name: gpt-5.2
+      session:
+        enabled: true
+        provider: sqlite
+        path: data/sessions.sqlite
+    tools: [fiware-mcp-local]
+    handoffs: []
+
+  - id: fiware-evaluator
+    description: LLM judge for evaluation and benchmarks
+    system_prompt: judge_system.md
+    backend:
+      type: openai_responses
+      model_name: gpt-5-nano
+    tools: []
+```
+
+The evaluator is a normal configured agent. Evaluation code calls it through the same service layer instead of using a separate provider path.
+
+## Tools
+
+Tools live in `app/tools/tools.yaml` and are referenced by profile name:
 
 ```yaml
 tools_definitions:
   - name: fiware-mcp
-    type: mcp
+    type: mcp_hosted
     config:
-      label: fiware-mcp
-      url: https://example.com/mcp
-      allowed_tools: execute_query, get_entity_types
+      server_label: fiware-mcp
+      server_url: https://example.com/mcp
+      allowed_tools: execute_query, get_entity_types, CB_version
 
-  - name: code-interpreter
-    type: openai-responses-tool
+  - name: fiware-mcp-local
+    type: mcp_streamable_http
     config:
-      type: code_interpreter
-      container:
-        type: auto
-        memory_limit: 4g
+      name: fiware-mcp
+      url: http://127.0.0.1:5001/mcp
+      allowed_tools: execute_query, get_entity_types, CB_version
+      cache_tools_list: true
 ```
 
-### Tool overrides per agent
+Supported tool categories include `mcp_hosted`, `mcp_streamable_http`, `mcp_sse`, `mcp_stdio`, `openai_hosted_tool`, and reserved `function_tool`. Legacy `type: mcp` is still accepted as an alias for `mcp_hosted`.
 
-Profiles can override tool defaults using `tool_overrides` (deep-merged over the catalog defaults):
+## CLI Usage
 
-```yaml
-agents:
-  - id: fiware-client
-    system_prompt: system2.3.md
-    backend:
-      type: openai_responses
-      model: gpt-5.2
-    tools: [fiware-mcp, code-interpreter]
-    tool_overrides:
-      code-interpreter:
-        container:
-          memory_limit: 8g
+All commands accept `--config`, defaulting to `config.yaml`:
+
+```powershell
+python -m app.cli <command> --config config.yaml
 ```
 
-### YAML-mode (recommended)
+### Single Run
 
-In YAML-mode (when `profiles_yaml` is set), tools are loaded from the tools catalog YAML.
-There is **no fallback** to MCP servers defined in `.env`.
+```powershell
+python -m app.cli run --prompt "List available entity types"
+```
 
-### Legacy env-only mode (compat)
+Useful overrides:
 
-If you run without `profiles_yaml`, the client uses the legacy path (OpenAI Responses directly) and MCP servers are configured via `config.yaml` (`mcp_servers`).
+```powershell
+python -m app.cli run --prompt "List entity types" --agent-id fiware-client-agents-local
+python -m app.cli run --prompt "Remember this parcel id: urn:ngsi-ld:AgriParcel:005" --agent-id fiware-client-agents-local --session-id demo-session
+```
 
-Optional backward-compat (not recommended): you can still configure MCP servers via `.env`.
+`run --session-id` is a low-level hook for Agents SDK session memory. For normal multi-turn work, prefer `chat`.
 
-Multiple MCP servers (optional):
-- Use `MCP0_LABEL`, `MCP0_URL`, `MCP0_ALLOWED_TOOLS`, then `MCP1_...`, etc.
+### Chat
 
-## Usage
+Interactive chat uses a persistent `session_id` and the same configured agent/profile defaults as `run`:
 
-Run the CLI:
-- python -m app.cli <command> [options]
+```powershell
+python -m app.cli chat --agent-id fiware-client-agents-local --session-id demo-session
+```
 
-System prompt selection:
-- Defaults to `config.yaml` (`system_prompt_file`) in legacy mode.
-- Override per run with --system-prompt-file.
+Send one chat turn and exit:
 
-### Single run
+```powershell
+python -m app.cli chat --prompt "What did I ask before?" --agent-id fiware-client-agents-local --session-id demo-session
+```
 
-- Example:
-  - Windows (PowerShell):
-    - python -m app.cli run --prompt "List available entity types"
-  - macOS/Linux (bash):
-    - python -m app.cli run --prompt 'List available entity types'
+Stream text deltas with the Agents SDK backend:
 
-Prints the LLM output.
+```powershell
+python -m app.cli chat --stream --agent-id fiware-client-agents-local --session-id demo-session
+```
 
-### Evaluation mode
+The Responses backend remains available for compatibility, but it does not provide SDK session memory or streaming.
 
-Compare the LLM response against an expected value using one criterion:
-- --exact-text
-- --equals-json
-- --json-subset
-- --regex
+### Evaluation
 
-Examples:
-- Exact text:
-  - python -m app.cli eval --prompt "ping" --exact-text "OK"
-- Equals JSON:
-  - Windows (PowerShell): python -m app.cli eval --prompt "..." --equals-json '{ "status": 200 }'
-  - macOS/Linux (bash): python -m app.cli eval --prompt '...' --equals-json '{ "status": 200 }'
-- JSON subset:
-  - python -m app.cli eval --prompt "..." --json-subset '{ "status": 200 }'
-- Regex:
-  - python -m app.cli eval --prompt "..." --regex "status\\D+200"
+```powershell
+python -m app.cli eval --prompt "ping" --exact-text "OK"
+python -m app.cli eval --prompt "..." --equals-json '{ "status": 200 }'
+python -m app.cli eval --prompt "..." --json-subset '{ "status": 200 }'
+python -m app.cli eval --prompt "..." --regex "status\\D+200"
+```
 
-Output:
-- Prints the model response and an evaluation line like:
-  - [EVAL] passed=True reason=
+LLM-as-judge expects a JSON file:
 
-## Benchmarks (CSV)
+```powershell
+python -m app.cli eval --prompt "How many animals are located at AgriParcel 005?" --llm-judge-file judge.json
+```
 
-Run multiple prompts and evaluate them from a CSV file.
-
-- Command:
-  - python -m app.cli bench --csv benchmark/benchmark_tests.csv --out bench_out
-  - python -m app.cli bench --csv benchmark/benchmark_tests.csv --out "bench_out/my results v1.csv"
-- Output:
-  - A results file at bench_out/results.csv with columns:
-    - id, passed, reason, model, system_prompt_file, eval_mode, question, output_text, profiles_yaml, agent_id, score_* metrics, mcp_call_count, queries
-
-CSV format (columns):
-- **id**: identifier
-- **question**: user prompt
-- **model** (optional): override the default model for this row (ignored if profiles_yaml+agent_id are used)
-- **system_prompt_file** (optional): override the default system prompt (legacy path; ignored when using profiles_yaml)
-- **profiles_yaml** (optional): path to an agents YAML. If set, the row uses AgentSession loading (tools from catalog, agent backends, prompts from profile).
-- **agent_id** (optional): agent id from the profiles YAML (falls back to default_agent if empty)
-- **eval_mode**: exact_text | equals_json | json_subset | regex | llm_judge | *(empty for run-only)*
-- **expected**: payload matching eval_mode (ignored if eval_mode is empty)
-
-#### LLM-as-Judge mode
-
-When `eval_mode` is `llm_judge`, the `expected` column must contain a JSON object with the judge specification:
+Judge file shape:
 
 ```json
 {
   "gold": {
-    "answer_text": "expected answer text",
-    "answer_json": {"key": "value"},
     "numeric": 13,
-    "reasoning": "expected reasoning steps",
-    "queries": ["/ngsi-ld/v1/entities?type=Animal&q=..."]
+    "queries": ["/ngsi-ld/v1/entities?type=Animal&q=locatedAt==%22urn:ngsi-ld:AgriParcel:005%22&count=true"]
   },
   "weights": {"correctness": 0.7, "reasoning": 0.2, "efficiency": 0.1},
   "pass_threshold": 0.8,
   "grading_mode": "gated",
-  "min_correctness": 1.0,
-  "efficiency_budget": 5,
-  "notes": "Additional evaluation hints"
+  "min_correctness": 1.0
 }
 ```
 
-All fields are optional except `gold` (which must be an object). The judge will evaluate correctness, reasoning quality, and query efficiency.
+## Benchmarks
 
-Example CSV (see sample: benchmark/benchmark_tests.csv):
-- id,question,model,system_prompt_file,eval_mode,expected
-- T1,"Tell me how many animals are located at AgriParcel 005. Answer only with a number",,system3.md,exact_text,"13"
-- T2,"List all animals located at AgriParcel 005. Just return the JSON format (Context Broker answer)",gpt-4o,system3.md,json_subset,"[{""id"":""urn:ngsi-ld:Animal:cow003""},{""id"":""urn:ngsi-ld:Animal:cow005""}]"
-- T3,"How many animals at AgriParcel 005?",,system3.md,llm_judge,"{""gold"":{""numeric"":13,""queries"":[""/ngsi-ld/v1/entities?type=Animal&q=locatedAt==%22urn:ngsi-ld:AgriParcel:005%22&count=true""]},""weights"":{""correctness"":0.7,""reasoning"":0.2,""efficiency"":0.1},""pass_threshold"":0.8}"
+Run benchmark CSV files:
 
-Tips:
-- For JSON inside CSV, escape quotes with "".
-- If system_prompt_file is empty, the legacy default from `config.yaml` is used (or the built-in default if config.yaml is missing).
-- If model is empty, the legacy default from `config.yaml` is used (or the env/built-in default if config.yaml is missing).
-- For llm_judge mode, compact the JSON in one line or use a tool to escape it properly.
- - id,question,model,system_prompt_file,eval_mode,expected,profiles_yaml,agent_id
- - T1,"Tell me how many animals are located at AgriParcel 005. Answer only with a number",,system3.md,exact_text,"13",,
- - T2,"List all animals located at AgriParcel 005. Just return the JSON format (Context Broker answer)",gpt-4o,system3.md,json_subset,"[{""id"":""urn:ngsi-ld:Animal:cow003""},{""id"":""urn:ngsi-ld:Animal:cow005""}]",,
- - T3,"List all animals owned by 'Old MacDonald'",,,llm_judge,"{...judge json...}","app/profiles/fiware-agents.yaml","fiware-client"
- 
- Tips:
- - For JSON inside CSV, escape quotes with "".
- - If system_prompt_file is empty, the legacy default from `config.yaml` is used (or the built-in default if config.yaml is missing).
- - If model is empty, the legacy default from `config.yaml` is used (or the env/built-in default if config.yaml is missing).
- - If profiles_yaml is provided, tools/backends/prompts come from that YAML; system_prompt_file and model columns are ignored for that row.
- - For llm_judge mode, compact the JSON in one line or use a tool to escape it properly.
+```powershell
+python -m app.cli bench --csv benchmark/benchmark_tests.csv --out bench_out
+python -m app.cli bench --csv benchmark/benchmark_tests.csv --out "bench_out/results-v2.csv"
+```
 
-### config.yaml selection
+Benchmark rows can select `profiles_yaml` and `agent_id`; otherwise CLI/config defaults are used. Output includes model, response text, evaluation verdicts, score fields, MCP call count, and extracted queries.
 
-All commands accept `--config` (defaults to `config.yaml`):
-- `python -m app.cli run --config config.yaml --prompt "..."`
+Important CSV columns:
 
-If `config.yaml` is missing, the CLI falls back to env-only mode.
+- `id`: benchmark identifier
+- `question`: user prompt
+- `model`: legacy-mode model override
+- `system_prompt_file`: legacy-mode prompt override
+- `profiles_yaml`: YAML profiles path
+- `agent_id`: profile agent id
+- `eval_mode`: `exact_text`, `equals_json`, `json_subset`, `regex`, `llm_judge`, or empty
+- `expected`: expected value or judge JSON payload
 
-## Prompts
+## Architecture
 
-Place system prompts in prompts/ (e.g., system1.md, system2.md, system3.md). Switch with --system-prompt-file as needed.
+Current high-level layers:
+
+- `app/cli.py`: argument parsing and output rendering only.
+- `app/services/run_service.py`: single-turn orchestration and normalized `RunResult`.
+- `app/services/chat_service.py`: persistent chat turns over `RunService`.
+- `app/core/config.py` and `app/core/config_loader.py`: Pydantic config models, YAML loading, env placeholders, and legacy compatibility.
+- `app/core/agent_session.py`: configured agent registry and routing.
+- `app/backends/openai_responses_backend.py`: direct Responses API compatibility backend.
+- `app/backends/openai_agents_backend.py`: Agents SDK backend with local MCP, SQLite sessions, streaming, and handoffs.
+- `app/tools/*_adapter.py`: backend-specific conversion from neutral `ToolSpec`.
+- `app/core/normalizers.py`: provider-agnostic output and MCP trace extraction.
+- `app/evaluator/evaluator.py` and `benchmark/csv_runner.py`: evaluation and benchmark flows over normalized results.
+
+The stable result contract is `RunResult`. Evaluation and benchmark code should not inspect raw OpenAI response objects directly.
+
+## Development
+
+Run tests:
+
+```powershell
+.\.venv\Scripts\python -m pytest -q
+```
+
+Compile check:
+
+```powershell
+.\.venv\Scripts\python -m compileall app tests benchmark
+```
 
 ## Notes
 
-- Ensure the MCP server is reachable and configured with the allowed tools expected by the client.
-- Do not commit the .env file or API keys.
-- `--out` accepts either a directory (defaulting to results.csv inside it) or a full CSV file path.
+- Do not commit `.env` or API keys.
+- Local Agents SDK MCP profile assumes a streamable HTTP MCP server at `http://127.0.0.1:5001/mcp`.
+- Use explicit `handoffs: []` or a list of agent ids in profiles. Handoff targets must currently use the `openai_agents` backend.
+- `read_only` is appended to prompts and is intended to become stricter tool filtering or approval policy as guardrails mature.
 
 ## License
 

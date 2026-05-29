@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, List, Optional
 
 from app.backends.model_backend import ModelBackend
+from app.tools.specs import ToolSpec
 
 
 @dataclass
@@ -13,14 +14,14 @@ class Agent:
 	name: str
 	system_prompt: str
 	model_backend: ModelBackend
-	tools: List[dict] = field(default_factory=list)
+	tools: List[ToolSpec] = field(default_factory=list)
 	delegates: List["Agent"] = field(default_factory=list)
 
 	def generate(
 		self,
 		user_prompt: str,
 		*,
-		tools: Optional[List[dict]] = None,
+		tools: Optional[List[ToolSpec]] = None,
 		**kwargs: Any,
 	) -> Any:
 		"""Run a turn against the underlying backend."""
@@ -30,5 +31,28 @@ class Agent:
 			instructions=self.system_prompt,
 			user_prompt=user_prompt,
 			tools=active_tools,
+			agent_name=self.name,
+			handoff_agents=self.delegates,
+			**kwargs,
+		)
+
+	def stream(
+		self,
+		user_prompt: str,
+		*,
+		on_text_delta,
+		tools: Optional[List[ToolSpec]] = None,
+		**kwargs: Any,
+	) -> Any:
+		"""Run a streaming turn against the underlying backend."""
+
+		active_tools = tools if tools is not None else self.tools
+		return self.model_backend.stream(
+			instructions=self.system_prompt,
+			user_prompt=user_prompt,
+			on_text_delta=on_text_delta,
+			tools=active_tools,
+			agent_name=self.name,
+			handoff_agents=self.delegates,
 			**kwargs,
 		)

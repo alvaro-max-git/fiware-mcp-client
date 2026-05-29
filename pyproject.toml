@@ -14,6 +14,7 @@ authors = [
 ]
 dependencies = [
     "openai",
+    "openai-agents",
     "python-dotenv",
     "pydantic",
     "PyYAML"

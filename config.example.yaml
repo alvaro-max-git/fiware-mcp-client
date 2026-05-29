@@ -6,6 +6,10 @@
 profiles_yaml: app/profiles/fiware-agents.yaml
 tools_yaml: app/tools/tools.yaml
 agent_id: fiware-client
+# For the OpenAI Agents SDK + local MCP path, use:
+# agent_id: fiware-client-agents-local
+# Persistent chat sessions use the selected profile plus a CLI --session-id.
+# Example: python -m app.cli chat --agent-id fiware-client-agents-local --session-id demo
 
 # Legacy mode tools (only used when running WITHOUT profiles_yaml)
 mcp_servers:
