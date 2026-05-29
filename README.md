@@ -17,7 +17,8 @@ The project is YAML-first and organized around a thin CLI, application services,
 
 - Python 3.10+
 - OpenAI API key
-- MCP server exposing FIWARE tools such as `execute_query`, `get_entity_types`, `CB_version`, and `haversine_dist`
+- Local FIWARE Context Broker, usually at `http://localhost:1026`
+- The bundled FIWARE MCP server in `fiware-mcp-server/server.py`, exposing tools such as `execute_query`, `get_all_entities`, `get_entity_types`, `CB_version`, and `haversine_dist`
 
 References used by this academic project:
 
@@ -64,7 +65,7 @@ log_to_file: true
 logs_dir: logs
 ```
 
-Use `agent_id: fiware-client` for the Responses compatibility profile. Use `agent_id: fiware-client-agents-local` for the OpenAI Agents SDK profile with local streamable HTTP MCP at `http://127.0.0.1:5001/mcp`.
+Use `agent_id: fiware-client` for the Responses compatibility profile. Use `agent_id: fiware-client-agents-local` for the OpenAI Agents SDK profile with the bundled local MCP server at `http://127.0.0.1:5001/mcp`.
 
 ## Profiles
 
@@ -115,12 +116,20 @@ tools_definitions:
     type: mcp_streamable_http
     config:
       name: fiware-mcp
-      url: http://127.0.0.1:5001/mcp
-      allowed_tools: execute_query, get_entity_types, CB_version
+      launcher: fiware-mcp-server
+      host: 127.0.0.1
+      port: 5001
+      auto_start: true
+      allowed_tools: execute_query, get_all_entities, get_entity_types, CB_version, haversine_dist
       cache_tools_list: true
 ```
 
 Supported tool categories include `mcp_hosted`, `mcp_streamable_http`, `mcp_sse`, `mcp_stdio`, `openai_hosted_tool`, and reserved `function_tool`. Legacy `type: mcp` is still accepted as an alias for `mcp_hosted`.
+
+For local tools, `launcher: fiware-mcp-server` resolves transport details from `app/core/mcp_launcher.py`:
+
+- `mcp_streamable_http` starts or reuses the bundled HTTP server and fills `url`.
+- `mcp_stdio` fills `command`, `args`, and `cwd` so the Agents SDK can own the subprocess.
 
 ## CLI Usage
 
@@ -166,6 +175,34 @@ python -m app.cli chat --stream --agent-id fiware-client-agents-local --session-
 ```
 
 The Responses backend remains available for compatibility, but it does not provide SDK session memory or streaming.
+
+### MCP Server Management
+
+The client can manage the bundled server process:
+
+```powershell
+python -m app.cli mcp-server status
+python -m app.cli mcp-server start
+python -m app.cli mcp-server restart
+python -m app.cli mcp-server stop
+```
+
+Defaults:
+
+```text
+endpoint: http://127.0.0.1:5001/mcp
+pid_file: data/fiware-mcp-server.pid
+log_file: logs/fiware-mcp-server.log
+```
+
+Useful overrides:
+
+```powershell
+python -m app.cli mcp-server start --host 127.0.0.1 --port 5002
+python -m app.cli mcp-server restart --context-url mcp-experiments
+```
+
+When `fiware-mcp-local` is used by an Agents SDK profile, the launcher auto-starts the server unless `auto_start: false` is set in `app/tools/tools.yaml`.
 
 ### Evaluation
 
@@ -253,7 +290,7 @@ Compile check:
 ## Notes
 
 - Do not commit `.env` or API keys.
-- Local Agents SDK MCP profile assumes a streamable HTTP MCP server at `http://127.0.0.1:5001/mcp`.
+- Local Agents SDK MCP profiles use the bundled streamable HTTP MCP server at `http://127.0.0.1:5001/mcp` by default.
 - Use explicit `handoffs: []` or a list of agent ids in profiles. Handoff targets must currently use the `openai_agents` backend.
 - `read_only` is appended to prompts and is intended to become stricter tool filtering or approval policy as guardrails mature.
 
