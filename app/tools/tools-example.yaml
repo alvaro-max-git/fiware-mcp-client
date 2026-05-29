@@ -3,5 +3,27 @@ tools_definitions:
     type: mcp
     config:
       label: "fiware-mcp"
-      url: "http://127.0.0.1:5001"
-      allowed_tools: "execute_query, get_entity_types, CB_version"
+      url: "https://example.com/mcp"
+      allowed_tools: "execute_query, get_entity_types, CB_version, haversine_dist"
+
+  - name: fiware-mcp-local
+    type: mcp_streamable_http
+    config:
+      name: "fiware-mcp"
+      launcher: "fiware-mcp-server"
+      host: "127.0.0.1"
+      port: 5001
+      context_url: "context-data-loader"
+      auto_start: true
+      startup_timeout_seconds: 10
+      allowed_tools: "execute_query, get_all_entities, get_entity_types, CB_version, haversine_dist"
+      cache_tools_list: true
+
+  - name: fiware-mcp-local-stdio
+    type: mcp_stdio
+    config:
+      name: "fiware-mcp"
+      launcher: "fiware-mcp-server"
+      context_url: "context-data-loader"
+      allowed_tools: "execute_query, get_all_entities, get_entity_types, CB_version, haversine_dist"
+      cache_tools_list: true

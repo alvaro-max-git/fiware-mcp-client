@@ -18,6 +18,9 @@ __pycache__/
 # Ignore result files
 bench_out/
 
+# Ignore local process state
+data/*.pid
+
 # Ignore configuration files
 # profiles/ -> for the moment, there's no sensible info on profile config
 tools.yaml

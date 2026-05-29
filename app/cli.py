@@ -4,6 +4,7 @@ import logging
 import json
 from pathlib import Path
 from app.core.config import AppConfig, apply_client_config_overrides, load_client_config, ClientConfig
+from app.core.mcp_launcher import MCPServerLauncher
 from app.logging_conf import setup_logging
 from app.core.types import RunRequest, RunResult, ExpectedSpec, LLMJudgeSpec
 from app.evaluator.evaluator import evaluate, evaluate_llm_judge
@@ -192,6 +193,54 @@ def cmd_bench(cfg: AppConfig, args: argparse.Namespace) -> int:
     print(f"Benchmark results: {out}")
     return 0
 
+
+def _launcher_from_args(args: argparse.Namespace) -> MCPServerLauncher:
+    return MCPServerLauncher.from_config(
+        {
+            "python": args.python,
+            "script_path": args.script_path,
+            "server_dir": args.server_dir,
+            "host": args.host,
+            "port": args.port,
+            "context_url": args.context_url,
+            "pid_file": args.pid_file,
+            "log_file": args.log_file,
+        }
+    )
+
+
+def _print_mcp_server_state(state) -> None:
+    pid = state.pid if state.pid is not None else "-"
+    print(f"status: {state.message}")
+    print(f"endpoint: {state.endpoint}")
+    print(f"pid: {pid}")
+    if state.pid_file:
+        print(f"pid_file: {state.pid_file}")
+    if state.log_file:
+        print(f"log_file: {state.log_file}")
+
+
+def cmd_mcp_server(cfg: AppConfig, args: argparse.Namespace) -> int:
+    launcher = _launcher_from_args(args)
+    action = args.action
+    try:
+        if action == "start":
+            state = launcher.start(timeout_seconds=args.timeout, wait=not args.no_wait)
+        elif action == "stop":
+            state = launcher.stop(timeout_seconds=args.timeout)
+        elif action == "restart":
+            state = launcher.restart(timeout_seconds=args.timeout)
+        elif action == "status":
+            state = launcher.status()
+        else:
+            raise ValueError(f"Unknown MCP server action: {action}")
+    except Exception as exc:
+        print(f"[ERROR] {exc}")
+        return 1
+
+    _print_mcp_server_state(state)
+    return 0 if state.running or action in {"stop", "status"} else 1
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="fiware-mcp-client")
     common = argparse.ArgumentParser(add_help=False)
@@ -246,11 +295,34 @@ def build_parser() -> argparse.ArgumentParser:
     pb.add_argument("--agent-id", default=None, help="Default agent id for rows missing agent_id")
     pb.set_defaults(func=cmd_bench)
 
+    pm = sub.add_parser("mcp-server", parents=[common], help="Manage the bundled FIWARE MCP server")
+    pm.add_argument("action", choices=["start", "stop", "restart", "status"])
+    pm.add_argument("--host", default="127.0.0.1", help="HTTP host (default: 127.0.0.1)")
+    pm.add_argument("--port", type=int, default=5001, help="HTTP port (default: 5001)")
+    pm.add_argument(
+        "--context-url",
+        default="context-data-loader",
+        choices=["context-data-loader", "mcp-experiments"],
+        help="Context Broker JSON-LD context selector",
+    )
+    pm.add_argument("--python", default=None, help="Python executable for the server process")
+    pm.add_argument("--server-dir", default=None, help="Server working directory")
+    pm.add_argument("--script-path", default=None, help="Path to server.py")
+    pm.add_argument("--pid-file", default=None, help="PID file path")
+    pm.add_argument("--log-file", default=None, help="Server log path")
+    pm.add_argument("--timeout", type=float, default=10.0, help="Startup/shutdown timeout in seconds")
+    pm.add_argument("--no-wait", action="store_true", help="Do not wait for HTTP readiness on start")
+    pm.set_defaults(func=cmd_mcp_server)
+
     return p
 
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
+
+    if args.cmd == "mcp-server":
+        setup_logging(level="INFO", log_to_file=False, logs_dir=Path("logs"))
+        return args.func(AppConfig(openai_api_key=None), args)
 
     client_cfg: ClientConfig | None = None
     config_path = getattr(args, "config", None)

@@ -12,6 +12,16 @@ def test_chat_parser_defaults_to_persistent_session_id():
     assert not args.stream
 
 
+def test_mcp_server_parser_defaults_to_local_http_server():
+    args = build_parser().parse_args(["mcp-server", "status"])
+
+    assert args.cmd == "mcp-server"
+    assert args.action == "status"
+    assert args.host == "127.0.0.1"
+    assert args.port == 5001
+    assert args.context_url == "context-data-loader"
+
+
 def test_bench_permission_error_is_user_friendly(monkeypatch, capsys):
     def raise_permission(*args, **kwargs):
         raise PermissionError(13, "Permission denied", "locked.csv")

@@ -4,6 +4,7 @@ import warnings
 from typing import Any, Dict, List, Optional
 
 from app.core.config import ToolDefinition, ToolsCatalog
+from app.core.mcp_launcher import resolve_managed_tool_config
 from app.tools.specs import (
     FUNCTION_TOOL,
     MCP_HOSTED,
@@ -52,6 +53,8 @@ class ToolFactory:
         raw_type = definition.type.lower()
         tool_type = self._TYPE_ALIASES.get(raw_type, raw_type)
         config = self._merge_config(definition.config or {}, override)
+        if tool_type in MCP_LOCAL_TRANSPORTS:
+            config = resolve_managed_tool_config(tool_type, config)
 
         if raw_type == "mcp":
             warnings.warn(
