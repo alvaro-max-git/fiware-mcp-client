@@ -6,7 +6,7 @@ from app.core.config import load_tools_config
 from app.core.tool_factory import ToolFactory
 from app.tools.openai_agents_adapter import OpenAIAgentsToolAdapter
 from app.tools.openai_responses_adapter import OpenAIResponsesToolAdapter
-from app.tools.specs import MCP_HOSTED, MCP_STREAMABLE_HTTP, OPENAI_HOSTED_TOOL
+from app.tools.specs import MCP_HOSTED, MCP_STREAMABLE_HTTP, OPENAI_HOSTED_TOOL, ToolSpec
 
 
 def test_tool_factory_builds_mcp_tool(tmp_path: Path):
@@ -202,3 +202,23 @@ def test_agents_adapter_builds_local_mcp_server(tmp_path: Path):
 
     assert runtime.tools == []
     assert len(runtime.mcp_servers) == 1
+
+
+def test_agents_adapter_builds_code_interpreter_tool():
+    runtime = OpenAIAgentsToolAdapter.to_runtime(
+        [
+            ToolSpec(
+                name="code-interpreter",
+                type=OPENAI_HOSTED_TOOL,
+                config={
+                    "provider": "responses",
+                    "type": "code_interpreter",
+                    "container": {"type": "auto", "memory_limit": "4g"},
+                },
+            )
+        ]
+    )
+
+    assert len(runtime.tools) == 1
+    assert runtime.tools[0].name == "code_interpreter"
+    assert runtime.tools[0].tool_config["container"]["memory_limit"] == "4g"

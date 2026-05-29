@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+from app.backends.backend_factory import create_backend
 from app.core.config import (
     AppConfig,
     BackendConfig,
@@ -148,3 +149,26 @@ def test_client_config_accepts_legacy_model_alias(tmp_path: Path):
 
     assert cfg.model_name == "gpt-5-nano"
     assert cfg.model == "gpt-5-nano"
+
+
+def test_openai_backend_model_name_normalizes_whitespace():
+    backend = create_backend(
+        BackendConfig(type="openai_responses", model_name=" gpt-5 mini "),
+        api_key="test-key",
+    )
+
+    assert backend.model_name == "gpt-5-mini"
+
+
+def test_benchmark_experiment_profiles_use_local_mcp_for_agents():
+    cfg = load_profiles_config(Path("app/profiles/fiware-agents.yaml"))
+
+    low = cfg.get_agent("mcp-experiments-low")
+    high = cfg.get_agent("mcp-experiments-high")
+
+    assert low.backend.type == "openai_agents"
+    assert "fiware-mcp-local" in low.tools
+    assert "fiware-mcp" not in low.tools
+    assert high.backend.type == "openai_agents"
+    assert "fiware-mcp-local" in high.tools
+    assert "fiware-mcp" not in high.tools

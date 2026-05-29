@@ -174,14 +174,21 @@ def cmd_bench(cfg: AppConfig, args: argparse.Namespace) -> int:
     default_profiles_yaml = args.profiles_yaml or getattr(args, "default_profiles_yaml", None)
     default_tools_yaml = args.tools_yaml or getattr(args, "default_tools_yaml", None)
     default_agent_id = args.agent_id or getattr(args, "default_agent_id", None)
-    out = run_benchmark(
-        cfg,
-        Path(args.csv),
-        Path(args.out),
-        default_profiles_yaml=default_profiles_yaml,
-        default_tools_yaml=default_tools_yaml,
-        default_agent_id=default_agent_id,
-    )
+    try:
+        out = run_benchmark(
+            cfg,
+            Path(args.csv),
+            Path(args.out),
+            default_profiles_yaml=default_profiles_yaml,
+            default_tools_yaml=default_tools_yaml,
+            default_agent_id=default_agent_id,
+        )
+    except PermissionError as exc:
+        print(
+            "[ERROR] Cannot write benchmark output. Close the CSV if it is open in "
+            f"Excel/another viewer or choose a different --out path: {exc.filename or args.out}"
+        )
+        return 1
     print(f"Benchmark results: {out}")
     return 0
 

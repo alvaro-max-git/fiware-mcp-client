@@ -63,3 +63,28 @@ def test_run_service_can_skip_runtime_instruction_suffix(tmp_path: Path, monkeyp
     )
 
     assert fake_client.responses.payload["instructions"] == "Judge instructions"
+
+
+def test_run_service_formats_hosted_mcp_dependency_errors(monkeypatch):
+    cfg = AppConfig(openai_api_key="test-key")
+
+    class FakeProviderError(Exception):
+        body = {
+            "error": {
+                "message": (
+                    "Error retrieving tool list from MCP server: 'fiware-mcp'. "
+                    "Http status code: 424 (Failed Dependency)"
+                )
+            }
+        }
+
+    def fail_run(self, request):
+        raise FakeProviderError("raw provider error")
+
+    monkeypatch.setattr(RunService, "_run_legacy_mode", fail_run)
+
+    result = RunService(cfg).run_turn(RunRequest(user_prompt="hello"))
+
+    assert not result.ok
+    assert "hosted MCP server" in result.error
+    assert "local MCP" in result.error

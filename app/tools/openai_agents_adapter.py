@@ -11,6 +11,7 @@ from app.tools.specs import (
     MCP_SSE,
     MCP_STDIO,
     MCP_STREAMABLE_HTTP,
+    OPENAI_HOSTED_TOOL,
     ToolSpec,
     normalize_allowed_tools,
 )
@@ -35,6 +36,8 @@ class OpenAIAgentsToolAdapter:
                 runtime.tools.append(cls._hosted_mcp_tool(spec))
             elif spec.type in MCP_LOCAL_TRANSPORTS:
                 runtime.mcp_servers.append(cls._local_mcp_server(spec))
+            elif spec.type == OPENAI_HOSTED_TOOL:
+                runtime.tools.append(cls._openai_hosted_tool(spec))
             else:
                 raise ValueError(f"Tool type '{spec.type}' is not supported by the Agents adapter")
         return runtime
@@ -45,6 +48,40 @@ class OpenAIAgentsToolAdapter:
 
         tool_config = OpenAIResponsesToolAdapter.to_tool_dict(spec)
         return HostedMCPTool(tool_config=tool_config)
+
+    @staticmethod
+    def _openai_hosted_tool(spec: ToolSpec) -> Any:
+        cfg = dict(spec.config)
+        cfg.pop("provider", None)
+        tool_type = cfg.get("type")
+
+        if tool_type == "code_interpreter":
+            from agents import CodeInterpreterTool
+
+            return CodeInterpreterTool(tool_config=cfg)
+
+        if tool_type == "image_generation":
+            from agents import ImageGenerationTool
+
+            return ImageGenerationTool(tool_config=cfg)
+
+        if tool_type in {"web_search", "web_search_preview"}:
+            from agents import WebSearchTool
+
+            cfg.pop("type", None)
+            supported = {"user_location", "filters", "search_context_size"}
+            return WebSearchTool(**{key: value for key, value in cfg.items() if key in supported})
+
+        if tool_type == "file_search":
+            from agents import FileSearchTool
+
+            cfg.pop("type", None)
+            return FileSearchTool(**cfg)
+
+        raise ValueError(
+            f"OpenAI hosted tool '{spec.name}' with type {tool_type!r} is not supported "
+            "by the Agents adapter"
+        )
 
     @classmethod
     def _local_mcp_server(cls, spec: ToolSpec) -> Any:
@@ -113,4 +150,3 @@ class OpenAIAgentsToolAdapter:
             return params
 
         raise ValueError(f"Tool type '{spec.type}' is not a local MCP transport")
-

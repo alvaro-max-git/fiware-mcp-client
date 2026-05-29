@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 from contextlib import AsyncExitStack
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from app.backends.model_backend import ModelBackend, TextDeltaHandler, ToolLike
 from app.tools.openai_agents_adapter import OpenAIAgentsToolAdapter
@@ -97,6 +97,7 @@ class OpenAIAgentsBackend(ModelBackend):
             max_output_tokens = self.max_output_tokens
 
         session = self._build_session(session_id)
+        run_config, run_client = self._build_run_config()
 
         try:
             async with AsyncExitStack() as stack:
@@ -113,8 +114,10 @@ class OpenAIAgentsBackend(ModelBackend):
                     input=user_prompt,
                     max_turns=max_turns,
                     session=session,
+                    run_config=run_config,
                 )
         finally:
+            await run_client.close()
             if session is not None:
                 close = getattr(session, "close", None)
                 if callable(close):
@@ -141,6 +144,7 @@ class OpenAIAgentsBackend(ModelBackend):
             max_output_tokens = self.max_output_tokens
 
         session = self._build_session(session_id)
+        run_config, run_client = self._build_run_config()
 
         try:
             async with AsyncExitStack() as stack:
@@ -157,6 +161,7 @@ class OpenAIAgentsBackend(ModelBackend):
                     input=user_prompt,
                     max_turns=max_turns,
                     session=session,
+                    run_config=run_config,
                 )
                 async for event in result.stream_events():
                     if event.type != "raw_response_event":
@@ -167,6 +172,7 @@ class OpenAIAgentsBackend(ModelBackend):
                             on_text_delta(delta)
                 return result
         finally:
+            await run_client.close()
             if session is not None:
                 close = getattr(session, "close", None)
                 if callable(close):
@@ -258,22 +264,29 @@ class OpenAIAgentsBackend(ModelBackend):
 
         return SQLiteSession(str(session_id), db_path=db_path)
 
+    def _build_run_config(self) -> Tuple[Any, Any]:
+        from agents import AsyncOpenAI, RunConfig
+        from agents.models.openai_provider import OpenAIProvider
+
+        opts = self._openai_client_options()
+        client = AsyncOpenAI(api_key=self.api_key, **opts)
+        provider = OpenAIProvider(openai_client=client, use_responses=True)
+        return RunConfig(model_provider=provider), client
+
     def _configure_openai_defaults(self) -> None:
-        from agents import AsyncOpenAI
-        from agents import set_default_openai_api, set_default_openai_client, set_default_openai_key
+        from agents import set_default_openai_api, set_default_openai_key
 
         if not self.api_key:
             raise ValueError("OpenAIAgentsBackend requires an api_key")
 
         set_default_openai_api("responses")
-        if self.base_url or self.client_options:
-            opts = dict(self.client_options)
-            opts.pop("max_turns", None)
-            opts.pop("model_settings", None)
-            opts.pop("session", None)
-            if self.base_url:
-                opts.setdefault("base_url", self.base_url)
-            client = AsyncOpenAI(api_key=self.api_key, **opts)
-            set_default_openai_client(client)
-        else:
-            set_default_openai_key(self.api_key)
+        set_default_openai_key(self.api_key)
+
+    def _openai_client_options(self) -> Dict[str, Any]:
+        opts = dict(self.client_options)
+        opts.pop("max_turns", None)
+        opts.pop("model_settings", None)
+        opts.pop("session", None)
+        if self.base_url:
+            opts.setdefault("base_url", self.base_url)
+        return opts

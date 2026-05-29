@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Callable, List, Optional
+from typing import Any, Callable, List, Optional
 
 from openai import OpenAI
 
@@ -15,6 +15,7 @@ from app.core.normalizers import (
     parse_output_json,
 )
 from app.core.types import RunRequest, RunResult
+from app.core.model_name import normalize_model_name
 from app.prompts import load_prompt
 from app.tools.openai_responses_adapter import OpenAIResponsesToolAdapter, ToolLike
 
@@ -37,7 +38,7 @@ class RunService:
             return RunResult(
                 ok=False,
                 output_text="",
-                error=str(exc),
+                error=self._format_error(exc),
                 model_name=request.model_name or self.cfg.model,
             )
 
@@ -56,7 +57,7 @@ class RunService:
             return RunResult(
                 ok=False,
                 output_text="",
-                error=str(exc),
+                error=self._format_error(exc),
                 model_name=request.model_name or self.cfg.model,
             )
 
@@ -109,7 +110,7 @@ class RunService:
         )
 
     def _run_legacy_mode(self, request: RunRequest) -> RunResult:
-        model_name = request.model_name or self.cfg.model
+        model_name = normalize_model_name(request.model_name or self.cfg.model)
         tools: List[dict] = []
         if request.use_tools:
             tools = self.cfg.build_tools()
@@ -184,3 +185,38 @@ class RunService:
 
     def _build_client(self) -> OpenAI:
         return OpenAI(api_key=self.cfg.openai_api_key)
+
+    def _format_error(self, exc: Exception) -> str:
+        provider_message = self._provider_error_message(exc)
+        if provider_message and "Error retrieving tool list from MCP server" in provider_message:
+            return (
+                f"{provider_message}. OpenAI could not list tools from the hosted MCP server; "
+                "check the public MCP URL/server health or use an Agents SDK local MCP tool."
+            )
+        return provider_message or str(exc)
+
+    def _provider_error_message(self, exc: Exception) -> Optional[str]:
+        body = getattr(exc, "body", None)
+        message = self._message_from_provider_body(body)
+        if message:
+            return message
+
+        response = getattr(exc, "response", None)
+        response_json = getattr(response, "json", None)
+        if callable(response_json):
+            try:
+                return self._message_from_provider_body(response_json())
+            except Exception:
+                return None
+        return None
+
+    @staticmethod
+    def _message_from_provider_body(body: Any) -> Optional[str]:
+        if not isinstance(body, dict):
+            return None
+        error = body.get("error")
+        if isinstance(error, dict):
+            message = error.get("message")
+            if message:
+                return str(message)
+        return None

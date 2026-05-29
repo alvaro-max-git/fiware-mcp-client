@@ -6,6 +6,7 @@ from typing import Any, Dict, Optional, Protocol
 from app.backends.model_backend import ModelBackend
 from app.backends.openai_agents_backend import OpenAIAgentsBackend
 from app.backends.openai_responses_backend import OpenAIResponsesBackend
+from app.core.model_name import normalize_model_name
 
 
 class BackendConfig(Protocol):
@@ -33,9 +34,10 @@ def create_backend(config: BackendConfig, *, api_key: Optional[str] = None) -> M
 	if not backend_type:
 		raise ValueError("Backend type must be provided")
 
-	model_name = getattr(config, "model_name", None) or getattr(config, "model", None)
-	if not model_name:
+	raw_model_name = getattr(config, "model_name", None) or getattr(config, "model", None)
+	if not raw_model_name:
 		raise ValueError("Backend model must be provided")
+	model_name = normalize_model_name(raw_model_name)
 
 	resolved_api_key = _resolve_api_key(config, api_key)
 	common_kwargs = {
