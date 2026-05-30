@@ -245,7 +245,7 @@ class MCPServerLauncher:
         try:
             os.kill(pid, 0)
             return True
-        except OSError:
+        except (OSError, SystemError):
             return False
 
     @staticmethod

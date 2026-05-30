@@ -13,12 +13,15 @@ authors = [
     { name = "Alvaro Max" }
 ]
 dependencies = [
+    "fastapi",
     "openai",
     "openai-agents",
     "python-dotenv",
     "pydantic",
     "PyYAML",
     "requests>=2.31.0",
+    "gradio",
+    "uvicorn",
     "fastmcp>=0.3.0",
     "mcp[cli]",
     "haversine"
@@ -30,5 +33,5 @@ dev = [
     "pytest-mock"
 ]
 
-[tool.setuptools]
-packages = ["app"]
+[tool.setuptools.packages.find]
+include = ["app*"]

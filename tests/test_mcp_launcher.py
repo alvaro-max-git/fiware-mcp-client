@@ -52,3 +52,12 @@ def test_launcher_status_uses_pid_file(tmp_path: Path):
     assert not state.running
     assert state.pid_file == pid_file
     assert state.log_file == log_file
+
+
+def test_pid_liveness_handles_windows_system_error(monkeypatch):
+    def raise_system_error(pid, signal_number):
+        raise SystemError("invalid pid check")
+
+    monkeypatch.setattr("app.core.mcp_launcher.os.kill", raise_system_error)
+
+    assert MCPServerLauncher._pid_is_alive(12345) is False
