@@ -8,6 +8,8 @@ The project is YAML-first and organized around a thin CLI, application services,
 
 - Single-turn runs with the OpenAI Responses API compatibility backend.
 - OpenAI Agents SDK backend with local MCP transports, SQLite chat sessions, streaming, and optional handoff configuration.
+- FastAPI HTTP API under `/api/v1` for simple frontends, smoke tests, streaming chat, and local MCP server management.
+- Gradio local frontend for chat, one-shot questions, MCP server controls, and trace inspection.
 - YAML profile and tool catalog configuration.
 - Backend-neutral tool specs with backend-specific adapters.
 - Evaluation modes: exact text, JSON equality, JSON subset, regex, and LLM-as-judge.
@@ -204,6 +206,145 @@ python -m app.cli mcp-server restart --context-url mcp-experiments
 
 When `fiware-mcp-local` is used by an Agents SDK profile, the launcher auto-starts the server unless `auto_start: false` is set in `app/tools/tools.yaml`.
 
+## FastAPI Usage
+
+The HTTP API is implemented in `app/api/` as a thin adapter over the same services used by the CLI:
+
+- `RunService` for `/api/v1/run`
+- `ChatService` for `/api/v1/chat` and `/api/v1/chat/stream`
+- `MCPServerLauncher` for `/api/v1/mcp-server/*`
+- YAML config loaders for `/api/v1/runtime` and `/api/v1/agents`
+
+Start the API server:
+
+```powershell
+uvicorn app.api.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+OpenAPI docs are available at:
+
+```text
+http://127.0.0.1:8000/docs
+http://127.0.0.1:8000/openapi.json
+```
+
+### API Endpoints
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/v1/health` | Process health. Does not contact OpenAI or the Context Broker. |
+| `GET` | `/api/v1/runtime` | Safe runtime metadata for frontend controls. |
+| `GET` | `/api/v1/agents` | Configured agent profiles and feature flags. |
+| `POST` | `/api/v1/run` | One non-streaming model turn through `RunService`. |
+| `POST` | `/api/v1/chat` | Persistent chat turn through `ChatService`. |
+| `POST` | `/api/v1/chat/stream` | Streaming chat via Server-Sent Events. |
+| `GET` | `/api/v1/mcp-server/status` | Local FIWARE MCP server status. |
+| `POST` | `/api/v1/mcp-server/start` | Start the bundled local MCP server. |
+| `POST` | `/api/v1/mcp-server/stop` | Stop the managed local MCP server process. |
+| `POST` | `/api/v1/mcp-server/restart` | Restart the local MCP server, usually to switch context dataset. |
+
+The API never serializes provider SDK objects. The HTTP response model is a safe `RunResponse` derived from `RunResult`, omitting `raw_response` and exposing a normalized `mcp_trace` for UI rendering.
+
+### API Examples
+
+Health check:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8000/api/v1/health
+```
+
+List available agents:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8000/api/v1/agents
+```
+
+Start the bundled local MCP server:
+
+```powershell
+Invoke-RestMethod `
+  -Method Post `
+  -Uri http://127.0.0.1:8000/api/v1/mcp-server/start `
+  -ContentType "application/json" `
+  -Body '{"host":"127.0.0.1","port":5001,"context_url":"context-data-loader","timeout_seconds":10,"wait":true}'
+```
+
+Run one prompt:
+
+```powershell
+Invoke-RestMethod `
+  -Method Post `
+  -Uri http://127.0.0.1:8000/api/v1/run `
+  -ContentType "application/json" `
+  -Body '{"prompt":"List available entity types","agent_id":"fiware-client-agents-local","max_output_tokens":30000}'
+```
+
+Send a persistent chat turn:
+
+```powershell
+Invoke-RestMethod `
+  -Method Post `
+  -Uri http://127.0.0.1:8000/api/v1/chat `
+  -ContentType "application/json" `
+  -Body '{"prompt":"How many animals are in that parcel?","agent_id":"fiware-client-agents-local","session_id":"demo-session"}'
+```
+
+For interactive frontend chat, prefer `/api/v1/chat/stream`. It returns `text/event-stream` events:
+
+```text
+event: delta
+data: {"type":"delta","content":"Checking"}
+
+event: final
+data: {"type":"final","result":{"ok":true,"output_text":"...","model_name":"gpt-5.5","error":null,"parsed_json":null,"mcp_trace":{"calls":[],"call_count":0,"queries":[],"usage":{}},"metadata":{"tools":[]}}}
+```
+
+Frontend integration flow:
+
+1. Call `/api/v1/runtime` and `/api/v1/agents` on page load.
+2. Call `/api/v1/mcp-server/status` and start or restart the server if the selected agent uses `fiware-mcp-local`.
+3. Generate a client-side `session_id` for each new conversation.
+4. Use `/api/v1/chat/stream` for chat, with `/api/v1/chat` as a fallback.
+
+## Gradio Frontend
+
+The Gradio UI is an operational local frontend over the FastAPI API. It does not import backend services directly, and it only persists browser-visible chat messages in local storage.
+
+Start the API in one terminal:
+
+```powershell
+uvicorn app.api.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Start the UI in another terminal:
+
+```powershell
+python -m app.ui.gradio_app --api-base http://127.0.0.1:8000/api/v1 --host 127.0.0.1 --port 7860
+```
+
+Then open:
+
+```text
+http://127.0.0.1:7860
+```
+
+The UI provides:
+
+- API and MCP server status.
+- Start, stop, restart, and refresh controls for the bundled FIWARE MCP server.
+- Agent selection from `GET /api/v1/agents`.
+- Chat mode with optional streaming through `/chat/stream`.
+- Question mode through `/run`.
+- Browser-stable chat sessions with visible transcript persistence.
+- Last MCP trace summary without exposing raw provider responses.
+
+You can also set the API URL with:
+
+```powershell
+$env:FIWARE_API_BASE="http://127.0.0.1:8000/api/v1"
+python -m app.ui.gradio_app
+```
+
 ### Evaluation
 
 ```powershell
@@ -261,6 +402,9 @@ Important CSV columns:
 Current high-level layers:
 
 - `app/cli.py`: argument parsing and output rendering only.
+- `app/api/main.py`: FastAPI router, error handling, endpoint functions, and SSE streaming.
+- `app/api/dependencies.py`: API config loading and service/launcher factories.
+- `app/api/schemas.py`: API-only Pydantic request/response models.
 - `app/services/run_service.py`: single-turn orchestration and normalized `RunResult`.
 - `app/services/chat_service.py`: persistent chat turns over `RunService`.
 - `app/core/config.py` and `app/core/config_loader.py`: Pydantic config models, YAML loading, env placeholders, and legacy compatibility.
@@ -281,6 +425,18 @@ Run tests:
 .\.venv\Scripts\python -m pytest -q
 ```
 
+Run only the API tests:
+
+```powershell
+.\.venv\Scripts\python -m pytest tests\test_api.py -q
+```
+
+Run the Gradio client tests:
+
+```powershell
+.\.venv\Scripts\python -m pytest tests\test_gradio_api_client.py -q
+```
+
 Compile check:
 
 ```powershell
@@ -290,6 +446,7 @@ Compile check:
 ## Notes
 
 - Do not commit `.env` or API keys.
+- The FastAPI adapter is UI-facing. Do not add benchmark, evaluator, raw Context Broker CRUD, filesystem, shell, or secret-inspection endpoints without an explicit design change.
 - Local Agents SDK MCP profiles use the bundled streamable HTTP MCP server at `http://127.0.0.1:5001/mcp` by default.
 - Use explicit `handoffs: []` or a list of agent ids in profiles. Handoff targets must currently use the `openai_agents` backend.
 - `read_only` is appended to prompts and is intended to become stricter tool filtering or approval policy as guardrails mature.
