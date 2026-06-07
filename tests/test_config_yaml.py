@@ -11,6 +11,7 @@ from app.core.config import (
     apply_client_config_overrides,
     load_client_config,
     load_profiles_config,
+    load_tools_config,
 )
 
 
@@ -29,6 +30,19 @@ def test_load_client_config_env_placeholders(tmp_path: Path, monkeypatch: pytest
 
     cfg = load_client_config(p)
     assert cfg.profiles_yaml == "abc"
+
+
+def test_load_client_config_uses_env_config_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    p = tmp_path / "docker-config.yaml"
+    p.write_text(
+        "profiles_yaml: app/profiles/fiware-agents.docker.yaml\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("FIWARE_CLIENT_CONFIG", str(p))
+
+    cfg = load_client_config()
+
+    assert cfg.profiles_yaml == "app/profiles/fiware-agents.docker.yaml"
 
 
 def test_load_client_config_env_placeholders_missing_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
@@ -172,3 +186,13 @@ def test_benchmark_experiment_profiles_use_local_mcp_for_agents():
     assert high.backend.type == "openai_agents"
     assert "fiware-mcp-local" in high.tools
     assert "fiware-mcp" not in high.tools
+
+
+def test_docker_config_profiles_and_tools_load_together():
+    client_cfg = load_client_config(Path("config.docker.yaml"))
+    profiles = load_profiles_config(Path(client_cfg.profiles_yaml or ""))
+    tools = load_tools_config(Path(client_cfg.tools_yaml or ""))
+
+    assert client_cfg.agent_id == profiles.default_agent
+    assert profiles.get_agent("fiware-client-agents-local").tools == ["fiware-mcp-local"]
+    assert tools.get("fiware-mcp-local").type == "mcp_streamable_http"

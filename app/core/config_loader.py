@@ -223,7 +223,8 @@ def load_client_config(yaml_path: Optional[Path] = None) -> ClientConfig:
     if yaml_path is not None:
         candidates.append(Path(yaml_path))
     else:
-        candidates.append(Path("config.yaml"))
+        env_config = os.getenv("FIWARE_CLIENT_CONFIG") or os.getenv("CONFIG_YAML")
+        candidates.append(Path(env_config) if env_config else Path("config.yaml"))
 
     expanded: List[Path] = []
     for candidate in candidates:

@@ -2,6 +2,7 @@ import sys
 import argparse
 import logging
 import json
+import os
 from pathlib import Path
 from app.core.config import AppConfig, apply_client_config_overrides, load_client_config, ClientConfig
 from app.core.mcp_launcher import MCPServerLauncher
@@ -246,7 +247,7 @@ def build_parser() -> argparse.ArgumentParser:
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument(
         "--config",
-        default="config.yaml",
+        default=os.getenv("FIWARE_CLIENT_CONFIG", "config.yaml"),
         help="Runtime YAML config (default: config.yaml). Use .env only for secrets like OPENAI_API_KEY.",
     )
     sub = p.add_subparsers(dest="cmd", required=True)
