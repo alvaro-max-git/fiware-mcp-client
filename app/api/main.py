@@ -6,7 +6,7 @@ from queue import Queue
 from threading import Thread
 from typing import Any, Dict, Generator
 
-from fastapi import APIRouter, Depends, FastAPI, Request
+from fastapi import APIRouter, Depends, FastAPI, Query, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from app.api.dependencies import (
@@ -16,6 +16,7 @@ from app.api.dependencies import (
     ApiError,
     LauncherFactory,
     get_chat_service,
+    get_chat_history_service,
     get_client_config,
     get_mcp_launcher_factory,
     get_profiles_config,
@@ -25,6 +26,9 @@ from app.api.dependencies import (
 from app.api.schemas import (
     AgentInfo,
     AgentsResponse,
+    ChatDetailResponse,
+    ChatsListResponse,
+    DeleteChatResponse,
     ErrorResponse,
     HealthResponse,
     MCPServerRestartRequest,
@@ -39,6 +43,7 @@ from app.api.schemas import (
 from app.core.config import ClientConfig, ProfilesConfig
 from app.core.mcp_launcher import MCPServerState
 from app.core.types import RunRequest, RunResult
+from app.services.chat_history_service import ChatHistoryService, ChatNotFound
 from app.services.chat_service import ChatService
 from app.services.run_service import RunService
 
@@ -272,6 +277,51 @@ def chat_stream(
         _chat_stream_events(service, request),
         media_type="text/event-stream",
     )
+
+
+@router.get(
+    "/chats",
+    response_model=ChatsListResponse,
+    responses=_error_response(400),
+)
+def list_chats(
+    limit: int = Query(default=50, gt=0, le=200),
+    service: ChatHistoryService = Depends(get_chat_history_service),
+) -> ChatsListResponse:
+    return ChatsListResponse(chats=service.list_chats(limit=limit))
+
+
+@router.get(
+    "/chats/{session_id}",
+    response_model=ChatDetailResponse,
+    responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
+)
+def get_chat(
+    session_id: str,
+    service: ChatHistoryService = Depends(get_chat_history_service),
+) -> ChatDetailResponse:
+    try:
+        return service.get_chat(session_id)
+    except ChatNotFound as exc:
+        raise ApiError(
+            status_code=404,
+            error="chat_not_found",
+            message=str(exc),
+            details={"session_id": session_id},
+        ) from exc
+
+
+@router.delete(
+    "/chats/{session_id}",
+    response_model=DeleteChatResponse,
+    responses=_error_response(400),
+)
+def delete_chat(
+    session_id: str,
+    service: ChatHistoryService = Depends(get_chat_history_service),
+) -> DeleteChatResponse:
+    service.delete_chat(session_id)
+    return DeleteChatResponse(deleted=True, session_id=session_id)
 
 
 @router.get(

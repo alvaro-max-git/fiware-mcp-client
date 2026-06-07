@@ -43,6 +43,15 @@ class FiwareApiClient:
     def agents(self) -> dict[str, Any]:
         return self._request("GET", "/agents")
 
+    def chats(self) -> dict[str, Any]:
+        return self._request("GET", "/chats")
+
+    def chat_detail(self, session_id: str) -> dict[str, Any]:
+        return self._request("GET", f"/chats/{session_id}")
+
+    def delete_chat(self, session_id: str) -> dict[str, Any]:
+        return self._request("DELETE", f"/chats/{session_id}")
+
     def mcp_status(self) -> dict[str, Any]:
         return self._request("GET", "/mcp-server/status")
 
