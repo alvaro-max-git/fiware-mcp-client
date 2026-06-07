@@ -153,6 +153,35 @@ class AgentsResponse(BaseModel):
     agents: List[AgentInfo]
 
 
+class ChatSummary(BaseModel):
+    session_id: str
+    title: str
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+    message_count: int = 0
+    last_message_preview: Optional[str] = None
+
+
+class ChatsListResponse(BaseModel):
+    chats: List[ChatSummary]
+
+
+class ChatMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str
+    created_at: Optional[str] = None
+
+
+class ChatDetailResponse(BaseModel):
+    session: ChatSummary
+    messages: List[ChatMessage]
+
+
+class DeleteChatResponse(BaseModel):
+    deleted: bool
+    session_id: str
+
+
 class PromptTurnRequest(BaseModel):
     prompt: str = Field(..., min_length=1)
     agent_id: Optional[str] = None

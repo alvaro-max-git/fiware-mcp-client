@@ -124,6 +124,15 @@ def save_session_messages(
     return state
 
 
+def remove_session(browser_state: Any, *, session_id: str) -> dict[str, Any]:
+    state = coerce_browser_state(browser_state)
+    sessions = state.setdefault("sessions", {})
+    sessions.pop(session_id, None)
+    if state.get("active_session_id") == session_id:
+        state["active_session_id"] = None
+    return state
+
+
 def update_browser_preferences(
     browser_state: Any,
     *,

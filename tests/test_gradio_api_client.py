@@ -71,6 +71,28 @@ def test_agents_returns_payload():
     assert client.agents()["default_agent_id"] == "local"
 
 
+def test_chat_history_methods_call_expected_endpoints():
+    session = FakeSession(
+        [
+            FakeResponse(payload={"chats": []}),
+            FakeResponse(payload={"session": {"session_id": "sid"}, "messages": []}),
+            FakeResponse(payload={"deleted": True, "session_id": "sid"}),
+        ]
+    )
+    client = FiwareApiClient("http://api.test/api/v1", session=session)
+
+    client.chats()
+    client.chat_detail("sid")
+    client.delete_chat("sid")
+
+    assert session.calls[0]["method"] == "GET"
+    assert session.calls[0]["url"].endswith("/chats")
+    assert session.calls[1]["method"] == "GET"
+    assert session.calls[1]["url"].endswith("/chats/sid")
+    assert session.calls[2]["method"] == "DELETE"
+    assert session.calls[2]["url"].endswith("/chats/sid")
+
+
 def test_mcp_actions_post_expected_payloads():
     session = FakeSession(
         [

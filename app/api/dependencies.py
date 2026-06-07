@@ -14,6 +14,7 @@ from app.core.config import (
     load_profiles_config,
 )
 from app.core.mcp_launcher import MCPServerLauncher
+from app.services.chat_history_service import ChatHistoryService, ChatHistoryUnsupported
 from app.services.chat_service import ChatService
 from app.services.run_service import RunService
 
@@ -90,6 +91,20 @@ def get_profiles_config(client_cfg: ClientConfig = Depends(get_client_config)) -
             error="config_error",
             message=str(exc),
             details={"profiles_yaml": client_cfg.profiles_yaml},
+        ) from exc
+
+
+def get_chat_history_service(
+    client_cfg: ClientConfig = Depends(get_client_config),
+    profiles: ProfilesConfig = Depends(get_profiles_config),
+) -> ChatHistoryService:
+    try:
+        return ChatHistoryService(client_cfg, profiles)
+    except ChatHistoryUnsupported as exc:
+        raise ApiError(
+            status_code=400,
+            error=exc.error,
+            message=exc.message,
         ) from exc
 
 

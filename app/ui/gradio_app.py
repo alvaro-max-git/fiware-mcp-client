@@ -19,6 +19,8 @@ from app.ui.state import (
     create_new_session,
     empty_browser_state,
     ensure_active_session,
+    normalize_messages,
+    remove_session,
     save_session_messages,
     update_browser_preferences,
 )
@@ -83,6 +85,11 @@ def build_app(api_base: str = DEFAULT_API_BASE) -> gr.Blocks:
                     new_chat_btn = gr.Button("New Chat")
                     clear_btn = gr.Button("Clear Visible Transcript")
                 session_box = gr.Textbox(label="Session ID", interactive=False)
+                gr.Markdown("### Past Chats")
+                history_refresh_btn = gr.Button("Refresh Chats")
+                chat_history = gr.Radio(label="Past Chats", choices=[], interactive=False)
+                delete_chat_btn = gr.Button("Delete Selected Chat", interactive=False)
+                history_note = gr.Markdown(elem_classes=["fiware-status", "fiware-muted"])
 
             with gr.Column(scale=3):
                 chatbot = gr.Chatbot(
@@ -112,6 +119,9 @@ def build_app(api_base: str = DEFAULT_API_BASE) -> gr.Blocks:
             start_btn,
             stop_btn,
             restart_btn,
+            chat_history,
+            delete_chat_btn,
+            history_note,
             ui_state,
             browser_state,
         ]
@@ -139,15 +149,25 @@ def build_app(api_base: str = DEFAULT_API_BASE) -> gr.Blocks:
             ui_state,
             browser_state,
         ]
-        send_btn.click(
+        send_click = send_btn.click(
             _send_message(client),
             inputs=send_inputs,
             outputs=send_outputs,
         )
-        prompt.submit(
+        send_click.then(
+            _refresh_history_after_send(client),
+            inputs=[ui_state],
+            outputs=[chat_history, delete_chat_btn, history_note],
+        )
+        prompt_submit = prompt.submit(
             _send_message(client),
             inputs=send_inputs,
             outputs=send_outputs,
+        )
+        prompt_submit.then(
+            _refresh_history_after_send(client),
+            inputs=[ui_state],
+            outputs=[chat_history, delete_chat_btn, history_note],
         )
 
         refresh_btn.click(
@@ -189,12 +209,37 @@ def build_app(api_base: str = DEFAULT_API_BASE) -> gr.Blocks:
         new_chat_btn.click(
             _new_chat,
             inputs=[agent, ui_state, browser_state],
-            outputs=[chatbot, session_box, trace, status, ui_state, browser_state],
+            outputs=[chatbot, session_box, trace, status, chat_history, ui_state, browser_state],
         )
         clear_btn.click(
             _clear_visible_transcript,
             inputs=[agent, ui_state, browser_state],
             outputs=[chatbot, trace, status, ui_state, browser_state],
+        )
+        history_refresh_btn.click(
+            _refresh_history(client),
+            inputs=[ui_state],
+            outputs=[chat_history, delete_chat_btn, history_note, ui_state],
+        )
+        chat_history.change(
+            _recover_chat(client),
+            inputs=[chat_history, agent, ui_state, browser_state],
+            outputs=[chatbot, session_box, trace, status, ui_state, browser_state],
+        )
+        delete_chat_btn.click(
+            _delete_selected_chat(client),
+            inputs=[chat_history, agent, ui_state, browser_state],
+            outputs=[
+                chatbot,
+                session_box,
+                trace,
+                status,
+                chat_history,
+                delete_chat_btn,
+                history_note,
+                ui_state,
+                browser_state,
+            ],
         )
 
     return demo
@@ -263,6 +308,7 @@ def _initial_ui_state(api_base: str) -> dict[str, Any]:
         "last_trace": DEFAULT_TRACE,
         "mcp_status": None,
         "api_connected": False,
+        "chat_history_supported": None,
     }
 
 
@@ -279,6 +325,9 @@ def _load_initial(client: FiwareApiClient, api_base: str):
         runtime: dict[str, Any] | None = None
         agents_payload: dict[str, Any] = {"default_agent_id": None, "agents": []}
         mcp_payload: dict[str, Any] = {}
+        history_choices: list[tuple[str, str]] = []
+        history_note = ""
+        history_supported: bool | None = None
         connected = False
 
         try:
@@ -286,6 +335,7 @@ def _load_initial(client: FiwareApiClient, api_base: str):
             runtime = client.runtime()
             agents_payload = client.agents()
             mcp_payload = client.mcp_status()
+            history_choices, history_note, history_supported = _load_history_choices(client)
             connected = True
             api_status = (
                 f"**API:** Connected  \n"
@@ -325,6 +375,7 @@ def _load_initial(client: FiwareApiClient, api_base: str):
                 "messages": messages,
                 "mcp_status": mcp_payload,
                 "api_connected": connected,
+                "chat_history_supported": history_supported,
             }
         )
 
@@ -345,6 +396,9 @@ def _load_initial(client: FiwareApiClient, api_base: str):
             gr.update(interactive=connected),
             gr.update(interactive=connected),
             gr.update(interactive=connected),
+            gr.update(choices=history_choices, value=None, interactive=bool(history_choices)),
+            gr.update(interactive=bool(history_choices)),
+            history_note,
             ui_state,
             browser,
         )
@@ -752,14 +806,14 @@ def _new_chat(
     selected_agent_id: str | None,
     ui_state: dict[str, Any],
     browser_value: Any,
-) -> tuple[list[dict[str, str]], str, dict[str, Any], str, dict[str, Any], dict[str, Any]]:
+) -> tuple[list[dict[str, str]], str, dict[str, Any], str, Any, dict[str, Any], dict[str, Any]]:
     ui_state = _coerce_ui_state(ui_state)
     browser, session_id = create_new_session(
         browser_value,
         selected_agent_id=selected_agent_id or ui_state.get("selected_agent_id"),
     )
     ui_state.update({"session_id": session_id, "messages": [], "last_trace": DEFAULT_TRACE})
-    return [], session_id, DEFAULT_TRACE, "New chat created.", ui_state, browser
+    return [], session_id, DEFAULT_TRACE, "New chat created.", gr.update(value=None), ui_state, browser
 
 
 def _clear_visible_transcript(
@@ -782,6 +836,168 @@ def _clear_visible_transcript(
     return [], DEFAULT_TRACE, "Visible transcript cleared. Backend chat memory is unchanged.", ui_state, browser
 
 
+def _refresh_history(client: FiwareApiClient):
+    def refresh(ui_state: dict[str, Any]) -> tuple[Any, Any, str, dict[str, Any]]:
+        ui_state = _coerce_ui_state(ui_state)
+        if not ui_state.get("api_connected"):
+            return (
+                gr.update(choices=[], value=None, interactive=False),
+                gr.update(interactive=False),
+                "Chat history requires a connected API.",
+                ui_state,
+            )
+        choices, note, supported = _load_history_choices(client)
+        ui_state["chat_history_supported"] = supported
+        return (
+            gr.update(choices=choices, value=None, interactive=bool(choices)),
+            gr.update(interactive=bool(choices)),
+            note,
+            ui_state,
+        )
+
+    return refresh
+
+
+def _refresh_history_after_send(client: FiwareApiClient):
+    def refresh(ui_state: dict[str, Any]) -> tuple[Any, Any, str]:
+        ui_state = _coerce_ui_state(ui_state)
+        if not ui_state.get("api_connected"):
+            return gr.update(), gr.update(interactive=False), ""
+        choices, note, supported = _load_history_choices(client)
+        ui_state["chat_history_supported"] = supported
+        return (
+            gr.update(choices=choices, value=None, interactive=bool(choices)),
+            gr.update(interactive=bool(choices)),
+            note,
+        )
+
+    return refresh
+
+
+def _recover_chat(client: FiwareApiClient):
+    def recover(
+        selected_session_id: str | None,
+        selected_agent_id: str | None,
+        ui_state: dict[str, Any],
+        browser_value: Any,
+    ) -> tuple[Any, str, dict[str, Any], str, dict[str, Any], dict[str, Any]]:
+        ui_state = _coerce_ui_state(ui_state)
+        if not selected_session_id:
+            return (
+                ui_state.get("messages") or [],
+                str(ui_state.get("session_id") or ""),
+                ui_state.get("last_trace") or DEFAULT_TRACE,
+                "Select a chat to recover.",
+                ui_state,
+                coerce_browser_state(browser_value),
+            )
+
+        try:
+            detail = client.chat_detail(selected_session_id)
+        except ApiClientError as exc:
+            return (
+                ui_state.get("messages") or [],
+                str(ui_state.get("session_id") or ""),
+                ui_state.get("last_trace") or DEFAULT_TRACE,
+                _error_status(exc),
+                ui_state,
+                coerce_browser_state(browser_value),
+            )
+
+        messages = normalize_messages(detail.get("messages"))
+        agent_id = selected_agent_id or ui_state.get("selected_agent_id")
+        browser = save_session_messages(
+            browser_value,
+            session_id=selected_session_id,
+            selected_agent_id=agent_id,
+            messages=messages,
+        )
+        ui_state.update(
+            {
+                "session_id": selected_session_id,
+                "selected_agent_id": agent_id,
+                "messages": messages,
+                "last_trace": DEFAULT_TRACE,
+            }
+        )
+        return (
+            messages,
+            selected_session_id,
+            DEFAULT_TRACE,
+            "Recovered chat. Future turns will use the currently selected agent.",
+            ui_state,
+            browser,
+        )
+
+    return recover
+
+
+def _delete_selected_chat(client: FiwareApiClient):
+    def delete(
+        selected_session_id: str | None,
+        selected_agent_id: str | None,
+        ui_state: dict[str, Any],
+        browser_value: Any,
+    ) -> tuple[Any, str, dict[str, Any], str, Any, Any, str, dict[str, Any], dict[str, Any]]:
+        ui_state = _coerce_ui_state(ui_state)
+        browser = coerce_browser_state(browser_value)
+        messages = ui_state.get("messages") or []
+        session_id = str(ui_state.get("session_id") or "")
+        trace = ui_state.get("last_trace") or DEFAULT_TRACE
+
+        if not selected_session_id:
+            return (
+                messages,
+                session_id,
+                trace,
+                "Select a chat first.",
+                gr.update(),
+                gr.update(),
+                "",
+                ui_state,
+                browser,
+            )
+
+        try:
+            client.delete_chat(selected_session_id)
+        except ApiClientError as exc:
+            return (
+                messages,
+                session_id,
+                trace,
+                _error_status(exc),
+                gr.update(),
+                gr.update(),
+                "",
+                ui_state,
+                browser,
+            )
+
+        browser = remove_session(browser, session_id=selected_session_id)
+        agent_id = selected_agent_id or ui_state.get("selected_agent_id")
+        if ui_state.get("session_id") == selected_session_id:
+            browser, session_id = create_new_session(browser, selected_agent_id=agent_id)
+            messages = []
+            trace = DEFAULT_TRACE
+            ui_state.update({"session_id": session_id, "messages": messages, "last_trace": trace})
+
+        choices, note, supported = _load_history_choices(client)
+        ui_state["chat_history_supported"] = supported
+        return (
+            messages,
+            session_id,
+            trace,
+            "Deleted selected chat.",
+            gr.update(choices=choices, value=None, interactive=bool(choices)),
+            gr.update(interactive=bool(choices)),
+            note,
+            ui_state,
+            browser,
+        )
+
+    return delete
+
+
 def _send_outputs(
     messages: list[dict[str, str]],
     prompt_value: str,
@@ -802,6 +1018,54 @@ def _coerce_ui_state(value: Any) -> dict[str, Any]:
     state.setdefault("agents", [])
     state.setdefault("last_trace", DEFAULT_TRACE)
     return state
+
+
+def _load_history_choices(client: FiwareApiClient) -> tuple[list[tuple[str, str]], str, bool]:
+    try:
+        payload = client.chats()
+    except ApiClientError as exc:
+        if exc.error == "chat_history_unsupported":
+            return [], "Chat history is available for Agents SDK SQLite profiles.", False
+        return [], _error_status(exc), False
+
+    choices = _history_choices(payload)
+    if choices:
+        return choices, "", True
+    return [], "No past chats yet.", True
+
+
+def _history_choices(payload: dict[str, Any]) -> list[tuple[str, str]]:
+    chats = payload.get("chats")
+    if not isinstance(chats, list):
+        return []
+
+    choices: list[tuple[str, str]] = []
+    for chat in chats:
+        if not isinstance(chat, dict):
+            continue
+        session_id = str(chat.get("session_id") or "")
+        if not session_id:
+            continue
+        choices.append((_history_label(chat, session_id), session_id))
+    return choices
+
+
+def _history_label(chat: dict[str, Any], session_id: str) -> str:
+    title = str(chat.get("title") or "New chat")
+    updated = _short_timestamp(chat.get("updated_at"))
+    sid = session_id[:8]
+    parts = [title]
+    if updated:
+        parts.append(updated)
+    parts.append(sid)
+    return " - ".join(parts)
+
+
+def _short_timestamp(value: Any) -> str:
+    text = str(value or "")
+    if not text:
+        return ""
+    return text.replace("T", " ").replace("Z", "")[:16]
 
 
 def _agents_from_payload(payload: dict[str, Any]) -> list[dict[str, Any]]:
