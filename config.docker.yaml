@@ -1,0 +1,15 @@
+# Docker runtime configuration.
+# Secrets are provided through Docker Compose environment variables.
+
+profiles_yaml: app/profiles/fiware-agents.docker.yaml
+tools_yaml: app/tools/tools.docker.yaml
+agent_id: fiware-client-agents-local
+
+read_only: true
+
+log_level: INFO
+log_to_file: true
+logs_dir: /app/logs
+
+prompts_dir: prompts
+max_output_tokens: 30000

@@ -21,6 +21,7 @@ The project is YAML-first and organized around a thin CLI, application services,
 - OpenAI API key
 - Local FIWARE Context Broker, usually at `http://localhost:1026`
 - The bundled FIWARE MCP server in `fiware-mcp-server/server.py`, exposing tools such as `execute_query`, `get_all_entities`, `get_entity_types`, `CB_version`, and `haversine_dist`
+- Docker Engine or Docker Desktop with Compose v2 for container deployment.
 
 References used by this academic project:
 
@@ -345,7 +346,85 @@ $env:FIWARE_API_BASE="http://127.0.0.1:8000/api/v1"
 python -m app.ui.gradio_app
 ```
 
-### Evaluation
+## Docker Compose Deployment
+
+The repository includes a Docker deployment for the FastAPI backend and the Gradio frontend:
+
+- `api`: runs `uvicorn app.api.main:app` on port `8000`.
+- `ui`: runs `python -m app.ui.gradio_app` on port `7860`.
+- The bundled FIWARE MCP server is intentionally not a separate Compose service. It remains a managed child process of the API container, so the Gradio controls can start, stop, and restart it with the selected NGSI-LD context (`context-data-loader` or `mcp-experiments`).
+
+Prepare secrets:
+
+```powershell
+Copy-Item .template.env .env
+```
+
+Set at least:
+
+```text
+OPENAI_API_KEY=...
+```
+
+Start the deployment:
+
+```powershell
+docker compose up --build
+```
+
+Open:
+
+```text
+http://127.0.0.1:7860
+http://127.0.0.1:8000/docs
+```
+
+The Docker deployment uses:
+
+```text
+FIWARE_CLIENT_CONFIG=/app/config.docker.yaml
+profiles_yaml: app/profiles/fiware-agents.docker.yaml
+tools_yaml: app/tools/tools.docker.yaml
+agent_id: fiware-client-agents-local
+```
+
+This avoids relying on ignored local files such as `.env`, `config.yaml`, or `app/tools/tools.yaml` inside the image.
+
+### Context Broker URLs in Docker
+
+By default, Compose sets:
+
+```text
+FIWARE_CB_BASE_URL=http://host.docker.internal:1026
+```
+
+This is appropriate when the Context Broker is running on the host machine. If the broker is somewhere else, set `FIWARE_CB_BASE_URL` in `.env`:
+
+```text
+FIWARE_CB_BASE_URL=http://host.docker.internal:1026
+```
+
+If the two UI context options should talk to different brokers, set context-specific URLs:
+
+```text
+FIWARE_CB_BASE_URL_CONTEXT_DATA_LOADER=http://host.docker.internal:1026
+FIWARE_CB_BASE_URL_MCP_EXPERIMENTS=http://host.docker.internal:1027
+```
+
+When you choose a context in the UI and click **Start** or **Restart**, the API launches the MCP server with that context selector. The MCP server then uses the matching broker URL above and sends the matching JSON-LD `Link` header.
+
+Useful commands:
+
+```powershell
+docker compose logs -f api
+docker compose logs -f ui
+docker compose down
+docker compose down -v
+```
+
+`docker compose down -v` removes the named volumes used for `data/` and `logs/`, including persisted chat sessions.
+
+## Evaluation
 
 ```powershell
 python -m app.cli eval --prompt "ping" --exact-text "OK"

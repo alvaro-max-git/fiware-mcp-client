@@ -1,0 +1,58 @@
+default_agent: "fiware-client-agents-local"
+
+agents:
+  - id: "fiware-client-agents-local"
+    description: "NGSI-LD expert assistant using the OpenAI Agents SDK and local MCP"
+    system_prompt: "system2.3.md"
+
+    backend:
+      type: "openai_agents"
+      model_name: "gpt-5.5"
+      session:
+        enabled: true
+        provider: "sqlite"
+        path: "data/sessions.sqlite"
+
+    tools: ["fiware-mcp-local"]
+    handoffs: []
+
+  - id: "mcp-experiments-low"
+    description: "NGSI-LD expert assistant for MCP Experiments"
+    system_prompt: "mcp_experiments_instructions_01.md"
+
+    backend:
+      type: "openai_agents"
+      model_name: "gpt-5"
+      session:
+        enabled: true
+        provider: "sqlite"
+        path: "data/sessions.sqlite"
+
+    tools: ["fiware-mcp-local"]
+    handoffs: []
+
+  - id: "mcp-experiments-high"
+    description: "NGSI-LD expert assistant for MCP Experiments"
+    system_prompt: "mcp_experiments_instructions_01.md"
+
+    backend:
+      type: "openai_agents"
+      model_name: "gpt-5.5"
+      session:
+        enabled: true
+        provider: "sqlite"
+        path: "data/sessions.sqlite"
+
+    tools: ["fiware-mcp-local", "code-interpreter"]
+    handoffs: []
+
+  - id: "fiware-evaluator"
+    description: "LLM judge for evaluation and benchmarks"
+    system_prompt: "judge_system.md"
+
+    backend:
+      type: "openai_responses"
+      model_name: "gpt-5-nano"
+
+    tools: []
+    handoffs: []

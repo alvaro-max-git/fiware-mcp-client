@@ -1,4 +1,5 @@
 from fastmcp import FastMCP
+import os
 import time
 import signal
 import sys
@@ -6,6 +7,7 @@ import requests
 import json
 import logging
 import argparse
+from urllib.parse import urlparse
 from haversine import haversine, Unit
 
 # --- Logging to STDERR only ---
@@ -34,6 +36,68 @@ _CONTEXT_LINK = '<http://context/user-context.jsonld>; rel="http://www.w3.org/ns
 if _CONTEXT_URL_FLAG == "mcp-experiments":
     _CONTEXT_LINK = '<http://ld-context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 
+_DEFAULT_CB_HOST = "localhost"
+_DEFAULT_CB_PORT = 1026
+
+
+def _context_env_suffix(context_url: str) -> str:
+    return "".join(ch if ch.isalnum() else "_" for ch in context_url).upper()
+
+
+def _configured_cb_base_url(context_url: str = _CONTEXT_URL_FLAG) -> str:
+    context_key = f"FIWARE_CB_BASE_URL_{_context_env_suffix(context_url)}"
+    for key in (context_key, "FIWARE_CB_BASE_URL", "CONTEXT_BROKER_URL"):
+        value = os.getenv(key)
+        if value and value.strip():
+            return value.strip().rstrip("/")
+
+    host = os.getenv("FIWARE_CB_HOST")
+    port = int(os.getenv("FIWARE_CB_PORT") or _DEFAULT_CB_PORT)
+    if host and host.strip():
+        host = host.strip()
+        if host.startswith(("http://", "https://")):
+            return host.rstrip("/")
+        return f"http://{host}:{port}"
+
+    return f"http://{_DEFAULT_CB_HOST}:{port}"
+
+
+_CB_BASE_URL = _configured_cb_base_url()
+
+
+def _broker_base_url(address: str = _DEFAULT_CB_HOST, port: int = _DEFAULT_CB_PORT) -> str:
+    address = str(address or "").strip()
+    port = int(port or _DEFAULT_CB_PORT)
+    if not address or (address in {_DEFAULT_CB_HOST, "127.0.0.1"} and port == _DEFAULT_CB_PORT):
+        return _CB_BASE_URL
+    if address.startswith(("http://", "https://")):
+        return address.rstrip("/")
+    return f"http://{address}:{port}"
+
+
+def _broker_url(path: str, address: str = _DEFAULT_CB_HOST, port: int = _DEFAULT_CB_PORT) -> str:
+    return f"{_broker_base_url(address, port)}/{str(path).lstrip('/')}"
+
+
+def _query_url_from_params(params: str) -> str:
+    raw = str(params or "").strip()
+    if raw.upper().startswith("GET "):
+        raw = raw[3:].strip()
+
+    if raw.startswith(("http://", "https://")):
+        parsed = urlparse(raw)
+        if parsed.hostname in {_DEFAULT_CB_HOST, "127.0.0.1"} and (
+            parsed.port or _DEFAULT_CB_PORT
+        ) == _DEFAULT_CB_PORT:
+            path = parsed.path.lstrip("/")
+            if parsed.query:
+                path = f"{path}?{parsed.query}"
+            return _broker_url(path)
+        return raw
+
+    return _broker_url(raw.lstrip("/").replace(" ", ""))
+
+
 # Handle SIGINT (Ctrl+C) gracefully
 def signal_handler(sig, frame):
     logger.info("Shutting down server gracefully...")  # was print
@@ -52,7 +116,7 @@ mcp = FastMCP(
 def CB_version(address: str="localhost", port: int=1026) -> str:
     """Return the version of the CB."""
     try:
-        url = f"http://{address}:{port}/version"
+        url = _broker_url("version", address, port)
         response = requests.get(url)
         response.raise_for_status()  # Raise an exception for bad status codes
         return json.dumps(response.json())
@@ -69,8 +133,9 @@ def CB_version(address: str="localhost", port: int=1026) -> str:
 def get_all_entities(address: str="localhost", port: int=1026,  limit=1000, extra_headers: str="") -> str:
     """Get all entities from the Context Broker."""
     try:
-        url = f"http://{address}:{port}/ngsi-ld/v1/entities?limit={limit}"
+        url = _broker_url("ngsi-ld/v1/entities", address, port)
         params = {
+            "limit": limit,
             "local": "true",
             "count": "true"
         }
@@ -102,7 +167,10 @@ def get_all_entities(address: str="localhost", port: int=1026,  limit=1000, extr
 def get_entity_types(address: str="localhost", port: int=1026, limit=1000, extra_headers: str="") -> str:
     """Get entity types from the Context Broker."""
     try:
-        url = f"http://{address}:{port}/ngsi-ld/v1/types?limit={limit}"
+        url = _broker_url("ngsi-ld/v1/types", address, port)
+        params = {
+            "limit": limit,
+        }
         headers = {
             "Accept": "application/json"
         }
@@ -115,7 +183,7 @@ def get_entity_types(address: str="localhost", port: int=1026, limit=1000, extra
             except json.JSONDecodeError:
                 return json.dumps({"error": "Invalid extra_headers format. Must be valid JSON string"})
 
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, params=params, headers=headers)
         response.raise_for_status()
         return json.dumps(response.json())
     except requests.exceptions.RequestException as e:
@@ -136,22 +204,7 @@ def execute_query(params: str) -> str:
         For example, to get the entity of type "Building" whose name is "Building 1" you should provide the following URL:
         'GET http://localhost:1026/ngsi-ld/v1/entities/Building/name/Building%201' or 'GET /ngsi-ld/v1/entities/Building/name/Building%201'
         """
-        base_url = "http://localhost:1026"
-
-        # Normalize params without printing anything to stdout
-        if isinstance(params, str) and params.strip().startswith("GET"):
-            params = params.strip()[3:]
-        if isinstance(params, str) and params.strip().startswith("http://localhost:1026/"):
-            params = params.strip()[len("http://localhost:1026/"):]
-        params = params.lstrip("/").replace(" ", "")
-
-        # Check if params start with "/" (possibly with leading spaces), and strip spaces and the first slash
-        if isinstance(params, str):
-            params = params.lstrip()
-            if params.startswith("/"):
-                params = params[1:]
-
-        full_url = f"{base_url}/{params}"
+        full_url = _query_url_from_params(params)
 
         headers = {
             "Accept": "application/ld+json, application/json;q=0.9, */*;q=0.1",
@@ -189,7 +242,7 @@ def execute_query(params: str) -> str:
 @mcp.tool()
 def publish_to_CB(address: str="localhost", port: int=1026, entity_data: dict=None) -> str:  # type: ignore
     """Publish an entity to the CB."""
-    broker_url = f"http://{address}:{port}/ngsi-ld/v1/entities"
+    broker_url = _broker_url("ngsi-ld/v1/entities", address, port)
     headers = {
         "Content-Type": "application/ld+json"
     }
@@ -251,7 +304,13 @@ def haversine_dist(lat1: float, lon1: float, lat2: float, lon2: float, unit: str
 if __name__ == "__main__":
     try:
         if _IS_HTTP:
-            logger.info("Starting MCP server 'CB-assistant' on %s:%s (HTTP)", _HOST, _PORT)
+            logger.info(
+                "Starting MCP server 'CB-assistant' on %s:%s (HTTP), broker=%s, context=%s",
+                _HOST,
+                _PORT,
+                _CB_BASE_URL,
+                _CONTEXT_URL_FLAG,
+            )
             mcp.run(
                 transport="http",
                 host=_HOST,
