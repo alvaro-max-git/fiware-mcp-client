@@ -213,6 +213,7 @@ The HTTP API is implemented in `app/api/` as a thin adapter over the same servic
 
 - `RunService` for `/api/v1/run`
 - `ChatService` for `/api/v1/chat` and `/api/v1/chat/stream`
+- `ChatHistoryService` for `/api/v1/chats*`
 - `MCPServerLauncher` for `/api/v1/mcp-server/*`
 - YAML config loaders for `/api/v1/runtime` and `/api/v1/agents`
 
@@ -239,12 +240,15 @@ http://127.0.0.1:8000/openapi.json
 | `POST` | `/api/v1/run` | One non-streaming model turn through `RunService`. |
 | `POST` | `/api/v1/chat` | Persistent chat turn through `ChatService`. |
 | `POST` | `/api/v1/chat/stream` | Streaming chat via Server-Sent Events. |
+| `GET` | `/api/v1/chats` | List recent Agents SDK SQLite chat sessions. |
+| `GET` | `/api/v1/chats/{session_id}` | Recover a visible user/assistant transcript for one chat session. |
+| `DELETE` | `/api/v1/chats/{session_id}` | Delete one persisted Agents SDK SQLite chat session. |
 | `GET` | `/api/v1/mcp-server/status` | Local FIWARE MCP server status. |
 | `POST` | `/api/v1/mcp-server/start` | Start the bundled local MCP server. |
 | `POST` | `/api/v1/mcp-server/stop` | Stop the managed local MCP server process. |
 | `POST` | `/api/v1/mcp-server/restart` | Restart the local MCP server, usually to switch context dataset. |
 
-The API never serializes provider SDK objects. The HTTP response model is a safe `RunResponse` derived from `RunResult`, omitting `raw_response` and exposing a normalized `mcp_trace` for UI rendering.
+The API never serializes provider SDK objects. The HTTP response model for model turns is a safe `RunResponse` derived from `RunResult`, omitting `raw_response` and exposing a normalized `mcp_trace` for UI rendering. Chat-history endpoints read the OpenAI Agents SDK SQLite session database and return only clean user/assistant transcript messages, skipping reasoning items, function calls, and tool outputs.
 
 ### API Examples
 
@@ -290,6 +294,28 @@ Invoke-RestMethod `
   -Body '{"prompt":"How many animals are in that parcel?","agent_id":"fiware-client-agents-local","session_id":"demo-session"}'
 ```
 
+List recoverable chat sessions:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8000/api/v1/chats
+```
+
+Recover one visible transcript:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8000/api/v1/chats/demo-session
+```
+
+Delete one persisted chat:
+
+```powershell
+Invoke-RestMethod `
+  -Method Delete `
+  -Uri http://127.0.0.1:8000/api/v1/chats/demo-session
+```
+
+Chat history is available when an `openai_agents` profile with SQLite sessions is configured. The shipped session-capable profiles share `data/sessions.sqlite`; Responses-only profiles do not provide SDK session history.
+
 For interactive frontend chat, prefer `/api/v1/chat/stream`. It returns `text/event-stream` events:
 
 ```text
@@ -304,12 +330,14 @@ Frontend integration flow:
 
 1. Call `/api/v1/runtime` and `/api/v1/agents` on page load.
 2. Call `/api/v1/mcp-server/status` and start or restart the server if the selected agent uses `fiware-mcp-local`.
-3. Generate a client-side `session_id` for each new conversation.
-4. Use `/api/v1/chat/stream` for chat, with `/api/v1/chat` as a fallback.
+3. Call `/api/v1/chats` to populate recoverable server-side chat history when the selected configuration supports Agents SDK SQLite sessions.
+4. Generate a client-side `session_id` for each new conversation.
+5. Use `/api/v1/chat/stream` for chat, with `/api/v1/chat` as a fallback.
+6. Use `/api/v1/chats/{session_id}` to recover a previous visible transcript and `DELETE /api/v1/chats/{session_id}` to remove persisted history.
 
 ## Gradio Frontend
 
-The Gradio UI is an operational local frontend over the FastAPI API. It does not import backend services directly, and it only persists browser-visible chat messages in local storage.
+The Gradio UI is an operational local frontend over the FastAPI API. It does not import backend services directly. It keeps browser-visible chat messages in local storage for immediate restoration and, when an Agents SDK SQLite profile is configured, can also list, recover, and delete server-side chat history through `/api/v1/chats`.
 
 Start the API in one terminal:
 
@@ -337,6 +365,7 @@ The UI provides:
 - Chat mode with optional streaming through `/chat/stream`.
 - Question mode through `/run`.
 - Browser-stable chat sessions with visible transcript persistence.
+- Past Chats controls backed by Agents SDK SQLite history when available.
 - Last MCP trace summary without exposing raw provider responses.
 
 You can also set the API URL with:
