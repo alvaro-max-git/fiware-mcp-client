@@ -1,0 +1,19 @@
+default_agent: local
+agents:
+  - id: local
+    description: Local MCP agent
+    system_prompt: system.md
+    backend:
+      type: openai_agents
+      model_name: gpt-test
+      api_key: ${PROFILE_SECRET}
+      session:
+        enabled: true
+    tools: [fiware-mcp-local]
+  - id: one-shot
+    description: Responses agent
+    system_prompt: system.md
+    backend:
+      type: openai_responses
+      model_name: gpt-responses
+    tools: [fiware-mcp]

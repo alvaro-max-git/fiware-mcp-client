@@ -190,6 +190,16 @@ python -m app.cli mcp-server restart
 python -m app.cli mcp-server stop
 ```
 
+The bundled FIWARE MCP server is read-only by default. In this default mode,
+`publish_to_CB` is not exposed as an MCP tool, so the server can inspect the
+Context Broker without creating or updating entities. To deliberately enable
+Context Broker writes for experiments beyond the default thesis scope, start or
+restart the managed server with active write mode:
+
+```powershell
+python -m app.cli mcp-server restart --write-mode
+```
+
 Defaults:
 
 ```text
@@ -271,7 +281,7 @@ Invoke-RestMethod `
   -Method Post `
   -Uri http://127.0.0.1:8000/api/v1/mcp-server/start `
   -ContentType "application/json" `
-  -Body '{"host":"127.0.0.1","port":5001,"context_url":"context-data-loader","timeout_seconds":10,"wait":true}'
+  -Body '{"host":"127.0.0.1","port":5001,"context_url":"context-data-loader","write_mode":false,"timeout_seconds":10,"wait":true}'
 ```
 
 Run one prompt:

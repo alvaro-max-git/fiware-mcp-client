@@ -9,6 +9,21 @@ def test_launcher_builds_default_endpoint():
     assert launcher.endpoint == "http://127.0.0.1:5101/mcp"
     assert "--http" in launcher.http_command()
     assert "--context-url" in launcher.stdio_command()
+    assert "--write-mode" not in launcher.http_command()
+    assert "--write-mode" not in launcher.stdio_command()
+
+
+def test_launcher_adds_write_mode_only_when_enabled():
+    launcher = MCPServerLauncher(write_mode=True)
+
+    assert "--write-mode" in launcher.http_command()
+    assert "--write-mode" in launcher.stdio_command()
+
+
+def test_launcher_parses_string_false_write_mode():
+    launcher = MCPServerLauncher.from_config({"write_mode": "false"})
+
+    assert "--write-mode" not in launcher.http_command()
 
 
 def test_resolve_managed_stdio_tool_config_points_to_bundled_server():
@@ -17,6 +32,7 @@ def test_resolve_managed_stdio_tool_config_points_to_bundled_server():
         {
             "launcher": "fiware-mcp-server",
             "context_url": "mcp-experiments",
+            "write_mode": True,
         },
     )
 
@@ -24,6 +40,7 @@ def test_resolve_managed_stdio_tool_config_points_to_bundled_server():
     assert "server.py" in resolved["args"][0]
     assert "--context-url" in resolved["args"]
     assert "mcp-experiments" in resolved["args"]
+    assert "--write-mode" in resolved["args"]
     assert resolved["cwd"].endswith("fiware-mcp-server")
 
 
