@@ -34,7 +34,7 @@ agents:
 
     backend:
       type: "openai_agents"
-      model_name: "gpt-5"
+      model_name: "gpt-5.5-mini"
       session:
         enabled: true
         provider: "sqlite"

@@ -14,6 +14,16 @@ from typing import Any, Dict, List, Optional
 MANAGED_LAUNCHER_NAMES = {"fiware-mcp-server", "fiware_mcp_server", "fiware"}
 
 
+def _as_bool(value: Any, *, default: bool = False) -> bool:
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
+
 def repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
@@ -42,6 +52,7 @@ class MCPServerLauncher:
         host: str = "127.0.0.1",
         port: int = 5001,
         context_url: str = "context-data-loader",
+        write_mode: bool = False,
         pid_file: Optional[Path] = None,
         log_file: Optional[Path] = None,
         extra_env: Optional[Dict[str, str]] = None,
@@ -53,6 +64,7 @@ class MCPServerLauncher:
         self.host = host
         self.port = int(port)
         self.context_url = context_url
+        self.write_mode = bool(write_mode)
         self.pid_file = self._resolve_path(pid_file or Path("data/fiware-mcp-server.pid"), root)
         self.log_file = self._resolve_path(log_file or Path("logs/fiware-mcp-server.log"), root)
         self.extra_env = dict(extra_env or {})
@@ -67,6 +79,7 @@ class MCPServerLauncher:
             host=str(cfg.get("host") or "127.0.0.1"),
             port=int(cfg.get("port") or 5001),
             context_url=str(cfg.get("context_url") or cfg.get("context-url") or "context-data-loader"),
+            write_mode=_as_bool(cfg.get("write_mode", cfg.get("write-mode")), default=False),
             pid_file=Path(cfg["pid_file"]) if cfg.get("pid_file") else None,
             log_file=Path(cfg["log_file"]) if cfg.get("log_file") else None,
             extra_env={str(k): str(v) for k, v in dict(cfg.get("env") or {}).items()},
@@ -77,7 +90,7 @@ class MCPServerLauncher:
         return f"http://{self.host}:{self.port}/mcp"
 
     def http_command(self) -> List[str]:
-        return [
+        command = [
             self.python_executable,
             str(self.script_path),
             "--http",
@@ -88,14 +101,20 @@ class MCPServerLauncher:
             "--context-url",
             self.context_url,
         ]
+        if self.write_mode:
+            command.append("--write-mode")
+        return command
 
     def stdio_command(self) -> List[str]:
-        return [
+        command = [
             self.python_executable,
             str(self.script_path),
             "--context-url",
             self.context_url,
         ]
+        if self.write_mode:
+            command.append("--write-mode")
+        return command
 
     def status(self) -> MCPServerState:
         pid = self._read_pid()

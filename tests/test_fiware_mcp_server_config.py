@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import asyncio
 import importlib.util
+import json
 import sys
 import uuid
 from pathlib import Path
@@ -46,3 +48,23 @@ def test_mcp_server_prefers_context_specific_broker_url(monkeypatch: pytest.Monk
 
     assert server._CB_BASE_URL == "http://experiments:1027"
     assert server._broker_url("/ngsi-ld/v1/entities") == "http://experiments:1027/ngsi-ld/v1/entities"
+
+
+def test_mcp_server_is_read_only_by_default(monkeypatch: pytest.MonkeyPatch):
+    server = _load_server(monkeypatch)
+
+    tools = asyncio.run(server.mcp.get_tools())
+    disabled_response = json.loads(server.publish_to_CB(entity_data={"id": "urn:test"}))
+
+    assert server._WRITE_MODE is False
+    assert "publish_to_CB" not in tools
+    assert disabled_response["error"] == "write_mode_disabled"
+
+
+def test_mcp_server_write_mode_registers_publish_tool(monkeypatch: pytest.MonkeyPatch):
+    server = _load_server(monkeypatch, "--write-mode")
+
+    tools = asyncio.run(server.mcp.get_tools())
+
+    assert server._WRITE_MODE is True
+    assert "publish_to_CB" in tools

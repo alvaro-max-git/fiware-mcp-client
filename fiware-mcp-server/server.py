@@ -26,11 +26,13 @@ _parser.add_argument("--http", action="store_true", help="Run MCP server over HT
 _parser.add_argument("--host", default="127.0.0.1", help="HTTP host (only for --http)")
 _parser.add_argument("--port", type=int, default=5001, help="HTTP port (only for --http)")
 _parser.add_argument("--context-url", default="context-data-loader", choices=["context-data-loader", "mcp-experiments"], help="Select Context Broker JSON-LD context Link header")
+_parser.add_argument("--write-mode", action="store_true", help="Enable write tools such as publish_to_CB")
 _args, _ = _parser.parse_known_args()
 _IS_HTTP = _args.http
 _HOST = _args.host
 _PORT = _args.port
 _CONTEXT_URL_FLAG = _args.context_url
+_WRITE_MODE = _args.write_mode
 
 _CONTEXT_LINK = '<http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 if _CONTEXT_URL_FLAG == "mcp-experiments":
@@ -238,10 +240,16 @@ def execute_query(params: str) -> str:
 
 
 
-# This tool creates or updates entities in the Context Broker
-@mcp.tool()
-def publish_to_CB(address: str="localhost", port: int=1026, entity_data: dict=None) -> str:  # type: ignore
-    """Publish an entity to the CB."""
+def _write_mode_disabled_response() -> str:
+    return json.dumps(
+        {
+            "error": "write_mode_disabled",
+            "message": "publish_to_CB is disabled by default. Restart the MCP server with --write-mode to enable Context Broker writes.",
+        }
+    )
+
+
+def _publish_to_cb_impl(address: str="localhost", port: int=1026, entity_data: dict=None) -> str:  # type: ignore
     broker_url = _broker_url("ngsi-ld/v1/entities", address, port)
     headers = {
         "Content-Type": "application/ld+json"
@@ -275,6 +283,20 @@ def publish_to_CB(address: str="localhost", port: int=1026, entity_data: dict=No
     logger.info("Entity data sent: %s", json.dumps(entity_data, indent=2))
     return json.dumps({"status": "completed"})
 
+
+if _WRITE_MODE:
+    # This tool creates or updates entities in the Context Broker. It is registered
+    # only when explicitly enabled so the default MCP surface is read-only.
+    @mcp.tool()
+    def publish_to_CB(address: str="localhost", port: int=1026, entity_data: dict=None) -> str:  # type: ignore
+        """Publish an entity to the CB."""
+        return _publish_to_cb_impl(address=address, port=port, entity_data=entity_data)
+else:
+    def publish_to_CB(address: str="localhost", port: int=1026, entity_data: dict=None) -> str:  # type: ignore
+        """Disabled write tool placeholder for direct in-process calls."""
+        return _write_mode_disabled_response()
+
+
 # This tool calculates the Haversine distance between two coordinates.
 @mcp.tool()
 def haversine_dist(lat1: float, lon1: float, lat2: float, lon2: float, unit: str = "km") -> float:
@@ -305,11 +327,12 @@ if __name__ == "__main__":
     try:
         if _IS_HTTP:
             logger.info(
-                "Starting MCP server 'CB-assistant' on %s:%s (HTTP), broker=%s, context=%s",
+                "Starting MCP server 'CB-assistant' on %s:%s (HTTP), broker=%s, context=%s, write_mode=%s",
                 _HOST,
                 _PORT,
                 _CB_BASE_URL,
                 _CONTEXT_URL_FLAG,
+                _WRITE_MODE,
             )
             mcp.run(
                 transport="http",
@@ -317,7 +340,7 @@ if __name__ == "__main__":
                 port=_PORT,
             )
         else:
-            logger.info("Starting MCP server 'CB-assistant' (STDIO)")
+            logger.info("Starting MCP server 'CB-assistant' (STDIO), write_mode=%s", _WRITE_MODE)
             mcp.run(
                 transport="stdio",
             )

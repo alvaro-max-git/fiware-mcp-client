@@ -212,6 +212,7 @@ class MCPServerStartRequest(BaseModel):
     host: str = Field(default="127.0.0.1", min_length=1)
     port: int = Field(default=5001, gt=0, le=65535)
     context_url: ContextUrl = "context-data-loader"
+    write_mode: bool = False
     timeout_seconds: float = Field(default=10, gt=0)
     wait: bool = True
 
@@ -226,6 +227,7 @@ class MCPServerRestartRequest(BaseModel):
     host: str = Field(default="127.0.0.1", min_length=1)
     port: int = Field(default=5001, gt=0, le=65535)
     context_url: ContextUrl = "context-data-loader"
+    write_mode: bool = False
     timeout_seconds: float = Field(default=10, gt=0)
 
 

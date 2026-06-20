@@ -101,12 +101,14 @@ def _mcp_launcher_from_config(
     host: str = "127.0.0.1",
     port: int = 5001,
     context_url: str = "context-data-loader",
+    write_mode: bool = False,
 ):
     return factory(
         {
             "host": host,
             "port": port,
             "context_url": context_url,
+            "write_mode": write_mode,
         }
     )
 
@@ -355,6 +357,7 @@ def mcp_server_start(
             host=body.host,
             port=body.port,
             context_url=body.context_url,
+            write_mode=body.write_mode,
         )
         return _state_response(
             launcher.start(timeout_seconds=body.timeout_seconds, wait=body.wait)
@@ -398,6 +401,7 @@ def mcp_server_restart(
             host=body.host,
             port=body.port,
             context_url=body.context_url,
+            write_mode=body.write_mode,
         )
         return _state_response(launcher.restart(timeout_seconds=body.timeout_seconds))
     except (TimeoutError, RuntimeError) as exc:

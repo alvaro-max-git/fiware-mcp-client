@@ -204,6 +204,7 @@ def _launcher_from_args(args: argparse.Namespace) -> MCPServerLauncher:
             "host": args.host,
             "port": args.port,
             "context_url": args.context_url,
+            "write_mode": args.write_mode,
             "pid_file": args.pid_file,
             "log_file": args.log_file,
         }
@@ -313,6 +314,7 @@ def build_parser() -> argparse.ArgumentParser:
     pm.add_argument("--log-file", default=None, help="Server log path")
     pm.add_argument("--timeout", type=float, default=10.0, help="Startup/shutdown timeout in seconds")
     pm.add_argument("--no-wait", action="store_true", help="Do not wait for HTTP readiness on start")
+    pm.add_argument("--write-mode", action="store_true", help="Enable Context Broker write tools on the MCP server")
     pm.set_defaults(func=cmd_mcp_server)
 
     return p

@@ -240,6 +240,7 @@ def test_mcp_server_endpoints_call_launcher_and_serialize_state(tmp_path: Path):
             "host": "127.0.0.1",
             "port": 5101,
             "context_url": "mcp-experiments",
+            "write_mode": True,
             "timeout_seconds": 2,
             "wait": False,
         },
@@ -254,6 +255,7 @@ def test_mcp_server_endpoints_call_launcher_and_serialize_state(tmp_path: Path):
             "host": "127.0.0.1",
             "port": 5102,
             "context_url": "context-data-loader",
+            "write_mode": True,
             "timeout_seconds": 3,
         },
     )
@@ -266,18 +268,33 @@ def test_mcp_server_endpoints_call_launcher_and_serialize_state(tmp_path: Path):
     assert actions[0][0] == "status"
     assert actions[1] == (
         "start",
-        {"host": "127.0.0.1", "port": 5101, "context_url": "mcp-experiments"},
+        {
+            "host": "127.0.0.1",
+            "port": 5101,
+            "context_url": "mcp-experiments",
+            "write_mode": True,
+        },
         2,
         False,
     )
     assert actions[2] == (
         "stop",
-        {"host": "127.0.0.1", "port": 5101, "context_url": "context-data-loader"},
+        {
+            "host": "127.0.0.1",
+            "port": 5101,
+            "context_url": "context-data-loader",
+            "write_mode": False,
+        },
         1,
     )
     assert actions[3] == (
         "restart",
-        {"host": "127.0.0.1", "port": 5102, "context_url": "context-data-loader"},
+        {
+            "host": "127.0.0.1",
+            "port": 5102,
+            "context_url": "context-data-loader",
+            "write_mode": True,
+        },
         3,
     )
 
